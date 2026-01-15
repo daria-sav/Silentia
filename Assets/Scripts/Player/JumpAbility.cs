@@ -43,6 +43,13 @@ public class JumpAbility : BaseAbility
         {
             linkedStateMachine.ChangeState(PlayerStates.State.Idle);
         }
+        if (!linkedPhysics.isGrounded && linkedPhysics.isTouchingWall)
+        {
+            if(linkedPhysics.rb.linearVelocityY < 0)
+            {
+                linkedStateMachine.ChangeState(PlayerStates.State.WallSlide);
+            }
+        }
     }
 
     public override void ProcessFixedAbility()
@@ -73,7 +80,7 @@ public class JumpAbility : BaseAbility
 
     public override void UpdateAnimator()
     {
-        linkedAnimator.SetBool(jumpParameterID, linkedStateMachine.currentState == PlayerStates.State.Jump);
+        linkedAnimator.SetBool(jumpParameterID, linkedStateMachine.currentState == PlayerStates.State.Jump || linkedStateMachine.currentState == PlayerStates.State.WallJump);
         linkedAnimator.SetFloat(ySpeedParameterID, linkedPhysics.rb.linearVelocityY);
     }
 }

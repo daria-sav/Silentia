@@ -8,6 +8,7 @@ public class PlayerStates
         Jump,
         DoubleJump,
         WallJump, // ?
+        WallSlide,
         Dash,
         Crouch,
         Ladders, // ?

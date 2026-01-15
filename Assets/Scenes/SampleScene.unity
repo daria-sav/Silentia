@@ -119,6 +119,37 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &123719534
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 123719535}
+  m_Layer: 7
+  m_Name: WallUpperChech
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &123719535
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 123719534}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.336, y: 0.495, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1640875360}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &372792385
 GameObject:
   m_ObjectHideFlags: 0
@@ -4459,7 +4490,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 4.7578125
+  orthographic size: 4.5234375
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -10781,6 +10812,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a8a05de0ac134f4f9d01bef6b9da077, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachinePixelPerfect
+--- !u!1 &1114593539
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1114593540}
+  m_Layer: 7
+  m_Name: WallLowerChech
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1114593540
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1114593539}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.224, y: -0.54, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1640875360}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1265604017
 GameObject:
   m_ObjectHideFlags: 0
@@ -10913,6 +10975,8 @@ GameObject:
   - component: {fileID: 1640875363}
   - component: {fileID: 1640875366}
   - component: {fileID: 1640875369}
+  - component: {fileID: 1640875370}
+  - component: {fileID: 1640875371}
   - component: {fileID: 1640875358}
   - component: {fileID: 1640875365}
   - component: {fileID: 1640875368}
@@ -10939,7 +11003,7 @@ Rigidbody2D:
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_GravityScale: 1.6
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: dc41fd90a59ff3345b9b892e808f49d0, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -11023,6 +11087,8 @@ Transform:
   m_Children:
   - {fileID: 1265604018}
   - {fileID: 406654851}
+  - {fileID: 123719535}
+  - {fileID: 1114593540}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1640875361
@@ -11158,6 +11224,10 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   isGrounded: 0
+  wallCheckDistance: 0.7
+  wallCheckPointUpper: {fileID: 123719535}
+  wallCheckPointLower: {fileID: 1114593540}
+  isTouchingWall: 0
 --- !u!61 &1640875368
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -11192,7 +11262,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.15773368, y: -0.13144457}
+  m_Offset: {x: 0.06628454, y: -0.13144457}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -11202,7 +11272,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1.0415425, y: 2.4895213}
+  m_Size: {x: 1.489579, y: 2.4895213}
   m_EdgeRadius: 0
 --- !u!114 &1640875369
 MonoBehaviour:
@@ -11222,6 +11292,38 @@ MonoBehaviour:
   jumpForce: 10
   airSpeed: 2
   minimumAirTime: 0.2
+--- !u!114 &1640875370
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1640875356}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd456377f3be30841bc14a940d80f65c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WallJumpAbility
+  thisAbilityState: 5
+  isPermitted: 1
+  wallJumpActionRef: {fileID: 1104379796043896753, guid: 1b41bb87599c1334f9155036f7cfacb1, type: 3}
+  wallJumpForce: {x: 8, y: 10}
+  wallJumpMaxTime: 0.3
+--- !u!114 &1640875371
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1640875356}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e18cfba303db30e4a9eee35d0e5cd48d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WallSlideAbility
+  thisAbilityState: 6
+  isPermitted: 1
+  maxSlideSpeed: 0.5
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

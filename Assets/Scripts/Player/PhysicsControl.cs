@@ -12,6 +12,30 @@ public class PhysicsControl : MonoBehaviour
     private RaycastHit2D leftGroundHit;
     private RaycastHit2D rightGroundHit;
 
+    [Header("Wall")]
+    [SerializeField] private float wallCheckDistance;
+    [SerializeField] private Transform wallCheckPointUpper;
+    [SerializeField] private Transform wallCheckPointLower;
+    public bool isTouchingWall;
+    private RaycastHit2D wallHitUpper;
+    private RaycastHit2D wallHitLower;
+
+    private bool CheckWall()
+    {
+        wallHitUpper = Physics2D.Raycast(wallCheckPointUpper.position, transform.right, wallCheckDistance, whatToDetect);
+        wallHitLower = Physics2D.Raycast(wallCheckPointLower.position, transform.right, wallCheckDistance, whatToDetect);
+
+        Debug.DrawRay(wallCheckPointUpper.position, new Vector3(wallCheckDistance, 0, 0), Color.blue);
+        Debug.DrawRay(wallCheckPointLower.position, new Vector3(wallCheckDistance, 0, 0), Color.blue);
+
+        if (wallHitUpper || wallHitLower)
+        {
+            Debug.Log("WALL");
+            return true;
+        }
+        return false;
+    }
+
     private bool CheckGround()
     {
         leftGroundHit = Physics2D.Raycast(leftGroundPoint.position, Vector2.down, groundCheckRadius, whatToDetect);
@@ -39,5 +63,6 @@ public class PhysicsControl : MonoBehaviour
     private void FixedUpdate()
     {
         isGrounded = CheckGround();
+        isTouchingWall = CheckWall();
     }
 }
