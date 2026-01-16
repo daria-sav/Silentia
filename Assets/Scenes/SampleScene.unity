@@ -10977,6 +10977,7 @@ GameObject:
   - component: {fileID: 1640875369}
   - component: {fileID: 1640875370}
   - component: {fileID: 1640875371}
+  - component: {fileID: 1640875372}
   - component: {fileID: 1640875358}
   - component: {fileID: 1640875365}
   - component: {fileID: 1640875368}
@@ -11217,6 +11218,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PhysicsControl
   rb: {fileID: 1640875358}
+  coyoteSetTime: 0.05
+  coyoteTimer: 0
   groundCheckRadius: 0.05
   leftGroundPoint: {fileID: 1265604018}
   rightGroundPoint: {fileID: 406654851}
@@ -11324,6 +11327,23 @@ MonoBehaviour:
   thisAbilityState: 6
   isPermitted: 1
   maxSlideSpeed: 0.5
+--- !u!114 &1640875372
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1640875356}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 643a27b587e0f604fb7dcde44dd3f1df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DashAbility
+  thisAbilityState: 7
+  isPermitted: 1
+  dashActionRef: {fileID: -9086795085070252477, guid: 1b41bb87599c1334f9155036f7cfacb1, type: 3}
+  dashForce: 15
+  maxDashDuration: 0.3
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

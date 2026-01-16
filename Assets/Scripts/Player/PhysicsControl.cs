@@ -3,6 +3,11 @@ using UnityEngine;
 public class PhysicsControl : MonoBehaviour
 {
     public Rigidbody2D rb;
+
+    [Header("Coyote Time")]
+    [SerializeField] private float coyoteSetTime;
+    public float coyoteTimer;
+
     [Header("Ground")]
     [SerializeField] private float groundCheckRadius;
     [SerializeField] private Transform leftGroundPoint;
@@ -19,6 +24,14 @@ public class PhysicsControl : MonoBehaviour
     public bool isTouchingWall;
     private RaycastHit2D wallHitUpper;
     private RaycastHit2D wallHitLower;
+
+    private float gravityValue;
+
+    void Start()
+    {
+        gravityValue = rb.gravityScale;
+        coyoteTimer = coyoteSetTime;
+    }
 
     private bool CheckWall()
     {
@@ -49,15 +62,32 @@ public class PhysicsControl : MonoBehaviour
         
         return false;
     }
-    void Start()
+
+    public void DisableGravity()
     {
-        
+        rb.gravityScale = 0;
     }
 
-    // Update is called once per frame
-    void Update()
+    public void EnableGravity()
     {
-        
+        rb.gravityScale = gravityValue;
+    }
+
+    public void ResetVelocity()
+    {
+        rb.linearVelocity = Vector2.zero;
+    }
+
+    private void Update()
+    {
+        if (!isGrounded)
+        {
+            coyoteTimer -= Time.deltaTime;
+        }
+        else
+        {
+            coyoteTimer = coyoteSetTime;
+        }
     }
 
     private void FixedUpdate()

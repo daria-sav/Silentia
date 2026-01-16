@@ -65,12 +65,20 @@ public class JumpAbility : BaseAbility
     {
         if (!isPermitted)
             return;
-        if (linkedPhysics.isGrounded)
+
+        if (linkedPhysics.coyoteTimer > 0)
         {
             linkedStateMachine.ChangeState(PlayerStates.State.Jump);
             linkedPhysics.rb.linearVelocity = new Vector2(airSpeed * linkedInput.horizontalInput, jumpForce);
             minimumAirTime = startMinimumAirTime;
+            linkedPhysics.coyoteTimer = -1;
         }
+        //if (linkedPhysics.isGrounded)
+        //{
+        //    linkedStateMachine.ChangeState(PlayerStates.State.Jump);
+        //    linkedPhysics.rb.linearVelocity = new Vector2(airSpeed * linkedInput.horizontalInput, jumpForce);
+        //    minimumAirTime = startMinimumAirTime;
+        //}
     }
 
     private void StopJump(InputAction.CallbackContext value)

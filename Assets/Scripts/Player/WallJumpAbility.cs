@@ -52,16 +52,10 @@ public class WallJumpAbility : BaseAbility
     {
         wallJumpTimer -= Time.deltaTime;
         wallJumpMinimumTime -= Time.deltaTime;
-        if (wallJumpMinimumTime <= 0 && linkedPhysics.isTouchingWall)
-        {
-            linkedStateMachine.ChangeState(PlayerStates.State.WallSlide);
-            wallJumpTimer = -1;
-            return;
 
-        }
         if (wallJumpTimer <= 0)
         {
-            if(linkedPhysics.isGrounded)
+            if (linkedPhysics.isGrounded)
             {
                 linkedStateMachine.ChangeState(PlayerStates.State.Idle);
             }
@@ -69,6 +63,13 @@ public class WallJumpAbility : BaseAbility
             {
                 linkedStateMachine.ChangeState(PlayerStates.State.Jump);
             }
+            return;
+        }
+
+        if (wallJumpMinimumTime <= 0 && linkedPhysics.isTouchingWall)
+        {
+            linkedStateMachine.ChangeState(PlayerStates.State.WallSlide);
+            wallJumpTimer = -1;
         }
     }
 
