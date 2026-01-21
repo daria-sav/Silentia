@@ -21,7 +21,8 @@ public class GatherInput : MonoBehaviour
 
     private void OnDisable()
     {
-        playerMap.Disable();
+        if (playerMap != null) 
+            playerMap.Disable();
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created

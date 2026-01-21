@@ -4490,7 +4490,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 4.5234375
+  orthographic size: 5
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -10974,7 +10974,7 @@ GameObject:
   - component: {fileID: 1640875367}
   - component: {fileID: 1640875363}
   - component: {fileID: 1640875366}
-  - component: {fileID: 1640875369}
+  - component: {fileID: 1640875373}
   - component: {fileID: 1640875370}
   - component: {fileID: 1640875371}
   - component: {fileID: 1640875372}
@@ -11003,7 +11003,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1.6
+  m_GravityScale: 8
   m_Material: {fileID: 6200000, guid: dc41fd90a59ff3345b9b892e808f49d0, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
@@ -11204,7 +11204,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MoveAbility
   thisAbilityState: 1
   isPermitted: 1
-  speed: 2
+  speed: 4
 --- !u!114 &1640875367
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11226,7 +11226,7 @@ MonoBehaviour:
   whatToDetect:
     serializedVersion: 2
     m_Bits: 64
-  isGrounded: 0
+  isGrounded: 1
   wallCheckDistance: 0.7
   wallCheckPointUpper: {fileID: 123719535}
   wallCheckPointLower: {fileID: 1114593540}
@@ -11277,24 +11277,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1.489579, y: 2.4895213}
   m_EdgeRadius: 0
---- !u!114 &1640875369
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1640875356}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 12f24e2ab5e6ec841a8521a658d63f77, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::JumpAbility
-  thisAbilityState: 3
-  isPermitted: 1
-  jumpActionRef: {fileID: 1104379796043896753, guid: 1b41bb87599c1334f9155036f7cfacb1, type: 3}
-  jumpForce: 10
-  airSpeed: 2
-  minimumAirTime: 0.2
 --- !u!114 &1640875370
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11344,6 +11326,26 @@ MonoBehaviour:
   dashActionRef: {fileID: -9086795085070252477, guid: 1b41bb87599c1334f9155036f7cfacb1, type: 3}
   dashForce: 15
   maxDashDuration: 0.3
+--- !u!114 &1640875373
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1640875356}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07c4b7ae4a2763646b8c44f8f7305aa2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::VariableJumpAbility
+  thisAbilityState: 3
+  isPermitted: 1
+  jumpActionRef: {fileID: -2099379676528639254, guid: 3590b91b4603b465dbb4216d601bff33, type: 3}
+  jumpForce: 12
+  airSpeed: 5
+  minimumAirTime: 0.2
+  setMaxJumpTime: 0.2
+  gravityDivider: 1.8
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

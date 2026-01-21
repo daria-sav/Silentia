@@ -27,6 +27,11 @@ public class PhysicsControl : MonoBehaviour
 
     private float gravityValue;
 
+    public float GetGravity()
+    {
+        return gravityValue;
+    }
+
     void Start()
     {
         gravityValue = rb.gravityScale;
