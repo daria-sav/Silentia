@@ -11335,17 +11335,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 1640875356}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 07c4b7ae4a2763646b8c44f8f7305aa2, type: 3}
+  m_Script: {fileID: 11500000, guid: fc969e7f00f67594584e81751fa73b5f, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::VariableJumpAbility
+  m_EditorClassIdentifier: Assembly-CSharp::MultipleJumpAbility
   thisAbilityState: 3
   isPermitted: 1
   jumpActionRef: {fileID: -2099379676528639254, guid: 3590b91b4603b465dbb4216d601bff33, type: 3}
+  maxNumberOfJumps: 2
   jumpForce: 12
   airSpeed: 5
   minimumAirTime: 0.2
   setMaxJumpTime: 0.2
-  gravityDivider: 1.8
+  gravityDivider: 2
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

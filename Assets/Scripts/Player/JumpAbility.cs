@@ -41,7 +41,10 @@ public class JumpAbility : BaseAbility
         minimumAirTime -= Time.deltaTime;
         if (linkedPhysics.isGrounded && minimumAirTime <= 0)
         {
-            linkedStateMachine.ChangeState(PlayerStates.State.Idle);
+            if (linkedInput.horizontalInput != 0)
+                linkedStateMachine.ChangeState(PlayerStates.State.Walk);
+            else
+                linkedStateMachine.ChangeState(PlayerStates.State.Idle);
         }
         if (!linkedPhysics.isGrounded && linkedPhysics.isTouchingWall)
         {

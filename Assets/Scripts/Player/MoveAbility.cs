@@ -13,6 +13,10 @@ public class MoveAbility : BaseAbility
         walkParameterID = Animator.StringToHash(walkAnimParameterName);
     }
 
+    public override void EnterAbility()
+    {
+        player.Flip();
+    }
     public override void ProcessAbility()
     {
         if (linkedPhysics.isGrounded && linkedInput.horizontalInput == 0)

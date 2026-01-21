@@ -1,9 +1,15 @@
+using UnityEditor.Build;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class VariableJumpAbility : BaseAbility
+public class MultipleJumpAbility : BaseAbility
 {
     public InputActionReference jumpActionRef;
+
+    [SerializeField] private int maxNumberOfJumps;
+    private int numberOfJumps;
+    private bool canActivateAdditionalJumps;
+
     [SerializeField] private float jumpForce;
     [SerializeField] private float airSpeed;
     [SerializeField] private float minimumAirTime;
@@ -23,6 +29,7 @@ public class VariableJumpAbility : BaseAbility
     {
         base.Initialization();
         startMinimumAirTime = minimumAirTime;
+        numberOfJumps = maxNumberOfJumps;
         jumpParameterID = Animator.StringToHash(jumpAnimParameterName);
         ySpeedParameterID = Animator.StringToHash(ySpeedAnimParameterName);
     }
@@ -100,6 +107,31 @@ public class VariableJumpAbility : BaseAbility
 
             isJumping = true;
             jumpTimer = setMaxJumpTime;
+            numberOfJumps = maxNumberOfJumps;
+
+            canActivateAdditionalJumps = true;
+            numberOfJumps -= 1;
+
+            return;
+        }
+
+        if (numberOfJumps > 0 && canActivateAdditionalJumps)
+        {
+            linkedPhysics.EnableGravity();
+            linkedPhysics.rb.linearVelocity = new Vector2(airSpeed * linkedInput.horizontalInput, jumpForce); // change force for second jump?
+            minimumAirTime = startMinimumAirTime;
+            linkedPhysics.coyoteTimer = -1;
+
+            isJumping = true;
+            jumpTimer = setMaxJumpTime;
+
+            canActivateAdditionalJumps = true;
+            numberOfJumps -= 1;
+        }
+        else
+        {
+            canActivateAdditionalJumps = false;
+
         }
     }
 
@@ -111,11 +143,17 @@ public class VariableJumpAbility : BaseAbility
     public override void ExitAbility()
     {
         linkedPhysics.EnableGravity();
+        canActivateAdditionalJumps = false;
     }
 
     public override void UpdateAnimator()
     {
         linkedAnimator.SetBool(jumpParameterID, linkedStateMachine.currentState == PlayerStates.State.Jump || linkedStateMachine.currentState == PlayerStates.State.WallJump);
         linkedAnimator.SetFloat(ySpeedParameterID, linkedPhysics.rb.linearVelocityY);
+    }
+
+    public void SetMaxJumpNumber(int maxJumps)
+    { 
+        maxNumberOfJumps = maxJumps;
     }
 }
