@@ -1,31 +1,25 @@
 fileFormatVersion: 2
-guid: c231618f8e5f5344a97692e33f9f9567
+guid: 64e95d746b9f9e14f9439c4025efa9f3
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7637286211640271106
-    second: ground_run_animation_0
+      213: -8706027055454310758
+    second: ground_jump_0
   - first:
-      213: 5217438365220362158
-    second: ground_run_animation_1
+      213: -4789792799508715195
+    second: ground_jump_1
   - first:
-      213: -7146697810029833744
-    second: ground_run_animation_2
+      213: -6822726974585740365
+    second: ground_jump_2
   - first:
-      213: -5133486963523122484
-    second: ground_run_animation_3
+      213: -5593818734134433376
+    second: ground_jump_3
   - first:
-      213: 5351469567862828637
-    second: ground_run_animation_4
+      213: -9010783346969582525
+    second: ground_jump_4
   - first:
-      213: -2009392602973046775
-    second: ground_run_animation_5
-  - first:
-      213: 4427468033166203871
-    second: ground_run_animation_6
-  - first:
-      213: 3400517671372825873
-    second: ground_run_animation_7
+      213: 5322999188908668972
+    second: ground_jump_5
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -147,13 +141,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: ground_run_animation_0
+      name: ground_jump_0
       rect:
         serializedVersion: 2
-        x: 2
-        y: 7
-        width: 43
-        height: 43
+        x: 1
+        y: 0
+        width: 45
+        height: 45
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -162,107 +156,19 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 21456257daf17a7429ad6455bbb91455
-      internalID: 2111644622
+      spriteID: 18049ea30a661cb44ba0d2e268e6eb47
+      internalID: -1297973537
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ground_run_animation_1
+      name: ground_jump_1
       rect:
         serializedVersion: 2
-        x: 51
-        y: 8
+        x: 54
+        y: 0
         width: 42
-        height: 42
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: b7515b47aa3231f43ac2b40b084843c2
-      internalID: -546260726
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ground_run_animation_2
-      rect:
-        serializedVersion: 2
-        x: 97
-        y: 8
-        width: 45
-        height: 42
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 96fc70caad22e554e8745a2955e11e74
-      internalID: 828928188
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ground_run_animation_3
-      rect:
-        serializedVersion: 2
-        x: 146
-        y: 9
-        width: 44
-        height: 40
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: fddf983df43f3c84f8822300e3480af8
-      internalID: 1759884217
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ground_run_animation_4
-      rect:
-        serializedVersion: 2
-        x: 192
-        y: 7
-        width: 45
-        height: 42
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: f27bf8d7aab4338419a6a4c98423e030
-      internalID: 441194268
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ground_run_animation_5
-      rect:
-        serializedVersion: 2
-        x: 242
-        y: 8
-        width: 45
         height: 41
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -272,20 +178,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d86846b3adc1eeb448b33d8a5527216c
-      internalID: -215965086
+      spriteID: 2bc2d770feb4f6c4780f8d826b336ca9
+      internalID: 1019427032
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ground_run_animation_6
+      name: ground_jump_2
       rect:
         serializedVersion: 2
-        x: 289
-        y: 8
-        width: 43
-        height: 41
+        x: 111
+        y: 0
+        width: 49
+        height: 56
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -294,19 +200,19 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 853748dca871fe949a7b5eb667389e56
-      internalID: -576853135
+      spriteID: 1bc3e9ce57817944d869d74932178330
+      internalID: 244239874
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ground_run_animation_7
+      name: ground_jump_3
       rect:
         serializedVersion: 2
-        x: 338
-        y: 9
-        width: 44
+        x: 164
+        y: 15
+        width: 49
         height: 40
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -316,8 +222,52 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e9d778a65ae8d2a49b591fb23565a4f9
-      internalID: 103648821
+      spriteID: a6d9a6a4b38b5434dbdf99e26b460d2c
+      internalID: 1596973038
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ground_jump_4
+      rect:
+        serializedVersion: 2
+        x: 217
+        y: 3
+        width: 49
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2b47c253f2f93c54ea14be7c38f7cff9
+      internalID: 917409152
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ground_jump_5
+      rect:
+        serializedVersion: 2
+        x: 270
+        y: 1
+        width: 54
+        height: 42
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a8b4b1944242e2a45aa97beefebb4f21
+      internalID: -5237088
       vertices: []
       indices: 
       edges: []
@@ -338,14 +288,12 @@ TextureImporter:
       - key: SpriteEditor.SliceSettings
         value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      ground_run_animation_0: 2111644622
-      ground_run_animation_1: -546260726
-      ground_run_animation_2: 828928188
-      ground_run_animation_3: 1759884217
-      ground_run_animation_4: 441194268
-      ground_run_animation_5: -215965086
-      ground_run_animation_6: -576853135
-      ground_run_animation_7: 103648821
+      ground_jump_0: -1297973537
+      ground_jump_1: 1019427032
+      ground_jump_2: 244239874
+      ground_jump_3: 1596973038
+      ground_jump_4: 917409152
+      ground_jump_5: -5237088
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -230,6 +230,7 @@ MonoBehaviour:
   wallCheckLower: {fileID: 2267609834981823010}
   visualRoot: {fileID: 936978999391681073}
   animator: {fileID: 585498073827312674}
+  flipRoot: {fileID: 1419461465135587040}
 --- !u!1 &6338264749102956411
 GameObject:
   m_ObjectHideFlags: 0

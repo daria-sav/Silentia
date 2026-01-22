@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CharacterProfile
   id: 
   bodyPrefab: {fileID: 5681313495693577439, guid: 328511cbce0e5d247bf032292ab2fdf5, type: 3}
-  walkSpeed: 4
+  walkSpeed: 5
   baseGravity: 8
   jumpForce: 12
   maxJumps: 1

@@ -35,7 +35,7 @@ public class BodyConnector : MonoBehaviour
             body.wallCheckLower
         );
 
-        player.visual = body.visualRoot;
+        player.visual = body.flipRoot;
 
         if (body.animator != null)
             player.anim = body.animator;

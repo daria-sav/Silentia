@@ -26,7 +26,12 @@ public class PhysicsControl : MonoBehaviour
     private RaycastHit2D wallHitLower;
 
     private float gravityValue;
+    private Player player;
 
+    private void Awake()
+    {
+        player = GetComponent<Player>();
+    }
     public void SetCheckPoints(Transform leftGround, Transform rightGround, Transform wallUpper, Transform wallLower)
     {
         leftGroundPoint = leftGround;
@@ -54,11 +59,13 @@ public class PhysicsControl : MonoBehaviour
 
     private bool CheckWall()
     {
-        wallHitUpper = Physics2D.Raycast(wallCheckPointUpper.position, transform.right, wallCheckDistance, whatToDetect);
-        wallHitLower = Physics2D.Raycast(wallCheckPointLower.position, transform.right, wallCheckDistance, whatToDetect);
+        Vector2 dir = player != null && player.facingRight ? Vector2.right : Vector2.left;
 
-        Debug.DrawRay(wallCheckPointUpper.position, new Vector3(wallCheckDistance, 0, 0), Color.blue);
-        Debug.DrawRay(wallCheckPointLower.position, new Vector3(wallCheckDistance, 0, 0), Color.blue);
+        wallHitUpper = Physics2D.Raycast(wallCheckPointUpper.position, dir, wallCheckDistance, whatToDetect);
+        wallHitLower = Physics2D.Raycast(wallCheckPointLower.position, dir, wallCheckDistance, whatToDetect);
+
+        Debug.DrawRay(wallCheckPointUpper.position, (Vector3)dir * wallCheckDistance, Color.blue);
+        Debug.DrawRay(wallCheckPointLower.position, (Vector3)dir * wallCheckDistance, Color.blue);
 
         if (wallHitUpper || wallHitLower)
         {

@@ -1,31 +1,49 @@
 fileFormatVersion: 2
-guid: c231618f8e5f5344a97692e33f9f9567
+guid: ae01cfd5c464d1641acf1c219f54807d
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7637286211640271106
-    second: ground_run_animation_0
+      213: 2715759706387935012
+    second: clones_0
   - first:
-      213: 5217438365220362158
-    second: ground_run_animation_1
+      213: -4037273344151001714
+    second: clones_1
   - first:
-      213: -7146697810029833744
-    second: ground_run_animation_2
+      213: -219514610851135772
+    second: clones_2
   - first:
-      213: -5133486963523122484
-    second: ground_run_animation_3
+      213: 1987846593938778366
+    second: clones_3
   - first:
-      213: 5351469567862828637
-    second: ground_run_animation_4
+      213: -1188012764953825935
+    second: clones_4
   - first:
-      213: -2009392602973046775
-    second: ground_run_animation_5
+      213: -2355502599525863443
+    second: clones_5
   - first:
-      213: 4427468033166203871
-    second: ground_run_animation_6
+      213: -6380255725166923327
+    second: clones_6
   - first:
-      213: 3400517671372825873
-    second: ground_run_animation_7
+      213: 5198869719587936088
+    second: clones_7
+  - first:
+      213: 7517505127818896665
+    second: clones_8
+  - first:
+      213: -2128340306330665949
+    second: clones_9
+  - first:
+      213: 5915968668833254985
+    second: clones_10
+  - first:
+      213: -8329459593644543233
+    second: clones_11
+  - first:
+      213: 3856243549830936557
+    second: clones_12
+  - first:
+      213: 4951515521660578781
+    second: clones_13
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -147,13 +165,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: ground_run_animation_0
+      name: clones_0
       rect:
         serializedVersion: 2
-        x: 2
-        y: 7
-        width: 43
-        height: 43
+        x: 0
+        y: 1
+        width: 45
+        height: 45
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -162,20 +180,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 21456257daf17a7429ad6455bbb91455
-      internalID: 2111644622
+      spriteID: 603a5334dc89c4d45ba97429e4ce95ca
+      internalID: 728095524
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ground_run_animation_1
+      name: clones_1
       rect:
         serializedVersion: 2
         x: 51
-        y: 8
-        width: 42
-        height: 42
+        y: 1
+        width: 35
+        height: 49
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -184,20 +202,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b7515b47aa3231f43ac2b40b084843c2
-      internalID: -546260726
+      spriteID: 75d0057a6879da0458cd28f97922c125
+      internalID: -1415892853
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ground_run_animation_2
+      name: clones_2
       rect:
         serializedVersion: 2
-        x: 97
-        y: 8
-        width: 45
-        height: 42
+        x: 100
+        y: 1
+        width: 41
+        height: 44
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -206,20 +224,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 96fc70caad22e554e8745a2955e11e74
-      internalID: 828928188
+      spriteID: 7f9d1f40f3782e54990b047b04e72d5f
+      internalID: -387282983
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ground_run_animation_3
+      name: clones_3
       rect:
         serializedVersion: 2
-        x: 146
-        y: 9
-        width: 44
-        height: 40
+        x: 150
+        y: 1
+        width: 23
+        height: 45
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -228,20 +246,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fddf983df43f3c84f8822300e3480af8
-      internalID: 1759884217
+      spriteID: 306bc1945e47db949ac8994fc688e56a
+      internalID: 949389499
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ground_run_animation_4
+      name: clones_7
       rect:
         serializedVersion: 2
-        x: 192
-        y: 7
-        width: 45
-        height: 42
+        x: 228
+        y: 1
+        width: 32
+        height: 44
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -250,20 +268,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f27bf8d7aab4338419a6a4c98423e030
-      internalID: 441194268
+      spriteID: 9daa748b084911a449d96ed31cef341f
+      internalID: 1933112592
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ground_run_animation_5
+      name: clones_8
       rect:
         serializedVersion: 2
-        x: 242
-        y: 8
-        width: 45
-        height: 41
+        x: 280
+        y: 0
+        width: 27
+        height: 54
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -272,20 +290,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d86846b3adc1eeb448b33d8a5527216c
-      internalID: -215965086
+      spriteID: 62a7e890f5dd69a4fb2e8a2214a11388
+      internalID: -98095205
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ground_run_animation_6
+      name: clones_9
       rect:
         serializedVersion: 2
-        x: 289
-        y: 8
-        width: 43
-        height: 41
+        x: 180
+        y: 1
+        width: 39
+        height: 44
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -294,30 +312,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 853748dca871fe949a7b5eb667389e56
-      internalID: -576853135
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ground_run_animation_7
-      rect:
-        serializedVersion: 2
-        x: 338
-        y: 9
-        width: 44
-        height: 40
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: e9d778a65ae8d2a49b591fb23565a4f9
-      internalID: 103648821
+      spriteID: 2a8efbb484cea954f9787ec939b32bb3
+      internalID: -1582384062
       vertices: []
       indices: 
       edges: []
@@ -336,16 +332,22 @@ TextureImporter:
     spriteCustomMetadata:
       entries:
       - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":7.0,"y":1.0},"gridSpriteSize":{"x":48.0,"y":54.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      ground_run_animation_0: 2111644622
-      ground_run_animation_1: -546260726
-      ground_run_animation_2: 828928188
-      ground_run_animation_3: 1759884217
-      ground_run_animation_4: 441194268
-      ground_run_animation_5: -215965086
-      ground_run_animation_6: -576853135
-      ground_run_animation_7: 103648821
+      clones_0: 728095524
+      clones_1: -1415892853
+      clones_10: 961564076
+      clones_11: 1246051325
+      clones_12: -1856963189
+      clones_13: -2034805994
+      clones_2: -387282983
+      clones_3: 949389499
+      clones_4: -108389023
+      clones_5: -1219012542
+      clones_6: -1793105955
+      clones_7: 1933112592
+      clones_8: -98095205
+      clones_9: -1582384062
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

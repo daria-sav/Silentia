@@ -11,4 +11,6 @@ public class BodyMarkers : MonoBehaviour
     [Header("Visual")]
     public Transform visualRoot;     
     public Animator animator;
+
+    public Transform flipRoot;
 }
