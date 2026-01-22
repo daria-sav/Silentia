@@ -7,6 +7,11 @@ public class MoveAbility : BaseAbility
     private string walkAnimParameterName = "Walk";
     private int walkParameterID;
 
+    public void SetSpeed(float newSpeed)
+    {
+        speed = newSpeed;
+    }
+
     protected override void Initialization()
     {
         base.Initialization();

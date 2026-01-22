@@ -25,6 +25,10 @@ public class MultipleJumpAbility : BaseAbility
     private int jumpParameterID;
     private int ySpeedParameterID;
 
+    public void SetJumpForce(float value) => jumpForce = value;
+    public void SetAirSpeed(float value) => airSpeed = value;
+    public void SetGravityDivider(float value) => gravityDivider = value;
+
     protected override void Initialization()
     {
         base.Initialization();
@@ -95,12 +99,16 @@ public class MultipleJumpAbility : BaseAbility
 
     private void TryToJump(InputAction.CallbackContext value)
     {
+        Debug.Log($"TryToJump fired | permitted={isPermitted} | grounded={linkedPhysics.isGrounded} | coyote={linkedPhysics.coyoteTimer} | state={linkedStateMachine.currentState}");
+
         if (!isPermitted)
             return;
 
         if (linkedPhysics.coyoteTimer > 0)
         {
             linkedStateMachine.ChangeState(PlayerStates.State.Jump);
+            Debug.Log("TryToJump: attempting ChangeState(Jump)");
+            Debug.Log("TryToJump: after ChangeState, current=" + linkedStateMachine.currentState);
             linkedPhysics.rb.linearVelocity = new Vector2(airSpeed * linkedInput.horizontalInput, jumpForce);
             minimumAirTime = startMinimumAirTime;
             linkedPhysics.coyoteTimer = -1;
@@ -155,5 +163,13 @@ public class MultipleJumpAbility : BaseAbility
     public void SetMaxJumpNumber(int maxJumps)
     { 
         maxNumberOfJumps = maxJumps;
+    }
+
+    public void ResetJumpState()
+    {
+        numberOfJumps = maxNumberOfJumps;
+        canActivateAdditionalJumps = false;
+        isJumping = false;
+        minimumAirTime = startMinimumAirTime;
     }
 }

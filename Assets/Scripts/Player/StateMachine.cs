@@ -1,3 +1,5 @@
+using UnityEngine;
+
 public class StateMachine 
 {
     public PlayerStates.State previousState;
@@ -36,6 +38,7 @@ public class StateMachine
                     currentState = newState;
                     ability.EnterAbility();
                 }
+                Debug.Log("State changed to: " + newState);
                 break;
             }
         }

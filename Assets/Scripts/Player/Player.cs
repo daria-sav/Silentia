@@ -6,6 +6,7 @@ public class Player : MonoBehaviour
     public StateMachine stateMachine;
     public PhysicsControl physicsControl;
     public Animator anim;
+    public Transform visual;
 
     private BaseAbility[] playerAbilities;
     public bool facingRight = true;
@@ -45,19 +46,25 @@ public class Player : MonoBehaviour
     {
         if (facingRight==true && gatherInput.horizontalInput < 0)
         {
-            transform.Rotate(0f, 180f, 0f);
+            Vector3 s = visual.localScale;
+            s.x = -Mathf.Abs(s.x);
+            visual.localScale = s;
             facingRight = !facingRight;
         }
         else if (facingRight==false && gatherInput.horizontalInput > 0)
         {
-            transform.Rotate(0f, 180f, 0f);
+            Vector3 s = visual.localScale;
+            s.x = Mathf.Abs(s.x);
+            visual.localScale = s;
             facingRight = !facingRight;
         }
     }
 
     public void ForceFlip()
     {
-        transform.Rotate(0f, 180f, 0f);
+        Vector3 s = visual.localScale;
+        s.x *= -1f;
+        visual.localScale = s;
         facingRight = !facingRight;
     }
 }

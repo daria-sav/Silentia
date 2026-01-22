@@ -17,6 +17,11 @@ public class BaseAbility : MonoBehaviour
         Initialization();
     }
 
+    public void RefreshLinks()
+    {
+        Initialization();
+    }
+
     public virtual void EnterAbility()
     {
 

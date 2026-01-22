@@ -27,9 +27,23 @@ public class PhysicsControl : MonoBehaviour
 
     private float gravityValue;
 
+    public void SetCheckPoints(Transform leftGround, Transform rightGround, Transform wallUpper, Transform wallLower)
+    {
+        leftGroundPoint = leftGround;
+        rightGroundPoint = rightGround;
+        wallCheckPointUpper = wallUpper;
+        wallCheckPointLower = wallLower;
+    }
+
     public float GetGravity()
     {
         return gravityValue;
+    }
+
+    public void SetBaseGravity(float newGravity)
+    {
+        gravityValue = newGravity;
+        rb.gravityScale = newGravity;
     }
 
     void Start()

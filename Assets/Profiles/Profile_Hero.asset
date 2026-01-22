@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0268eee20c04a5247928da2e25d2c393, type: 3}
+  m_Name: Profile_Hero
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterProfile
+  id: 
+  bodyPrefab: {fileID: 5681313495693577439, guid: 328511cbce0e5d247bf032292ab2fdf5, type: 3}
+  walkSpeed: 4
+  baseGravity: 8
+  jumpForce: 12
+  maxJumps: 1
+  airSpeed: 5
+  gravityDivider: 2
+  permittedStates: 0000000001000000030000000500000006000000
