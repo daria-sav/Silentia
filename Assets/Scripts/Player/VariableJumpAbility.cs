@@ -3,7 +3,8 @@ using UnityEngine.InputSystem;
 
 public class VariableJumpAbility : BaseAbility
 {
-    public InputActionReference jumpActionRef;
+    //public InputActionReference jumpActionRef;
+    [Header("Jump parameters")]
     [SerializeField] private float jumpForce;
     [SerializeField] private float airSpeed;
     [SerializeField] private float minimumAirTime;
@@ -27,22 +28,25 @@ public class VariableJumpAbility : BaseAbility
         ySpeedParameterID = Animator.StringToHash(ySpeedAnimParameterName);
     }
 
-    private void OnEnable()
-    {
-        jumpActionRef.action.performed += TryToJump;
-        jumpActionRef.action.canceled += StopJump;
-    }
+    //private void OnEnable()
+    //{
+    //    jumpActionRef.action.performed += TryToJump;
+    //    jumpActionRef.action.canceled += StopJump;
+    //}
 
-    private void OnDisable()
-    {
-        jumpActionRef.action.performed -= TryToJump;
-        jumpActionRef.action.canceled -= StopJump;
-    }
+    //private void OnDisable()
+    //{
+    //    jumpActionRef.action.performed -= TryToJump;
+    //    jumpActionRef.action.canceled -= StopJump;
+    //}
 
     public override void ProcessAbility()
     {
         player.Flip();
         minimumAirTime -= Time.deltaTime;
+
+        if (!linkedInput.jumpHeld)
+            isJumping = false;
 
         if (isJumping)
         {
@@ -86,10 +90,10 @@ public class VariableJumpAbility : BaseAbility
         }
     }
 
-    private void TryToJump(InputAction.CallbackContext value)
+    public bool TryStartJump()
     {
         if (!isPermitted)
-            return;
+            return false;
 
         if (linkedPhysics.coyoteTimer > 0)
         {
@@ -100,7 +104,9 @@ public class VariableJumpAbility : BaseAbility
 
             isJumping = true;
             jumpTimer = setMaxJumpTime;
+            return true;
         }
+        return false;
     }
 
     private void StopJump(InputAction.CallbackContext value)
@@ -118,4 +124,8 @@ public class VariableJumpAbility : BaseAbility
         linkedAnimator.SetBool(jumpParameterID, linkedStateMachine.currentState == PlayerStates.State.Jump || linkedStateMachine.currentState == PlayerStates.State.WallJump);
         linkedAnimator.SetFloat(ySpeedParameterID, linkedPhysics.rb.linearVelocityY);
     }
+
+    public void SetJumpForce(float value) => jumpForce = value;
+    public void SetAirSpeed(float value) => airSpeed = value;
+    public void SetGravityDivider(float value) => gravityDivider = value;
 }

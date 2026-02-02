@@ -8,12 +8,13 @@ public class CloneSwitcher : MonoBehaviour
     public List<CharacterProfile> profiles;
 
     [Header("Body Parent (where Body instances will live)")]
-    public Transform bodyParent; // spawn bodies here (for example, BodySlot)
+    public Transform bodyParent;
 
     private BodyConnector bodyConnector;
     private ProfileApplier profileApplier;
     private Player player;
     private PhysicsControl physicsControl;
+    public CharacterProfile CurrentProfile { get; private set; }
 
     private BaseAbility[] abilities;
 
@@ -37,6 +38,9 @@ public class CloneSwitcher : MonoBehaviour
         }
 
         currentBody = GetComponentInChildren<BodyMarkers>(true);
+        if (profiles != null && profiles.Count > 0)
+            CurrentProfile = profiles[0];
+
         jumpAbility = GetComponent<MultipleJumpAbility>();
     }
 
@@ -60,17 +64,17 @@ public class CloneSwitcher : MonoBehaviour
         CharacterProfile profile = profiles[index];
         if (profile == null || profile.bodyPrefab == null) return;
 
-        // 1) save the state of motion
+        // save the state of motion
         Vector2 savedVelocity = physicsControl.rb.linearVelocity;
         bool savedFacingRight = player.facingRight;
 
-        // 2) delete the current body
+        // delete the current body
         if (currentBody != null)
         {
             Destroy(currentBody.gameObject);
         }
 
-        // 3) create a new body
+        // create a new body
         GameObject bodyObj = Instantiate(profile.bodyPrefab, bodyParent);
         bodyObj.transform.localPosition = Vector3.zero;
         bodyObj.transform.localRotation = Quaternion.identity;
@@ -85,7 +89,7 @@ public class CloneSwitcher : MonoBehaviour
 
         currentBody = newMarkers;
 
-        // 4) connect the dots/visual/anim
+        // connect the dots/visual/anim
         bodyConnector.ApplyBody(newMarkers);
 
         // Ensure visual faces the same direction as before switching
@@ -96,15 +100,21 @@ public class CloneSwitcher : MonoBehaviour
         // Make sure the flag matches the visual
         player.facingRight = savedFacingRight;
 
-        // 5) apply profile (stats + permissions)
+        // apply profile (stats + permissions)
         profileApplier.ApplyProfile(profile);
+        CurrentProfile = profile;
         jumpAbility.ResetJumpState();
 
-        // 6) update the links in the abilities (so that linkedAnimator becomes new)
+        // update the links in the abilities (so that linkedAnimator becomes new)
         foreach (var ab in abilities)
             ab.RefreshLinks();
 
-        // 7) restore velocity
+        // restore velocity
         physicsControl.rb.linearVelocity = savedVelocity;
+
+        Debug.Log(CurrentProfile.id);
+
+        Debug.Log($"[SWITCH RESULT {gameObject.name}] profile={CurrentProfile.id} maxJumps={profile.maxJumps}");
+        Debug.Log($"[SWITCH RESULT {gameObject.name}] jump.max={jumpAbility.DebugMaxJumps()} jump.num={jumpAbility.DebugNumJumps()}");
     }
 }

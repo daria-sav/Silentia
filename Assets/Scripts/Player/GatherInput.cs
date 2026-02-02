@@ -1,46 +1,201 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+[DefaultExecutionOrder(-350)]
 public class GatherInput : MonoBehaviour
 {
+    public enum InputMode
+    {
+        Live,   
+        Replay 
+    }
 
+    [Header("Input System (Live mode)")]
     public PlayerInput playerInput;
 
-    private InputActionMap playerMap;
-    private InputActionMap uiMap;
+    //private InputActionMap playerMap;
+    //private InputActionMap uiMap;
 
-    public InputActionReference jumpActionRef;
     public InputActionReference moveActionRef;
-    [HideInInspector]
-    public float horizontalInput;
+    public InputActionReference jumpActionRef;
+    public InputActionReference dashActionRef;
+
+    [Header("Mode")]
+    [SerializeField] private InputMode mode = InputMode.Live;
+
+    // Values used by gameplay THIS fixed tick
+    public float horizontalInput { get; private set; }
+
+    public bool jumpHeld { get; private set; }
+    public bool dashHeld { get; private set; }
+
+    public bool jumpDownTick { get; private set; }
+    public bool jumpUpTick { get; private set; }
+
+    public bool dashDownTick { get; private set; }
+    public bool dashUpTick { get; private set; }
+
+    // Raw events (accumulate between fixed ticks)
+    private bool jumpDownRaw;
+    private bool jumpUpRaw;
+    private bool dashDownRaw;
+    private bool dashUpRaw;
 
     private void OnEnable()
     {
+        moveActionRef?.action?.Enable();
+        jumpActionRef?.action?.Enable();
+        dashActionRef?.action?.Enable();
 
+        if (jumpActionRef != null)
+        {
+            jumpActionRef.action.started += OnJumpStarted;
+            jumpActionRef.action.canceled += OnJumpCanceled;
+        }
+
+        if (dashActionRef != null)
+        {
+            dashActionRef.action.started += OnDashStarted;
+            dashActionRef.action.canceled += OnDashCanceled;
+        }
     }
 
     private void OnDisable()
     {
-        if (playerMap != null) 
-            playerMap.Disable();
+        if (jumpActionRef != null)
+        {
+            jumpActionRef.action.started -= OnJumpStarted;
+            jumpActionRef.action.canceled -= OnJumpCanceled;
+        }
+
+        if (dashActionRef != null)
+        {
+            dashActionRef.action.started -= OnDashStarted;
+            dashActionRef.action.canceled -= OnDashCanceled;
+        }
+        //if (playerMap != null) 
+        //    playerMap.Disable();
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        playerMap = playerInput.actions.FindActionMap("Player");
-        uiMap = playerInput.actions.FindActionMap("UI");
-        playerMap.Enable();
+    //void Start()
+    //{
+    //    playerMap = playerInput.actions.FindActionMap("Player");
+    //    uiMap = playerInput.actions.FindActionMap("UI");
+    //    playerMap.Enable();
 
-        // also good stuff
-        //playerInput.actions.Enable();
-        //jumpActionRef.action.Disable();
-    }
+    //    // also good stuff
+    //    //playerInput.actions.Enable();
+    //    //jumpActionRef.action.Disable();
+    //}
 
     // Update is called once per frame
     void Update()
     {
-        horizontalInput = moveActionRef.action.ReadValue<float>();
-        Debug.Log("Horizontal Input: " + horizontalInput);
+        if (mode != InputMode.Live) return;
+
+        horizontalInput = moveActionRef != null ? moveActionRef.action.ReadValue<float>() : 0f;
     }
+
+    private void FixedUpdate()
+    {
+        if (mode == InputMode.Live)
+        {
+            // build ONE-TICK snapshot from raw events
+            jumpDownTick = jumpDownRaw;
+            jumpUpTick = jumpUpRaw;
+            dashDownTick = dashDownRaw;
+            dashUpTick = dashUpRaw;
+
+            // clear raw so they won't repeat next tick
+            jumpDownRaw = false;
+            jumpUpRaw = false;
+            dashDownRaw = false;
+            dashUpRaw = false;
+        }
+        // replay mode: tick values are set by ApplyReplayFrame() each tick
+    }
+
+    // ================== LIVE INPUT CALLBACKS ==================
+    private void OnJumpStarted(InputAction.CallbackContext ctx)
+    {
+        if (mode != InputMode.Live) return;
+        jumpDownRaw = true;
+        jumpHeld = true;
+    }
+
+    private void OnJumpCanceled(InputAction.CallbackContext ctx)
+    {
+        if (mode != InputMode.Live) return;
+        jumpUpRaw = true;
+        jumpHeld = false;
+    }
+
+    private void OnDashStarted(InputAction.CallbackContext ctx)
+    {
+        if (mode != InputMode.Live) return;
+        dashDownRaw = true;
+        dashHeld = true;
+    }
+
+    private void OnDashCanceled(InputAction.CallbackContext ctx)
+    {
+        if (mode != InputMode.Live) return;
+        dashUpRaw = true;
+        dashHeld = false;
+    }
+
+    // ================== SNAPSHOT FOR A FIXED TICK ==================
+    public InputFrame CaptureFrame(int tick)
+    {
+        return new InputFrame
+        {
+            tick = tick,
+
+            moveX = horizontalInput,
+
+            jumpDown = jumpDownTick,
+            jumpUp = jumpUpTick,
+            jumpHeld = jumpHeld,
+
+            dashDown = dashDownTick,
+            dashUp = dashUpTick,
+            dashHeld = dashHeld
+        };
+    }
+
+    // ================== REPLAY MODE ==================
+    public void SetMode(InputMode newMode)
+    {
+        mode = newMode;
+
+        horizontalInput = 0f;
+        jumpHeld = false;
+        dashHeld = false;
+
+        jumpDownTick = jumpUpTick = false;
+        dashDownTick = dashUpTick = false;
+
+        jumpDownRaw = jumpUpRaw = false;
+        dashDownRaw = dashUpRaw = false;
+    }
+
+    public void ApplyReplayFrame(InputFrame frame)
+    {
+        mode = InputMode.Replay;
+
+        horizontalInput = frame.moveX;
+
+        jumpHeld = frame.jumpHeld;
+        dashHeld = frame.dashHeld;
+
+        jumpDownTick = frame.jumpDown;
+        jumpUpTick = frame.jumpUp;
+
+        dashDownTick = frame.dashDown;
+        dashUpTick = frame.dashUp;
+    }
+
+    public void ClearJumpDownTick() => jumpDownTick = false;
+    public void ClearDashDownTick() => dashDownTick = false;
 }

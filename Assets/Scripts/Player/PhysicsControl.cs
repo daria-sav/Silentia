@@ -104,21 +104,27 @@ public class PhysicsControl : MonoBehaviour
         rb.linearVelocity = Vector2.zero;
     }
 
-    private void Update()
-    {
-        if (!isGrounded)
-        {
-            coyoteTimer -= Time.deltaTime;
-        }
-        else
-        {
-            coyoteTimer = coyoteSetTime;
-        }
-    }
+    //private void Update()
+    //{
+    //    if (!isGrounded)
+    //    {
+    //        coyoteTimer -= Time.deltaTime;
+    //    }
+    //    else
+    //    {
+    //        coyoteTimer = coyoteSetTime;
+    //    }
+    //}
 
     private void FixedUpdate()
     {
         isGrounded = CheckGround();
+
+        if (!isGrounded)
+            coyoteTimer -= Time.fixedDeltaTime;
+        else
+            coyoteTimer = coyoteSetTime;
+
         isTouchingWall = CheckWall();
     }
 }

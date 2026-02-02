@@ -53,6 +53,19 @@ public class WallJumpAbility : BaseAbility
         wallJumpTimer -= Time.deltaTime;
         wallJumpMinimumTime -= Time.deltaTime;
 
+        if (wallJumpMinimumTime < 0 && linkedPhysics.isGrounded)
+        {
+            if (linkedInput.horizontalInput != 0)
+            {
+                linkedStateMachine.ChangeState(PlayerStates.State.Walk);
+            }
+            else
+            {
+                linkedStateMachine.ChangeState(PlayerStates.State.Idle);
+            }
+            return;
+        }
+
         if (wallJumpTimer <= 0)
         {
             if (linkedPhysics.isGrounded)

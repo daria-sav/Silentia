@@ -1,5 +1,6 @@
 using UnityEngine;
 
+//[DefaultExecutionOrder(-100)]
 public class Player : MonoBehaviour
 {
     public GatherInput gatherInput;
@@ -33,6 +34,8 @@ public class Player : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (gameObject.name.Contains("GhostRoot"))
+            Debug.Log($"[GHOST FIXED] state={stateMachine.currentState} v={physicsControl.rb.linearVelocity}");
         foreach (BaseAbility ability in playerAbilities)
         {
             if (ability.thisAbilityState == stateMachine.currentState)

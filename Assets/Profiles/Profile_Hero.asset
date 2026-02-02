@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0268eee20c04a5247928da2e25d2c393, type: 3}
   m_Name: Profile_Hero
   m_EditorClassIdentifier: Assembly-CSharp::CharacterProfile
-  id: 
+  id: 0
   bodyPrefab: {fileID: 5681313495693577439, guid: 328511cbce0e5d247bf032292ab2fdf5, type: 3}
   walkSpeed: 5
   baseGravity: 8

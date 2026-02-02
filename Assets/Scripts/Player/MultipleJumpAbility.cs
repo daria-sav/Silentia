@@ -1,10 +1,8 @@
-using UnityEditor.Build;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class MultipleJumpAbility : BaseAbility
 {
-    public InputActionReference jumpActionRef;
+    //public InputActionReference jumpActionRef;
 
     [SerializeField] private int maxNumberOfJumps;
     private int numberOfJumps;
@@ -25,6 +23,8 @@ public class MultipleJumpAbility : BaseAbility
     private int jumpParameterID;
     private int ySpeedParameterID;
 
+    private bool leftGroundAfterJump;
+
     public void SetJumpForce(float value) => jumpForce = value;
     public void SetAirSpeed(float value) => airSpeed = value;
     public void SetGravityDivider(float value) => gravityDivider = value;
@@ -38,22 +38,24 @@ public class MultipleJumpAbility : BaseAbility
         ySpeedParameterID = Animator.StringToHash(ySpeedAnimParameterName);
     }
 
-    private void OnEnable()
-    {
-        jumpActionRef.action.performed += TryToJump;
-        jumpActionRef.action.canceled += StopJump;
-    }
+    //private void OnEnable()
+    //{
+    //    jumpActionRef.action.performed += TryToJump;
+    //    jumpActionRef.action.canceled += StopJump;
+    //}
 
-    private void OnDisable()
-    {
-        jumpActionRef.action.performed -= TryToJump;
-        jumpActionRef.action.canceled -= StopJump;
-    }
+    //private void OnDisable()
+    //{
+    //    jumpActionRef.action.performed -= TryToJump;
+    //    jumpActionRef.action.canceled -= StopJump;
+    //}
 
     public override void ProcessAbility()
     {
         player.Flip();
-        minimumAirTime -= Time.deltaTime;
+        //minimumAirTime -= Time.deltaTime;
+        if (!linkedPhysics.isGrounded)
+            leftGroundAfterJump = true;
 
         if (isJumping)
         {
@@ -64,7 +66,10 @@ public class MultipleJumpAbility : BaseAbility
             }
         }
 
-        if (linkedPhysics.isGrounded && minimumAirTime <= 0)
+        if (!linkedInput.jumpHeld)
+            isJumping = false;
+
+        if (linkedPhysics.isGrounded && leftGroundAfterJump && minimumAirTime <= 0)
         {
             if (linkedInput.horizontalInput != 0)
                 linkedStateMachine.ChangeState(PlayerStates.State.Walk);
@@ -95,20 +100,27 @@ public class MultipleJumpAbility : BaseAbility
         {
             linkedPhysics.rb.gravityScale = linkedPhysics.GetGravity() / gravityDivider;
         }
+
+        minimumAirTime -= Time.fixedDeltaTime;
     }
 
-    private void TryToJump(InputAction.CallbackContext value)
+    public bool TryToJump()
     {
-        Debug.Log($"TryToJump fired | permitted={isPermitted} | grounded={linkedPhysics.isGrounded} | coyote={linkedPhysics.coyoteTimer} | state={linkedStateMachine.currentState}");
+        Debug.Log($"[TRY JUMP {gameObject.name}] grounded={linkedPhysics.isGrounded} coyote={linkedPhysics.coyoteTimer:F2} num={numberOfJumps} canAdd={canActivateAdditionalJumps}");
 
         if (!isPermitted)
-            return;
+            return false;
 
-        if (linkedPhysics.coyoteTimer > 0)
+        if (linkedPhysics.isGrounded || linkedPhysics.coyoteTimer > 0)
         {
-            linkedStateMachine.ChangeState(PlayerStates.State.Jump);
-            Debug.Log("TryToJump: attempting ChangeState(Jump)");
-            Debug.Log("TryToJump: after ChangeState, current=" + linkedStateMachine.currentState);
+            var before = linkedStateMachine.currentState;
+            var beforeVel = linkedPhysics.rb.linearVelocity;
+
+            bool changed = linkedStateMachine.ChangeState(PlayerStates.State.Jump);
+            leftGroundAfterJump = false;
+            minimumAirTime = startMinimumAirTime;
+
+
             linkedPhysics.rb.linearVelocity = new Vector2(airSpeed * linkedInput.horizontalInput, jumpForce);
             minimumAirTime = startMinimumAirTime;
             linkedPhysics.coyoteTimer = -1;
@@ -120,7 +132,7 @@ public class MultipleJumpAbility : BaseAbility
             canActivateAdditionalJumps = true;
             numberOfJumps -= 1;
 
-            return;
+            return true;
         }
 
         if (numberOfJumps > 0 && canActivateAdditionalJumps)
@@ -135,18 +147,16 @@ public class MultipleJumpAbility : BaseAbility
 
             canActivateAdditionalJumps = true;
             numberOfJumps -= 1;
+            return true;
         }
-        else
-        {
-            canActivateAdditionalJumps = false;
-
-        }
+        //canActivateAdditionalJumps = false;
+        return false;
     }
 
-    private void StopJump(InputAction.CallbackContext value)
-    {
-        isJumping = false;
-    }
+    //private void StopJump(InputAction.CallbackContext value)
+    //{
+    //    isJumping = false;
+    //}
 
     public override void ExitAbility()
     {
@@ -172,4 +182,8 @@ public class MultipleJumpAbility : BaseAbility
         isJumping = false;
         minimumAirTime = startMinimumAirTime;
     }
+
+    public int DebugMaxJumps() => maxNumberOfJumps;
+    public int DebugNumJumps() => numberOfJumps;
+    public bool DebugCanAdd() => canActivateAdditionalJumps;
 }

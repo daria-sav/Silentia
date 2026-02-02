@@ -3,20 +3,20 @@ using UnityEngine.InputSystem;
 
 public class DashAbility : BaseAbility
 {
-    public InputActionReference dashActionRef;
+    //public InputActionReference dashActionRef;
     [SerializeField] private float dashForce;
     [SerializeField] private float maxDashDuration;
     private float dashTimer;
 
-    private void OnEnable()
-    {
-        dashActionRef.action.performed += TryToDash;
-    }
+    //private void OnEnable()
+    //{
+    //    dashActionRef.action.performed += TryToDash;
+    //}
 
-    private void OnDisable()
-    {
-        dashActionRef.action.performed -= TryToDash;
-    }
+    //private void OnDisable()
+    //{
+    //    dashActionRef.action.performed -= TryToDash;
+    //}
 
     public override void ExitAbility()
     {
@@ -25,13 +25,13 @@ public class DashAbility : BaseAbility
         linkedPhysics.ResetVelocity();
     }
 
-    private void TryToDash(InputAction.CallbackContext value)
+    public bool TryStartDash()
     {
         if (!isPermitted)
-            return;
+            return false;
         // other conditions
         if (linkedStateMachine.currentState == PlayerStates.State.Dash || linkedPhysics.isTouchingWall)
-            return;
+            return false;
 
         linkedStateMachine.ChangeState(PlayerStates.State.Dash);
         linkedPhysics.DisableGravity();
@@ -47,6 +47,7 @@ public class DashAbility : BaseAbility
         }
 
         dashTimer = maxDashDuration;
+        return true;
     }
 
     public override void ProcessAbility()
