@@ -25,6 +25,10 @@ public class PhysicsControl : MonoBehaviour
     private RaycastHit2D wallHitUpper;
     private RaycastHit2D wallHitLower;
 
+    [Header("Interpolation")]
+    public RigidbodyInterpolation2D interpolate;
+    public RigidbodyInterpolation2D extrapolate;
+
     private float gravityValue;
     private Player player;
 
@@ -87,6 +91,16 @@ public class PhysicsControl : MonoBehaviour
             return true;
         
         return false;
+    }
+
+    public void SetInterpolate() 
+    {
+        rb.interpolation = interpolate;
+    }
+
+    public void SetExtrapolate()
+    {
+        rb.interpolation = extrapolate;
     }
 
     public void DisableGravity()
