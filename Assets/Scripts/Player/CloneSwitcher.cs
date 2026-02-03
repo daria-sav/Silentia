@@ -22,6 +22,8 @@ public class CloneSwitcher : MonoBehaviour
 
     private MultipleJumpAbility jumpAbility;
 
+    [SerializeField] private bool enableHotkeys = true;
+
     private void Awake()
     {
         bodyConnector = GetComponent<BodyConnector>();
@@ -46,6 +48,7 @@ public class CloneSwitcher : MonoBehaviour
 
     private void Update()
     {
+        if (!enableHotkeys) return;
         if (Keyboard.current == null) return;
 
         if (Keyboard.current.digit0Key.wasPressedThisFrame) SwitchTo(0);
@@ -117,4 +120,6 @@ public class CloneSwitcher : MonoBehaviour
         Debug.Log($"[SWITCH RESULT {gameObject.name}] profile={CurrentProfile.id} maxJumps={profile.maxJumps}");
         Debug.Log($"[SWITCH RESULT {gameObject.name}] jump.max={jumpAbility.DebugMaxJumps()} jump.num={jumpAbility.DebugNumJumps()}");
     }
+
+    public void SetHotkeysEnabled(bool enabled) => enableHotkeys = enabled;
 }

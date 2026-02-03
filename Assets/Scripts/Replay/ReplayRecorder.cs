@@ -36,6 +36,8 @@ public class ReplayRecorder : MonoBehaviour
             return;
         }
 
+        cloneSwitcher.SetHotkeysEnabled(false);
+
         CurrentClip = new ReplayClip(cloneSwitcher.CurrentProfile);
 
         CurrentClip.startPosition = transform.position;
@@ -63,7 +65,8 @@ public class ReplayRecorder : MonoBehaviour
             if (f.jumpDown) j++;
             if (f.dashDown) d++;
         }
-        Debug.Log($"REPLAY STATS: jumpDown frames={j}, dashDown frames={d}");
+
+        cloneSwitcher.SetHotkeysEnabled(true);
     }
 
     private void FixedUpdate()
@@ -83,8 +86,5 @@ public class ReplayRecorder : MonoBehaviour
         {
             StopRecording();
         }
-
-        if (frame.jumpDown || frame.dashDown)
-            Debug.Log($"REC T{tick}: jumpDown={frame.jumpDown} dashDown={frame.dashDown} jumpHeld={frame.jumpHeld}");
     }
 }

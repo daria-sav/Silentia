@@ -190,6 +190,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProfileApplier
   startingProfile: {fileID: 11400000, guid: a77bebd0952ed5b40bc249de38860ec0, type: 2}
+  applyOnStart: 1
 --- !u!114 &8593855990564313870
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -206,6 +207,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a77bebd0952ed5b40bc249de38860ec0, type: 2}
   - {fileID: 11400000, guid: 996de7b505d664c4d99d01b51388020e, type: 2}
   bodyParent: {fileID: 3079041713236816436}
+  enableHotkeys: 0
 --- !u!114 &3570462417574252157
 MonoBehaviour:
   m_ObjectHideFlags: 0
