@@ -13,5 +13,7 @@ public class PlayerStates
         Crouch,
         Ladders, // ?
         Ignore,
+        KnockBack,
+        Death,
     }
 }

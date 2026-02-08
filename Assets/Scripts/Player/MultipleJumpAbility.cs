@@ -108,7 +108,7 @@ public class MultipleJumpAbility : BaseAbility
     {
         Debug.Log($"[TRY JUMP {gameObject.name}] grounded={linkedPhysics.isGrounded} coyote={linkedPhysics.coyoteTimer:F2} num={numberOfJumps} canAdd={canActivateAdditionalJumps}");
 
-        if (!isPermitted)
+        if (!isPermitted || linkedStateMachine.currentState == PlayerStates.State.KnockBack)
             return false;
 
         if (linkedPhysics.isGrounded || linkedPhysics.coyoteTimer > 0)

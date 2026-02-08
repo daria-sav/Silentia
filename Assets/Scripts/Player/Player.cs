@@ -6,6 +6,7 @@ public class Player : MonoBehaviour
     public GatherInput gatherInput;
     public StateMachine stateMachine;
     public PhysicsControl physicsControl;
+    public PlayerStats playerStats;
     public Animator anim;
     public Transform visual;
 

@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0268eee20c04a5247928da2e25d2c393, type: 3}
-  m_Name: Profile_Hero
+  m_Name: Profile_Clone2
   m_EditorClassIdentifier: Assembly-CSharp::CharacterProfile
-  id: 0
-  bodyPrefab: {fileID: 5681313495693577439, guid: 328511cbce0e5d247bf032292ab2fdf5, type: 3}
-  walkSpeed: 5
+  id: 2
+  bodyPrefab: {fileID: 5681313495693577439, guid: a20544b151545cd428338a38f0b6b291, type: 3}
+  walkSpeed: 8
   baseGravity: 8
-  jumpForce: 12
-  maxJumps: 1
+  jumpForce: 11
+  maxJumps: 2
   airSpeed: 5
   gravityDivider: 2
-  permittedStates: 00000000010000000300000005000000060000000b0000000c000000
+  permittedStates: 000000000100000003000000050000000600000007000000

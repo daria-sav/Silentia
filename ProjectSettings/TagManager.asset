@@ -16,8 +16,8 @@ TagManager:
   - Enemy
   - CameraEdge
   - Ghost
-  - 
-  - 
+  - PlayerStats
+  - DamagePlayer
   - 
   - 
   - 

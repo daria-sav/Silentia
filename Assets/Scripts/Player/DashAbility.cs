@@ -27,7 +27,7 @@ public class DashAbility : BaseAbility
 
     public bool TryStartDash()
     {
-        if (!isPermitted)
+        if (!isPermitted || linkedStateMachine.currentState == PlayerStates.State.KnockBack)
             return false;
         // other conditions
         if (linkedStateMachine.currentState == PlayerStates.State.Dash || linkedPhysics.isTouchingWall)
