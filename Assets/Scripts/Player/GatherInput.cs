@@ -13,7 +13,7 @@ public class GatherInput : MonoBehaviour
     [Header("Input System (Live mode)")]
     public PlayerInput playerInput;
 
-    //private InputActionMap playerMap;
+    private InputActionMap playerMap;
     //private InputActionMap uiMap;
 
     public InputActionReference moveActionRef;
@@ -73,21 +73,21 @@ public class GatherInput : MonoBehaviour
             dashActionRef.action.started -= OnDashStarted;
             dashActionRef.action.canceled -= OnDashCanceled;
         }
-        //if (playerMap != null) 
-        //    playerMap.Disable();
+        if (playerMap != null) 
+            playerMap.Disable();
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    //void Start()
-    //{
-    //    playerMap = playerInput.actions.FindActionMap("Player");
+    void Start()
+    {
+        playerMap = playerInput.actions.FindActionMap("Player");
     //    uiMap = playerInput.actions.FindActionMap("UI");
-    //    playerMap.Enable();
+        playerMap.Enable();
 
     //    // also good stuff
     //    //playerInput.actions.Enable();
     //    //jumpActionRef.action.Disable();
-    //}
+    }
 
     // Update is called once per frame
     void Update()
@@ -198,4 +198,6 @@ public class GatherInput : MonoBehaviour
 
     public void ClearJumpDownTick() => jumpDownTick = false;
     public void ClearDashDownTick() => dashDownTick = false;
+
+    public void DisablePlayerMap() => playerMap.Disable();
 }

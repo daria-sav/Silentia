@@ -4682,7 +4682,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 4.0859375
+  orthographic size: 4
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -4949,7 +4949,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerStats
   player: {fileID: 1640875364}
-  maxHealth: 10
+  maxHealth: 1
   flashDuration: 0.3
   flashStrength: 0.4
   flashColor: {r: 1, g: 1, b: 1, a: 1}
@@ -11530,8 +11530,8 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 1516043341
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_Sprite: {fileID: 743946583, guid: d4230beb95db5fc44bef0174ccaf8b7a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -11628,7 +11628,7 @@ MonoBehaviour:
   m_Intensity: 1
   m_LightVolumeIntensity: 1
   m_LightVolumeEnabled: 0
-  m_ApplyToSortingLayers: e9c7dfbeed491e5f00000000293aca7b
+  m_ApplyToSortingLayers: e9c7dfbeed491e5f00000000293aca7b4dfc5c5a
   m_LightCookieSprite: {fileID: 0}
   m_DeprecatedPointLightCookieSprite: {fileID: 0}
   m_LightOrder: 0
@@ -11702,6 +11702,7 @@ GameObject:
   - component: {fileID: 1640875371}
   - component: {fileID: 1640875372}
   - component: {fileID: 1640875381}
+  - component: {fileID: 1640875382}
   - component: {fileID: 1640875358}
   - component: {fileID: 1640875368}
   m_Layer: 7
@@ -12100,6 +12101,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KnockBackAbility
   thisAbilityState: 11
+  isPermitted: 1
+--- !u!114 &1640875382
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1640875356}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 479a86a3820e6d449abea123fc3a1fbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DeathAbility
+  thisAbilityState: 12
   isPermitted: 1
 --- !u!1 &1666658304
 GameObject:
