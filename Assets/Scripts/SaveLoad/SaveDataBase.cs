@@ -8,11 +8,13 @@ public class ExampleData
 [System.Serializable]
 public class SpawnData
 {
+    public string sceneName;
     public string spawnPintKey;
     public bool facingRight;
 
     public SpawnData()
     {
+        sceneName = "Level1";
         spawnPintKey = "Start";
         facingRight = true;
     }

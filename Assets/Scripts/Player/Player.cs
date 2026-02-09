@@ -30,6 +30,7 @@ public class Player : MonoBehaviour
             }
             ability.UpdateAnimator();
         }
+        Flip();
         Debug.Log("Current state is: " + stateMachine.currentState);
     }
 

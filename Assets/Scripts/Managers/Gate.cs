@@ -9,6 +9,8 @@ public class Gate : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
         {
+            spawnDataForOtherLevel.sceneName = levelToLoad;
+
             SaveLoadManager.instance.Save(spawnDataForOtherLevel, SaveLoadManager.instance.folderName, SaveLoadManager.instance.fileName);
 
             Player player = collision.GetComponent<Player>();

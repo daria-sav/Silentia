@@ -135,9 +135,15 @@ public class PhysicsControl : MonoBehaviour
         isGrounded = CheckGround();
 
         if (!isGrounded)
+        {
             coyoteTimer -= Time.fixedDeltaTime;
+        }
         else
-            coyoteTimer = coyoteSetTime;
+        {
+            if (rb.linearVelocityY <= 0.05)
+                coyoteTimer = coyoteSetTime;
+        }
+            
 
         isTouchingWall = CheckWall();
     }

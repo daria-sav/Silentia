@@ -28,6 +28,11 @@ public class IdleAbility : BaseAbility
         }
     }
 
+    public override void ProcessFixedAbility()
+    {
+        linkedPhysics.rb.linearVelocityX = 0;
+    }
+
     public override void UpdateAnimator()
     {
         linkedAnimator.SetBool(idleParameterInt, linkedStateMachine.currentState == PlayerStates.State.Idle);
