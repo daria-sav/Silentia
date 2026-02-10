@@ -165,6 +165,8 @@ MonoBehaviour:
   profiles:
   - {fileID: 11400000, guid: a77bebd0952ed5b40bc249de38860ec0, type: 2}
   - {fileID: 11400000, guid: 996de7b505d664c4d99d01b51388020e, type: 2}
+  - {fileID: 11400000, guid: 317ef33424953e4448cf227047c63027, type: 2}
+  - {fileID: 11400000, guid: c3ddfbe6bf7e1994890e6d9377883188, type: 2}
   bodyParent: {fileID: 4660924193984794465}
   enableHotkeys: 0
 --- !u!114 &2523089263063559254

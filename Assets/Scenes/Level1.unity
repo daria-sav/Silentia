@@ -12017,6 +12017,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 1535010861346565358, guid: b2c7ff61d24f9d74c9a3b6b90c17ded2, type: 3}
+      propertyPath: profiles.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1535010861346565358, guid: b2c7ff61d24f9d74c9a3b6b90c17ded2, type: 3}
+      propertyPath: 'profiles.Array.data[2]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 317ef33424953e4448cf227047c63027, type: 2}
+    - target: {fileID: 1535010861346565358, guid: b2c7ff61d24f9d74c9a3b6b90c17ded2, type: 3}
+      propertyPath: 'profiles.Array.data[3]'
+      value: 
+      objectReference: {fileID: 11400000, guid: c3ddfbe6bf7e1994890e6d9377883188, type: 2}
     - target: {fileID: 6119336696918859765, guid: b2c7ff61d24f9d74c9a3b6b90c17ded2, type: 3}
       propertyPath: m_LocalPosition.x
       value: -3.4941182
