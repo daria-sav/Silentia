@@ -18,6 +18,7 @@ public class Player : MonoBehaviour
         stateMachine = new StateMachine();
         playerAbilities = GetComponents<BaseAbility>();
         stateMachine.abilitiesArr = playerAbilities;
+        RefreshStatsFromChildren();
     }
 
     private void Update()
@@ -71,5 +72,15 @@ public class Player : MonoBehaviour
         s.x *= -1f;
         visual.localScale = s;
         facingRight = !facingRight;
+    }
+
+    public void SetCurrentStats(PlayerStats stats)
+    {
+        playerStats = stats;
+    }
+
+    public void RefreshStatsFromChildren()
+    {
+        playerStats = GetComponentInChildren<PlayerStats>(true);
     }
 }

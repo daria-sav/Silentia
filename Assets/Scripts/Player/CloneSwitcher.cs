@@ -83,6 +83,8 @@ public class CloneSwitcher : MonoBehaviour
         bodyObj.transform.localRotation = Quaternion.identity;
         bodyObj.transform.localScale = Vector3.one;
 
+        SetLayerRecursively(bodyObj, gameObject.layer);
+
         BodyMarkers newMarkers = bodyObj.GetComponent<BodyMarkers>();
         if (newMarkers == null)
         {
@@ -103,6 +105,9 @@ public class CloneSwitcher : MonoBehaviour
         // Make sure the flag matches the visual
         player.facingRight = savedFacingRight;
 
+        var newStats = bodyObj.GetComponentInChildren<PlayerStats>(true);
+        player.SetCurrentStats(newStats);
+
         // apply profile (stats + permissions)
         profileApplier.ApplyProfile(profile);
         CurrentProfile = profile;
@@ -119,6 +124,17 @@ public class CloneSwitcher : MonoBehaviour
 
         Debug.Log($"[SWITCH RESULT {gameObject.name}] profile={CurrentProfile.id} maxJumps={profile.maxJumps}");
         Debug.Log($"[SWITCH RESULT {gameObject.name}] jump.max={jumpAbility.DebugMaxJumps()} jump.num={jumpAbility.DebugNumJumps()}");
+    }
+
+    private void SetLayerRecursively(GameObject obj, int layer)
+    {
+        if (obj.GetComponent<PlayerStats>() != null)
+            return;
+
+        obj.layer = layer;
+
+        foreach (Transform child in obj.transform)
+            SetLayerRecursively(child.gameObject, layer);
     }
 
     public void SetHotkeysEnabled(bool enabled) => enableHotkeys = enabled;

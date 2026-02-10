@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: Profile_Clone1
   m_EditorClassIdentifier: Assembly-CSharp::CharacterProfile
   id: 1
-  bodyPrefab: {fileID: 5681313495693577439, guid: 9688da3e40c22c84ba7a8c71adb70bdd, type: 3}
+  bodyPrefab: {fileID: 6873362264134903609, guid: c5e46c6e2677d404ea310ecbdd3b84d4, type: 3}
   walkSpeed: 8
   baseGravity: 8
   jumpForce: 11
   maxJumps: 2
   airSpeed: 5
   gravityDivider: 2
-  permittedStates: 000000000100000003000000050000000600000007000000
+  permittedStates: 00000000010000000300000005000000060000000b0000000c000000
