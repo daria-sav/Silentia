@@ -57,17 +57,17 @@ public class MultipleJumpAbility : BaseAbility
         if (!linkedPhysics.isGrounded)
             leftGroundAfterJump = true;
 
-        if (isJumping)
-        {
-            jumpTimer -= Time.deltaTime;
-            if (jumpTimer <= 0)
-            {
-                isJumping = false;
-            }
-        }
+        //if (isJumping)
+        //{
+        //    jumpTimer -= Time.deltaTime;
+        //    if (jumpTimer <= 0)
+        //    {
+        //        isJumping = false;
+        //    }
+        //}
 
-        if (!linkedInput.jumpHeld)
-            isJumping = false;
+        //if (!linkedInput.jumpHeld)
+        //    isJumping = false;
 
         if (linkedPhysics.isGrounded && leftGroundAfterJump && minimumAirTime <= 0)
         {
@@ -87,6 +87,17 @@ public class MultipleJumpAbility : BaseAbility
 
     public override void ProcessFixedAbility()
     {
+        if (isJumping)
+        {
+            jumpTimer -= Time.fixedDeltaTime;
+            if (jumpTimer <= 0f)
+                isJumping = false;
+        }
+
+        // Releasing jump ends the "hold" immediately (also tick-based now)
+        if (!linkedInput.jumpHeld)
+            isJumping = false;
+
         if (!linkedPhysics.isGrounded)
         {
             if (isJumping)

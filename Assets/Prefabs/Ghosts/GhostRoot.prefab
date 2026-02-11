@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3706798894607196694}
   - component: {fileID: 1159738789115345220}
   - component: {fileID: 96316737790053095}
+  - component: {fileID: 8083592287813908564}
   - component: {fileID: 8289124023893513188}
   - component: {fileID: 9209526098558632861}
   - component: {fileID: 8244185318569249796}
@@ -78,6 +79,22 @@ MonoBehaviour:
   anim: {fileID: 6229535482587655609}
   visual: {fileID: 6004155436835460010}
   facingRight: 1
+--- !u!114 &8083592287813908564
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3199879368619415138}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ca01e7b769e7484fa448f5242a63d62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ReplayPlayback
+  input: {fileID: 8289124023893513188}
+  positionEpsilon: 0.15
+  hardSnapThreshold: 0.75
+  pullStrength: 0.5
 --- !u!114 &8289124023893513188
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -94,13 +94,14 @@ public class GatherInput : MonoBehaviour
     {
         if (mode != InputMode.Live) return;
 
-        horizontalInput = moveActionRef != null ? moveActionRef.action.ReadValue<float>() : 0f;
+        //horizontalInput = moveActionRef != null ? moveActionRef.action.ReadValue<float>() : 0f;
     }
 
     private void FixedUpdate()
     {
         if (mode == InputMode.Live)
         {
+            horizontalInput = moveActionRef != null ? moveActionRef.action.ReadValue<float>() : 0f;
             // build ONE-TICK snapshot from raw events
             jumpDownTick = jumpDownRaw;
             jumpUpTick = jumpUpRaw;
@@ -113,7 +114,6 @@ public class GatherInput : MonoBehaviour
             dashDownRaw = false;
             dashUpRaw = false;
         }
-        // replay mode: tick values are set by ApplyReplayFrame() each tick
     }
 
     // ================== LIVE INPUT CALLBACKS ==================

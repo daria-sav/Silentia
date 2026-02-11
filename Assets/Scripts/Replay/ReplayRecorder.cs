@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 [DefaultExecutionOrder(-300)]
@@ -13,11 +14,16 @@ public class ReplayRecorder : MonoBehaviour
     public bool IsRecording { get; private set; }
     public ReplayClip CurrentClip { get; private set; }
 
+    public event Action<ReplayClip> OnRecordingStopped;
+
     private int tick;
     private int maxTicks;
 
     private Player player;
     private PhysicsControl physics;
+
+    [Header("Drift correction")]
+    [SerializeField] private int keyframeEveryTicks = 10; // ~0.2s if fixedDeltaTime=0.02
 
     private void Awake()
     {
@@ -59,6 +65,9 @@ public class ReplayRecorder : MonoBehaviour
         IsRecording = false;
         Debug.Log($"REPLAY: Recording stopped. Frames={CurrentClip?.FrameCount ?? 0}");
 
+        if (CurrentClip != null)
+            OnRecordingStopped?.Invoke(CurrentClip);
+
         int j = 0, d = 0;
         foreach (var f in CurrentClip.frames)
         {
@@ -66,18 +75,22 @@ public class ReplayRecorder : MonoBehaviour
             if (f.dashDown) d++;
         }
 
-        cloneSwitcher.SetHotkeysEnabled(true);
     }
 
     private void FixedUpdate()
     {
         if (!IsRecording || input == null || CurrentClip == null) return;
 
-        // take a frame
         var frame = input.CaptureFrame(tick);
-
-        // add to clip
         CurrentClip.frames.Add(frame);
+
+        // save drift-correction keyframe every N ticks
+        if (keyframeEveryTicks > 0 && (tick % keyframeEveryTicks == 0))
+        {
+            Vector2 pos = transform.position;
+            Vector2 vel = (physics != null && physics.rb != null) ? physics.rb.linearVelocity : Vector2.zero;
+            CurrentClip.AddKeyframe(tick, pos, vel);
+        }
 
         tick++;
 
