@@ -34,6 +34,7 @@ public class ReplayPlayback : MonoBehaviour
         clip = replayClip;
         tick = 0;
         IsPlaying = true;
+        RestartPolicy.AllowLevelRestart = false;
 
         if (input != null)
             input.SetMode(GatherInput.InputMode.Replay);

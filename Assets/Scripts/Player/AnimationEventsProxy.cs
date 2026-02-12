@@ -18,7 +18,19 @@ public class AnimationEventsProxy : MonoBehaviour
             return;
         }
 
-        // player.ResetGame();
+        // if restart is globally forbidden (ghost playback), do nothing
+        if (!RestartPolicy.AllowLevelRestart)
+            return;
+
+        // if this is the real hero and we are recording -> stop recording
+        var recorder = player.GetComponent<ReplayRecorder>();
+        if (recorder != null && recorder.IsRecording)
+        {
+            recorder.StopRecording(); 
+            return;
+        }
+
+        // normal behavior
 
         var deathAbility = player.GetComponent<DeathAbility>();
         if (deathAbility != null) deathAbility.ResetGame();

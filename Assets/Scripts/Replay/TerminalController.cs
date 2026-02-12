@@ -6,16 +6,18 @@ public class TerminalController : MonoBehaviour
 {
     [Header("Ghost playback")]
     [SerializeField] private GameObject ghostRootPrefab;
-
-    [Tooltip("Optional explicit spawn point. If null, terminal transform is used.")]
     [SerializeField] private Transform ghostSpawnPoint;
 
-    private bool playerInZone;
 
     [Header("Terminal spawn control")]
     [SerializeField] private string terminalSpawnKey = "Terminal";
     [SerializeField] private bool facingRightAtTerminal = true;
-    private bool playbackSpawned;
+    //private bool playbackSpawned;
+
+    private bool playerInZone;
+
+    [Header("Slot UI")]
+    [SerializeField] private GameObject slotUiPanel;
 
     private void Reset()
     {
@@ -25,17 +27,21 @@ public class TerminalController : MonoBehaviour
 
     private void Update()
     {
+        UpdateSlotUiVisibility();
+
         if (!playerInZone) return;
 
         int selected = GetDigit1to6Down();
         if (selected != -1)
         {
-            int profileIndex = selected - 1; 
+            int profileIndex = selected; 
             if (TerminalSession.Instance == null)
             {
                 Debug.LogError("TerminalController: TerminalSession not found in scene.");
                 return;
             }
+
+            if (slotUiPanel != null) slotUiPanel.SetActive(false);
 
             TerminalSession.Instance.RequestRestartAndStartRecording(profileIndex);
             return;
@@ -44,25 +50,26 @@ public class TerminalController : MonoBehaviour
         // C - playback
         if (IsPlayDown())
         {
-            TryPlayLastClip();
+            TryPlayAllClips();
         }
     }
 
-    private void TryPlayLastClip()
+    private void TryPlayAllClips()
     {
-        if (playbackSpawned) return;
-
         var session = TerminalSession.Instance;
+
         if (session == null)
         {
             Debug.LogError("TerminalController: TerminalSession not found.");
             return;
         }
 
-        var clip = session.LastClip;
-        if (clip == null)
+        var hero = FindFirstObjectByType<Player>();
+        var recorder = hero != null ? hero.GetComponent<ReplayRecorder>() : null;
+
+        if (recorder != null && recorder.IsRecording)
         {
-            Debug.Log("TerminalController: No saved clip to play.");
+            Debug.Log("TerminalController: Cannot play while recording.");
             return;
         }
 
@@ -72,64 +79,57 @@ public class TerminalController : MonoBehaviour
             return;
         }
 
-        var hero = FindFirstObjectByType<Player>();
-        if (hero != null)
+        bool playedAny = false;
+
+        for (int i = 0; i < TerminalSession.SlotCount; i++)
         {
-            var recorder = hero.GetComponent<ReplayRecorder>();
-            if (recorder != null && recorder.IsRecording)
-            {
-                Debug.Log("TerminalController: Cannot play while recording.");
-                return;
-            }
+            var clip = session.Clips[i];
+            if (clip == null) continue;
+
+            string profileId = session.ClipProfileIds[i];
+            SpawnAndPlayGhostForClip(clip, profileId, i);
+            playedAny = true;
         }
 
+        if (!playedAny)
+            Debug.Log("TerminalController: No clips to play.");
+    }
+
+    private void SpawnAndPlayGhostForClip(ReplayClip clip, string profileId, int slotIndex)
+    {
         Vector3 spawnPos = (ghostSpawnPoint != null) ? ghostSpawnPoint.position : transform.position;
 
-        GameObject ghostRoot = Instantiate(ghostRootPrefab, spawnPos, Quaternion.identity);
+        //spawnPos.x += slotIndex * 0.6f;
 
-        // IMPORTANT: prevent ProfileApplier.Start() from overriding our chosen profile on ghost
-        var ghostApplier = ghostRoot.GetComponent<ProfileApplier>();
-        if (ghostApplier != null)
-            ghostApplier.DisableAutoApplyOnStart();
+        GameObject ghost = Instantiate(ghostRootPrefab, spawnPos, Quaternion.identity);
 
-        // Prefer CloneSwitcher on root, fallback to children
-        var ghostSwitcher = ghostRoot.GetComponent<CloneSwitcher>();
-        if (ghostSwitcher == null)
-            ghostSwitcher = ghostRoot.GetComponentInChildren<CloneSwitcher>();
+        var applier = ghost.GetComponent<ProfileApplier>();
+        if (applier != null) applier.DisableAutoApplyOnStart();
 
-        if (ghostSwitcher == null)
+        var switcher = ghost.GetComponent<CloneSwitcher>();
+        if (switcher == null) switcher = ghost.GetComponentInChildren<CloneSwitcher>();
+
+        if (switcher == null)
         {
-            Debug.LogError("TerminalController: Ghost has no CloneSwitcher!");
-            Destroy(ghostRoot);
+            Debug.LogError("Ghost has no CloneSwitcher");
+            Destroy(ghost);
             return;
         }
 
-        // Robust: find profile by clip.profileId (works even if profile list ordering differs)
-        int idx = ghostSwitcher.profiles.FindIndex(p => p != null && p.id == clip.profileId);
+        int idx = switcher.profiles.FindIndex(p => p != null && p.id == profileId);
         if (idx < 0)
         {
-            Debug.LogError($"TerminalController: Ghost profile not found for id={clip.profileId}");
-            Destroy(ghostRoot);
+            Debug.LogError($"Ghost profile not found for id={profileId}");
+            Destroy(ghost);
             return;
         }
 
-        ghostSwitcher.SwitchTo(idx);
+        switcher.SwitchTo(idx);
 
-        // If ProfileApplier is not on root but on the same object as switcher, disable it too (safety)
-        var applierOnSwitcher = ghostSwitcher.GetComponent<ProfileApplier>();
-        if (applierOnSwitcher != null)
-            applierOnSwitcher.DisableAutoApplyOnStart();
-
-        // Playback: prefer on root, fallback to children, add if missing
-        var playback = ghostRoot.GetComponent<ReplayPlayback>();
-        if (playback == null)
-            playback = ghostRoot.GetComponentInChildren<ReplayPlayback>();
-        if (playback == null)
-            playback = ghostRoot.AddComponent<ReplayPlayback>();
+        var playback = ghost.GetComponent<ReplayPlayback>();
+        if (playback == null) playback = ghost.AddComponent<ReplayPlayback>();
 
         playback.StartPlayback(clip);
-
-        playbackSpawned = true;
     }
 
     private int GetDigit1to6Down()
@@ -156,11 +156,25 @@ public class TerminalController : MonoBehaviour
         return kb.cKey.wasPressedThisFrame;
     }
 
+    private void UpdateSlotUiVisibility()
+    {
+        if (slotUiPanel == null) return;
+
+        bool isRecording = false;
+        var hero = FindFirstObjectByType<Player>();
+        var recorder = hero != null ? hero.GetComponent<ReplayRecorder>() : null;
+        if (recorder != null) isRecording = recorder.IsRecording;
+
+        slotUiPanel.SetActive(playerInZone && !isRecording);
+    }
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (!other.CompareTag("Player")) return;
 
         playerInZone = true;
+
+        UpdateSlotUiVisibility();
 
         if (TerminalSession.Instance != null)
             TerminalSession.Instance.SetTerminalSpawn(terminalSpawnKey, facingRightAtTerminal);
@@ -171,7 +185,7 @@ public class TerminalController : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             playerInZone = false;
-            playbackSpawned = false;
+            UpdateSlotUiVisibility();
         }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -5,19 +6,27 @@ public class TerminalSession : MonoBehaviour
 {
     public static TerminalSession Instance { get; private set; }
 
-    [Header("Runtime stored data")]
-    public ReplayClip LastClip { get; private set; }
+    public const int SlotCount = 3;
+
+    [Header("Replay slots (runtime)")]
+    public ReplayClip[] Clips { get; private set; } = new ReplayClip[SlotCount];
+    public string[] ClipProfileIds { get; private set; } = new string[SlotCount];
+
+    public int SelectedSlot { get; private set; } = 0;
+
+    public event Action OnSlotsChanged;
 
     // pending command (applied after scene reload)
     private bool pendingStartRecording;
     private int pendingProfileIndex = -1;
-    public int LastRecordedProfileIndex { get; private set; } = -1;
-
-    private ReplayRecorder boundRecorder;
 
     private string terminalSpawnKey;
     private bool terminalFacingRight = true;
+
     private bool restartInProgress;
+
+    private ReplayRecorder boundRecorder;
+
 
     private void Awake()
     {
@@ -43,12 +52,47 @@ public class TerminalSession : MonoBehaviour
         }
     }
 
+    public void SelectSlot(int slot)
+    {
+        var hero = FindFirstObjectByType<Player>();
+        var recorder = hero != null ? hero.GetComponent<ReplayRecorder>() : null;
+        if (recorder != null && recorder.IsRecording) return;
+
+        slot = Mathf.Clamp(slot, 0, SlotCount - 1);
+        SelectedSlot = slot;
+        OnSlotsChanged?.Invoke();
+    }
+
+    public bool HasClip(int slot)
+    {
+        return slot >= 0 && slot < SlotCount && Clips[slot] != null;
+    }
+
+    public void SetTerminalSpawn(string spawnKey, bool facingRight)
+    {
+        terminalSpawnKey = spawnKey;
+        terminalFacingRight = facingRight;
+    }
+
+    private void SaveSpawnForNextLoad()
+    {
+        if (string.IsNullOrEmpty(terminalSpawnKey)) return;
+        if (SaveLoadManager.instance == null) return;
+
+        var data = new SpawnData
+        {
+            spawnPintKey = terminalSpawnKey,
+            facingRight = terminalFacingRight
+        };
+
+        SaveLoadManager.instance.Save(data, SaveLoadManager.instance.folderName, SaveLoadManager.instance.fileName);
+    }
+
     public void RequestRestartAndStartRecording(int profileIndex)
     {
         if (restartInProgress) return;
         restartInProgress = true;
 
-        LastRecordedProfileIndex = profileIndex;
         pendingProfileIndex = profileIndex;
         pendingStartRecording = true;
 
@@ -60,25 +104,30 @@ public class TerminalSession : MonoBehaviour
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
-    public void SaveClipAndRestart(ReplayClip clip)
+    public void SaveClipToSelectedSlotAndRestart(ReplayClip clip)
     {
-        if (restartInProgress) return;
+        if (clip == null) return;
         restartInProgress = true;
 
-        LastClip = clip;
+        if (clip != null)
+        {
+            Clips[SelectedSlot] = clip;
+            ClipProfileIds[SelectedSlot] = clip.profileId;
+            OnSlotsChanged?.Invoke();
+        }
 
         SaveSpawnForNextLoad();
 
-        if (LevelManager.instance != null)
+        if (LevelManager.instance != null) 
             LevelManager.instance.RestartLevel();
-        else
+        else 
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         restartInProgress = false;
-        // Find the hero in the freshly loaded scene
+
         var hero = FindFirstObjectByType<Player>();
         if (hero == null)
         {
@@ -95,14 +144,15 @@ public class TerminalSession : MonoBehaviour
             return;
         }
 
-        // Always bind recorder after any scene load so stop events are handled.
         BindRecorder(recorder);
 
-        // We do not want global hotkeys anywhere (terminal will handle input)
         switcher.SetHotkeysEnabled(false);
 
-        // Apply pending: restart -> switch profile -> start recording
-        if (!pendingStartRecording) return;
+        if (!pendingStartRecording)
+        {
+            switcher.SwitchTo(0);
+            return;
+        }
 
         var applier = hero.GetComponent<ProfileApplier>();
         if (applier != null) applier.DisableAutoApplyOnStart();
@@ -134,26 +184,6 @@ public class TerminalSession : MonoBehaviour
     private void HandleRecordingStopped(ReplayClip clip)
     {
         // clip is already complete here
-        SaveClipAndRestart(clip);
-    }
-
-    public void SetTerminalSpawn(string spawnKey, bool facingRight)
-    {
-        terminalSpawnKey = spawnKey;
-        terminalFacingRight = facingRight;
-    }
-
-    private void SaveSpawnForNextLoad()
-    {
-        if (string.IsNullOrEmpty(terminalSpawnKey)) return;
-        if (SaveLoadManager.instance == null) return;
-
-        var data = new SpawnData
-        {
-            spawnPintKey = terminalSpawnKey,
-            facingRight = terminalFacingRight
-        };
-
-        SaveLoadManager.instance.Save(data, SaveLoadManager.instance.folderName, SaveLoadManager.instance.fileName);
+        SaveClipToSelectedSlotAndRestart(clip);
     }
 }
