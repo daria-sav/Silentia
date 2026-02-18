@@ -12,12 +12,32 @@ public class TerminalController : MonoBehaviour
     [Header("Terminal spawn control")]
     [SerializeField] private string terminalSpawnKey = "Terminal";
     [SerializeField] private bool facingRightAtTerminal = true;
-    //private bool playbackSpawned;
+    [SerializeField] private TerminalInput terminalInput;
 
     private bool playerInZone;
 
     [Header("Slot UI")]
     [SerializeField] private GameObject slotUiPanel;
+
+    private TerminalSession cachedSession;
+
+    private void Awake()
+    {
+        if (terminalInput == null) terminalInput = GetComponent<TerminalInput>();
+    }
+
+    private void OnEnable()
+    {
+        cachedSession = TerminalSession.Instance;
+        if (cachedSession != null)
+            cachedSession.OnStateChanged += HandleTerminalStateChanged;
+    }
+
+    private void OnDisable()
+    {
+        if (cachedSession != null)
+            cachedSession.OnStateChanged -= HandleTerminalStateChanged;
+    }
 
     private void Reset()
     {
@@ -27,36 +47,57 @@ public class TerminalController : MonoBehaviour
 
     private void Update()
     {
-        UpdateSlotUiVisibility();
+        var session = cachedSession;
+        if (session == null || terminalInput == null) return;
 
-        if (!playerInZone) return;
+        bool paused = session.State == TerminalSession.TerminalState.TerminalPaused;
 
-        int selected = GetDigit1to6Down();
-        if (selected != -1)
+        // Terminal map включается только когда мы реально в TerminalPaused
+        terminalInput.SetTerminalPaused(paused);
+
+        // В обычном режиме терминал "вооружается" только внутри зоны
+        if (!paused && playerInZone)
+            terminalInput.UpdateArming();
+
+        // ===== TerminalPaused =====
+        if (paused)
         {
-            int profileIndex = selected; 
-            if (TerminalSession.Instance == null)
+            if (terminalInput.ExitDown())
             {
-                Debug.LogError("TerminalController: TerminalSession not found in scene.");
+                session.ExitTerminalPaused();
                 return;
             }
 
-            if (slotUiPanel != null) slotUiPanel.SetActive(false);
+            int profileIndex = terminalInput.ProfileDown();
+            if (profileIndex != -1)
+            {
+                session.RequestRestartAndStartRecording(profileIndex);
+                return;
+            }
 
-            TerminalSession.Instance.RequestRestartAndStartRecording(profileIndex);
+            if (terminalInput.PlayDown())
+            {
+                TryPlayAllClips();
+                session.UnfreezeAfterTerminalPlay();
+                return;
+            }
+
             return;
         }
 
-        // C - playback
-        if (IsPlayDown())
+        // ===== Normal =====
+        if (!playerInZone) return;
+
+        if (terminalInput.InteractDown())
         {
-            TryPlayAllClips();
+            if (slotUiPanel != null) slotUiPanel.SetActive(false);
+            session.RequestRestartAndEnterTerminal();
         }
     }
 
     private void TryPlayAllClips()
     {
-        var session = TerminalSession.Instance;
+        var session = cachedSession;
 
         if (session == null)
         {
@@ -132,40 +173,19 @@ public class TerminalController : MonoBehaviour
         playback.StartPlayback(clip);
     }
 
-    private int GetDigit1to6Down()
-    {
-        var kb = Keyboard.current;
-        if (kb == null) return -1;
-
-        if (kb.digit1Key.wasPressedThisFrame || kb.numpad1Key.wasPressedThisFrame) return 1;
-        if (kb.digit2Key.wasPressedThisFrame || kb.numpad2Key.wasPressedThisFrame) return 2;
-        if (kb.digit3Key.wasPressedThisFrame || kb.numpad3Key.wasPressedThisFrame) return 3;
-        if (kb.digit4Key.wasPressedThisFrame || kb.numpad4Key.wasPressedThisFrame) return 4;
-        if (kb.digit5Key.wasPressedThisFrame || kb.numpad5Key.wasPressedThisFrame) return 5;
-        if (kb.digit6Key.wasPressedThisFrame || kb.numpad6Key.wasPressedThisFrame) return 6;
-
-        return -1;
-    }
-
-    private bool IsPlayDown()
-    {
-        var kb = Keyboard.current;
-        if (kb == null) return false;
-
-        // C key
-        return kb.cKey.wasPressedThisFrame;
-    }
 
     private void UpdateSlotUiVisibility()
     {
         if (slotUiPanel == null) return;
 
-        bool isRecording = false;
-        var hero = FindFirstObjectByType<Player>();
-        var recorder = hero != null ? hero.GetComponent<ReplayRecorder>() : null;
-        if (recorder != null) isRecording = recorder.IsRecording;
+        var session = cachedSession;
+        if (session == null)
+        {
+            slotUiPanel.SetActive(false);
+            return;
+        }
 
-        slotUiPanel.SetActive(playerInZone && !isRecording);
+        slotUiPanel.SetActive(session.State == TerminalSession.TerminalState.TerminalPaused);
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -173,6 +193,7 @@ public class TerminalController : MonoBehaviour
         if (!other.CompareTag("Player")) return;
 
         playerInZone = true;
+        terminalInput.NotifyEnteredZone();
 
         UpdateSlotUiVisibility();
 
@@ -182,10 +203,16 @@ public class TerminalController : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        if (other.CompareTag("Player"))
-        {
-            playerInZone = false;
-            UpdateSlotUiVisibility();
-        }
+        if (!other.CompareTag("Player")) return;
+
+        playerInZone = false;
+        terminalInput.NotifyExitedZone();
+
+        UpdateSlotUiVisibility();
+    }
+
+    private void HandleTerminalStateChanged(TerminalSession.TerminalState _)
+    {
+        UpdateSlotUiVisibility();
     }
 }

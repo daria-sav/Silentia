@@ -46,6 +46,12 @@ public class ReplayRecorder : MonoBehaviour
 
         CurrentClip = new ReplayClip(cloneSwitcher.CurrentProfile);
 
+        // simulation contract
+        CurrentClip.fixedDeltaTime = Time.fixedDeltaTime;
+        CurrentClip.velocityIterations = Physics2D.velocityIterations;
+        CurrentClip.positionIterations = Physics2D.positionIterations;
+
+        // start snapshot
         CurrentClip.startPosition = transform.position;
         CurrentClip.startVelocity = (physics != null && physics.rb != null) ? physics.rb.linearVelocity : Vector2.zero;
         CurrentClip.startFacingRight = (player != null) ? player.facingRight : true;
@@ -64,6 +70,9 @@ public class ReplayRecorder : MonoBehaviour
 
         IsRecording = false;
         Debug.Log($"REPLAY: Recording stopped. Frames={CurrentClip?.FrameCount ?? 0}");
+
+        if (CurrentClip != null && physics != null && physics.rb != null)
+            CurrentClip.AddKeyframe(tick, transform.position, physics.rb.linearVelocity);
 
         if (CurrentClip != null)
             OnRecordingStopped?.Invoke(CurrentClip);

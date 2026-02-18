@@ -37,7 +37,7 @@ public class LevelManager : MonoBehaviour
 
         while (time < fadeDuration)
         {
-            time += Time.deltaTime;
+            time += Time.unscaledDeltaTime;
             canvasGroup.alpha = Mathf.Lerp(startAlpha, endAlpha, time / fadeDuration);
 
             yield return null;
@@ -53,7 +53,7 @@ public class LevelManager : MonoBehaviour
 
         while (time < fadeDuration)
         {
-            time += Time.deltaTime;
+            time += Time.unscaledDeltaTime;
             canvasGroup.alpha = Mathf.Lerp(startAlpha, endAlpha, time / fadeDuration);
 
             yield return null;
@@ -70,7 +70,7 @@ public class LevelManager : MonoBehaviour
 
         while (time < fadeDuration)
         {
-            time += Time.deltaTime;
+            time += Time.unscaledDeltaTime;
             canvasGroup.alpha = Mathf.Lerp(startAlpha, endAlpha, time / fadeDuration);
 
             yield return null;

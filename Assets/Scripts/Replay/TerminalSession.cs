@@ -16,10 +16,6 @@ public class TerminalSession : MonoBehaviour
 
     public event Action OnSlotsChanged;
 
-    // pending command (applied after scene reload)
-    private bool pendingStartRecording;
-    private int pendingProfileIndex = -1;
-
     private string terminalSpawnKey;
     private bool terminalFacingRight = true;
 
@@ -27,6 +23,29 @@ public class TerminalSession : MonoBehaviour
 
     private ReplayRecorder boundRecorder;
 
+    public enum TerminalState
+    {
+        Normal,        
+        EnteringTerminal, 
+        TerminalPaused,
+        EnteringRecord,
+        Recording,      
+        Playback        
+    }
+
+    public TerminalState State { get; private set; } = TerminalState.Normal;
+
+    public event Action<TerminalState> OnStateChanged;
+
+    private enum PendingAction
+    {
+        None,
+        EnterTerminal,
+        StartRecording
+    }
+
+    private PendingAction pendingAction = PendingAction.None;
+    private int pendingProfileIndex = -1;
 
     private void Awake()
     {
@@ -93,13 +112,20 @@ public class TerminalSession : MonoBehaviour
         if (restartInProgress) return;
         restartInProgress = true;
 
+        pendingAction = PendingAction.StartRecording;
         pendingProfileIndex = profileIndex;
-        pendingStartRecording = true;
+
+        SetState(TerminalState.EnteringRecord);
 
         SaveSpawnForNextLoad();
 
+        Time.timeScale = 1f;
+
         if (LevelManager.instance != null)
+        {
             LevelManager.instance.RestartLevel();
+        }
+            
         else
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
@@ -107,14 +133,17 @@ public class TerminalSession : MonoBehaviour
     public void SaveClipToSelectedSlotAndRestart(ReplayClip clip)
     {
         if (clip == null) return;
+        if (restartInProgress) return;
         restartInProgress = true;
 
-        if (clip != null)
-        {
-            Clips[SelectedSlot] = clip;
-            ClipProfileIds[SelectedSlot] = clip.profileId;
-            OnSlotsChanged?.Invoke();
-        }
+        Clips[SelectedSlot] = clip;
+        ClipProfileIds[SelectedSlot] = clip.profileId;
+        OnSlotsChanged?.Invoke();
+
+        pendingAction = PendingAction.EnterTerminal;
+        SetState(TerminalState.EnteringTerminal);
+
+        Time.timeScale = 1f;
 
         SaveSpawnForNextLoad();
 
@@ -132,6 +161,7 @@ public class TerminalSession : MonoBehaviour
         if (hero == null)
         {
             Debug.LogError("TerminalSession: Player not found after scene reload.");
+            restartInProgress = false;
             return;
         }
 
@@ -148,24 +178,55 @@ public class TerminalSession : MonoBehaviour
 
         switcher.SetHotkeysEnabled(false);
 
-        if (!pendingStartRecording)
+        if (pendingAction == PendingAction.EnterTerminal)
         {
-            switcher.SwitchTo(0);
+            pendingAction = PendingAction.None;
+            pendingProfileIndex = -1;
+
+            EnterTerminalPaused(hero, switcher);
+            SetState(TerminalState.TerminalPaused);
+            Debug.Log("TerminalSession: Entered TerminalPaused after reload.");
             return;
         }
 
-        var applier = hero.GetComponent<ProfileApplier>();
-        if (applier != null) applier.DisableAutoApplyOnStart();
+        if (pendingAction == PendingAction.StartRecording)
+        {
+            pendingAction = PendingAction.None;
 
-        if (pendingProfileIndex >= 0)
-            switcher.SwitchTo(pendingProfileIndex);
+            // гарантируем что стартовый профиль не применится автоматически
+            var applier = hero.GetComponent<ProfileApplier>();
+            if (applier != null) applier.DisableAutoApplyOnStart();
 
-        recorder.StartRecording();
+            // переключаем тело на выбранный профиль
+            if (pendingProfileIndex >= 0)
+                switcher.SwitchTo(pendingProfileIndex);
 
-        pendingStartRecording = false;
-        pendingProfileIndex = -1;
+            pendingProfileIndex = -1;
 
-        Debug.Log("TerminalSession: Applied pending switch + started recording after reload.");
+            // мир живой
+            Time.timeScale = 1f;
+
+            // включаем управление
+            if (hero.gatherInput != null)
+                hero.gatherInput.EnablePlayerMap();
+
+            recorder.StartRecording();
+            SetState(TerminalState.Recording);
+
+            Debug.Log("TerminalSession: Started recording after reload.");
+            return;
+        }
+
+        // ===== NO PENDING ACTION: NORMAL LOAD =====
+        Time.timeScale = 1f;
+        SetState(TerminalState.Normal);
+
+        // всегда GG (0)
+        switcher.SwitchTo(0);
+
+        // управление включено
+        if (hero.gatherInput != null)
+            hero.gatherInput.EnablePlayerMap();
     }
 
     private void BindRecorder(ReplayRecorder recorder)
@@ -185,5 +246,71 @@ public class TerminalSession : MonoBehaviour
     {
         // clip is already complete here
         SaveClipToSelectedSlotAndRestart(clip);
+    }
+
+    public void RequestRestartAndEnterTerminal()
+    {
+        if (restartInProgress) return;
+        restartInProgress = true;
+
+        pendingAction = PendingAction.EnterTerminal;
+        SetState(TerminalState.EnteringTerminal);
+
+        SaveSpawnForNextLoad();
+
+        Time.timeScale = 1f;
+
+        if (LevelManager.instance != null)
+        {
+            LevelManager.instance.RestartLevel();
+        }
+            
+        else
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    public void ExitTerminalPaused()
+    {
+        Time.timeScale = 1f;
+        SetState(TerminalState.Normal);
+
+        var hero = FindFirstObjectByType<Player>();
+        if (hero != null && hero.gatherInput != null)
+            hero.gatherInput.EnablePlayerMap();
+    }
+
+    private void EnterTerminalPaused(Player hero, CloneSwitcher switcher)
+    {
+        // freeze world
+        Time.timeScale = 0f;
+
+        // lock hero input + ensure idle and no movement
+        if (hero.gatherInput != null)
+            hero.gatherInput.DisablePlayerMap();
+
+        if (hero.physicsControl != null && hero.physicsControl.rb != null)
+            hero.physicsControl.rb.linearVelocity = Vector2.zero;
+
+        hero.stateMachine.ForceChange(PlayerStates.State.Idle);
+
+        switcher.SwitchTo(0);
+        Debug.Log("TerminalSession: EnterTerminalPaused()");
+    }
+
+    public void UnfreezeAfterTerminalPlay()
+    {
+        SetState(TerminalState.Playback);
+        Time.timeScale = 1f;
+
+        var hero = FindFirstObjectByType<Player>();
+        if (hero != null && hero.gatherInput != null)
+            hero.gatherInput.EnablePlayerMap();
+    }
+
+    private void SetState(TerminalState newState)
+    {
+        if (State == newState) return;
+        State = newState;
+        OnStateChanged?.Invoke(State);
     }
 }

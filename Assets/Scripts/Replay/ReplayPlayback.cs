@@ -36,14 +36,21 @@ public class ReplayPlayback : MonoBehaviour
         IsPlaying = true;
         RestartPolicy.AllowLevelRestart = false;
 
+        if (clip != null)
+        {
+            if (!Mathf.Approximately(Time.fixedDeltaTime, clip.fixedDeltaTime))
+            {
+                Debug.LogWarning($"REPLAY: fixedDeltaTime mismatch. Now={Time.fixedDeltaTime} Clip={clip.fixedDeltaTime}. Drift possible.");
+            }
+
+            if (Physics2D.velocityIterations != clip.velocityIterations || Physics2D.positionIterations != clip.positionIterations)
+            {
+                Debug.LogWarning($"REPLAY: Physics2D iterations mismatch. Now v={Physics2D.velocityIterations},p={Physics2D.positionIterations} Clip v={clip.velocityIterations},p={clip.positionIterations}. Drift possible.");
+            }
+        }
+
         if (input != null)
             input.SetMode(GatherInput.InputMode.Replay);
-
-        //if (clip != null && clip.FrameCount > 0 && input != null)
-        //{
-        //    input.ApplyReplayFrame(clip.GetFrame(0));
-        //    tick = 1;
-        //}
 
         ApplyStartSnapshot(clip);
 
@@ -59,9 +66,11 @@ public class ReplayPlayback : MonoBehaviour
         if (tick >= clip.FrameCount)
         {
             IsPlaying = false;
+            RestartPolicy.AllowLevelRestart = true;
 
             if (input != null)
             {
+                input.SetMode(GatherInput.InputMode.Replay);
                 input.ApplyReplayFrame(default); // clears held/down/up + moveX
             }
 
@@ -166,5 +175,10 @@ public class ReplayPlayback : MonoBehaviour
 
             physics.rb.linearVelocity = Vector2.Lerp(physics.rb.linearVelocity, kf.vel, pullStrength);
         }
+    }
+
+    private void OnDisable()
+    {
+        if (IsPlaying) RestartPolicy.AllowLevelRestart = true;
     }
 }

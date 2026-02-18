@@ -7,6 +7,11 @@ public class ReplayClip
     public CharacterProfile profile;
     public string profileId;
 
+    // === SIMULATION SETTINGS (for determinism checks) ===
+    public float fixedDeltaTime;
+    public int velocityIterations;
+    public int positionIterations;
+
     // === START SNAPSHOT ===
     public Vector2 startPosition;
     public Vector2 startVelocity;
