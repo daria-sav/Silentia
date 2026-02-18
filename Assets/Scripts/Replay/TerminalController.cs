@@ -14,12 +14,20 @@ public class TerminalController : MonoBehaviour
     [SerializeField] private bool facingRightAtTerminal = true;
     [SerializeField] private TerminalInput terminalInput;
 
-    private bool playerInZone;
-
     [Header("Slot UI")]
     [SerializeField] private GameObject slotUiPanel;
 
-    private TerminalSession cachedSession;
+    private TerminalSession session;
+    private bool subscribed;
+
+    private GatherInput gatherInput;
+    private bool playerInZone;
+
+    private void Reset()
+    {
+        var col = GetComponent<Collider2D>();
+        col.isTrigger = true;
+    }
 
     private void Awake()
     {
@@ -28,80 +36,165 @@ public class TerminalController : MonoBehaviour
 
     private void OnEnable()
     {
-        cachedSession = TerminalSession.Instance;
-        if (cachedSession != null)
-            cachedSession.OnStateChanged += HandleTerminalStateChanged;
+        TryBindSession();
+        UpdateSlotUiVisibility();
     }
 
     private void OnDisable()
     {
-        if (cachedSession != null)
-            cachedSession.OnStateChanged -= HandleTerminalStateChanged;
-    }
-
-    private void Reset()
-    {
-        var col = GetComponent<Collider2D>();
-        col.isTrigger = true;
+        UnbindSession();
     }
 
     private void Update()
     {
-        var session = cachedSession;
-        if (session == null || terminalInput == null) return;
+        TryBindSession();
+
+        if (session == null)
+            return;
 
         bool paused = session.State == TerminalSession.TerminalState.TerminalPaused;
 
-        // Terminal map включается только когда мы реально в TerminalPaused
-        terminalInput.SetTerminalPaused(paused);
+        if (terminalInput != null)
+            terminalInput.SetTerminalPaused(paused);
 
-        // В обычном режиме терминал "вооружается" только внутри зоны
-        if (!paused && playerInZone)
-            terminalInput.UpdateArming();
-
-        // ===== TerminalPaused =====
         if (paused)
         {
-            if (terminalInput.ExitDown())
-            {
-                session.ExitTerminalPaused();
-                return;
-            }
-
-            int profileIndex = terminalInput.ProfileDown();
-            if (profileIndex != -1)
-            {
-                session.RequestRestartAndStartRecording(profileIndex);
-                return;
-            }
-
-            if (terminalInput.PlayDown())
-            {
-                TryPlayAllClips();
-                session.UnfreezeAfterTerminalPlay();
-                return;
-            }
-
+            HandlePausedInput();
             return;
         }
 
-        // ===== Normal =====
-        if (!playerInZone) return;
+        HandleNormalInput();
+    }
 
-        if (terminalInput.InteractDown())
+    private void HandlePausedInput()
+    {
+        if (terminalInput == null || session == null)
+            return;
+
+        if (terminalInput.ExitDown())
         {
-            if (slotUiPanel != null) slotUiPanel.SetActive(false);
+            session.ExitTerminalPaused();
+            return;
+        }
+
+        int profileIndex = terminalInput.ProfileDown();
+        if (profileIndex != -1)
+        {
+            session.RequestRestartAndStartRecording(profileIndex);
+            return;
+        }
+
+        if (terminalInput.PlayDown())
+        {
+            TryPlayAllClips();
+            session.UnfreezeAfterTerminalPlay();
+        }
+    }
+
+    private void HandleNormalInput()
+    {
+        if (!playerInZone || session == null || gatherInput == null)
+            return;
+
+        if (gatherInput.ConsumeInteractDown())
+        {
+#if UNITY_EDITOR
+            Debug.Log("[TerminalController] Interact -> entering terminal");
+#endif
+            if (slotUiPanel != null)
+                slotUiPanel.SetActive(false);
+
             session.RequestRestartAndEnterTerminal();
         }
     }
 
-    private void TryPlayAllClips()
+    private void TryBindSession()
     {
-        var session = cachedSession;
+        if (session != null)
+            return;
+
+        session = TerminalSession.Instance;
+        if (session == null)
+            return;
+
+        if (!subscribed)
+        {
+            session.OnStateChanged += HandleTerminalStateChanged;
+            UpdateSlotUiVisibility();
+            subscribed = true;
+        }
+    }
+
+    private void UnbindSession()
+    {
+        if (session != null && subscribed)
+        {
+            session.OnStateChanged -= HandleTerminalStateChanged;
+            subscribed = false;
+        }
+
+        session = null;
+    }
+
+    private void HandleTerminalStateChanged(TerminalSession.TerminalState _)
+    {
+        UpdateSlotUiVisibility();
+    }
+
+    private void UpdateSlotUiVisibility()
+    {
+        if (slotUiPanel == null)
+            return;
 
         if (session == null)
         {
-            Debug.LogError("TerminalController: TerminalSession not found.");
+            slotUiPanel.SetActive(false);
+            return;
+        }
+
+        slotUiPanel.SetActive(session.State == TerminalSession.TerminalState.TerminalPaused);
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        var player = other.GetComponentInParent<Player>();
+        if (player == null) return;
+
+        playerInZone = true;
+
+        gatherInput = player.gatherInput != null ? player.gatherInput : player.GetComponent<GatherInput>();
+        gatherInput?.ClearInteractBuffered();
+
+#if UNITY_EDITOR
+        Debug.Log("[TerminalController] ENTER zone");
+#endif
+        UpdateSlotUiVisibility();
+
+        TerminalSession.Instance?.SetTerminalSpawn(terminalSpawnKey, facingRightAtTerminal);
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        var player = other.GetComponentInParent<Player>();
+        if (player == null) return;
+
+#if UNITY_EDITOR
+        Debug.Log("[TerminalController] EXIT zone");
+#endif
+
+        playerInZone = false;
+        gatherInput = null;
+        UpdateSlotUiVisibility();
+    }
+
+    private void TryPlayAllClips()
+    {
+        if (session == null)
+            return;
+
+        if (ghostRootPrefab == null)
+        {
+            Debug.LogError("TerminalController: ghostRootPrefab is not assigned.");
             return;
         }
 
@@ -110,13 +203,9 @@ public class TerminalController : MonoBehaviour
 
         if (recorder != null && recorder.IsRecording)
         {
+#if UNITY_EDITOR
             Debug.Log("TerminalController: Cannot play while recording.");
-            return;
-        }
-
-        if (ghostRootPrefab == null)
-        {
-            Debug.LogError("TerminalController: ghostRootPrefab is not assigned.");
+#endif
             return;
         }
 
@@ -128,28 +217,25 @@ public class TerminalController : MonoBehaviour
             if (clip == null) continue;
 
             string profileId = session.ClipProfileIds[i];
-            SpawnAndPlayGhostForClip(clip, profileId, i);
+            SpawnAndPlayGhostForClip(clip, profileId);
             playedAny = true;
         }
 
-        if (!playedAny)
-            Debug.Log("TerminalController: No clips to play.");
+#if UNITY_EDITOR
+        if (!playedAny) Debug.Log("TerminalController: No clips to play.");
+#endif
     }
 
-    private void SpawnAndPlayGhostForClip(ReplayClip clip, string profileId, int slotIndex)
+    private void SpawnAndPlayGhostForClip(ReplayClip clip, string profileId)
     {
-        Vector3 spawnPos = (ghostSpawnPoint != null) ? ghostSpawnPoint.position : transform.position;
+        Vector3 spawnPos = ghostSpawnPoint != null ? ghostSpawnPoint.position : transform.position;
 
-        //spawnPos.x += slotIndex * 0.6f;
-
-        GameObject ghost = Instantiate(ghostRootPrefab, spawnPos, Quaternion.identity);
+        var ghost = Instantiate(ghostRootPrefab, spawnPos, Quaternion.identity);
 
         var applier = ghost.GetComponent<ProfileApplier>();
         if (applier != null) applier.DisableAutoApplyOnStart();
 
-        var switcher = ghost.GetComponent<CloneSwitcher>();
-        if (switcher == null) switcher = ghost.GetComponentInChildren<CloneSwitcher>();
-
+        var switcher = ghost.GetComponent<CloneSwitcher>() ?? ghost.GetComponentInChildren<CloneSwitcher>();
         if (switcher == null)
         {
             Debug.LogError("Ghost has no CloneSwitcher");
@@ -167,52 +253,7 @@ public class TerminalController : MonoBehaviour
 
         switcher.SwitchTo(idx);
 
-        var playback = ghost.GetComponent<ReplayPlayback>();
-        if (playback == null) playback = ghost.AddComponent<ReplayPlayback>();
-
+        var playback = ghost.GetComponent<ReplayPlayback>() ?? ghost.AddComponent<ReplayPlayback>();
         playback.StartPlayback(clip);
-    }
-
-
-    private void UpdateSlotUiVisibility()
-    {
-        if (slotUiPanel == null) return;
-
-        var session = cachedSession;
-        if (session == null)
-        {
-            slotUiPanel.SetActive(false);
-            return;
-        }
-
-        slotUiPanel.SetActive(session.State == TerminalSession.TerminalState.TerminalPaused);
-    }
-
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (!other.CompareTag("Player")) return;
-
-        playerInZone = true;
-        terminalInput.NotifyEnteredZone();
-
-        UpdateSlotUiVisibility();
-
-        if (TerminalSession.Instance != null)
-            TerminalSession.Instance.SetTerminalSpawn(terminalSpawnKey, facingRightAtTerminal);
-    }
-
-    private void OnTriggerExit2D(Collider2D other)
-    {
-        if (!other.CompareTag("Player")) return;
-
-        playerInZone = false;
-        terminalInput.NotifyExitedZone();
-
-        UpdateSlotUiVisibility();
-    }
-
-    private void HandleTerminalStateChanged(TerminalSession.TerminalState _)
-    {
-        UpdateSlotUiVisibility();
     }
 }
