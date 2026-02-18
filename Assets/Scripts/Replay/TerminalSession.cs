@@ -11,30 +11,21 @@ public class TerminalSession : MonoBehaviour
     [Header("Replay slots (runtime)")]
     public ReplayClip[] Clips { get; private set; } = new ReplayClip[SlotCount];
     public string[] ClipProfileIds { get; private set; } = new string[SlotCount];
-
-    public int SelectedSlot { get; private set; } = 0;
+    public int SelectedSlot { get; private set; }
 
     public event Action OnSlotsChanged;
 
-    private string terminalSpawnKey;
-    private bool terminalFacingRight = true;
-
-    private bool restartInProgress;
-
-    private ReplayRecorder boundRecorder;
-
     public enum TerminalState
     {
-        Normal,        
-        EnteringTerminal, 
+        Normal,
+        EnteringTerminal,
         TerminalPaused,
         EnteringRecord,
-        Recording,      
-        Playback        
+        Recording,
+        Playback
     }
 
     public TerminalState State { get; private set; } = TerminalState.Normal;
-
     public event Action<TerminalState> OnStateChanged;
 
     private enum PendingAction
@@ -46,6 +37,14 @@ public class TerminalSession : MonoBehaviour
 
     private PendingAction pendingAction = PendingAction.None;
     private int pendingProfileIndex = -1;
+
+    // ===== Spawn persist =====
+    private string terminalSpawnKey;
+    private bool terminalFacingRight = true;
+
+    private bool restartInProgress;
+
+    private ReplayRecorder boundRecorder;
 
     private void Awake()
     {
@@ -68,6 +67,7 @@ public class TerminalSession : MonoBehaviour
         {
             SceneManager.sceneLoaded -= OnSceneLoaded;
             BindRecorder(null);
+            Instance = null;
         }
     }
 
@@ -77,8 +77,7 @@ public class TerminalSession : MonoBehaviour
         var recorder = hero != null ? hero.GetComponent<ReplayRecorder>() : null;
         if (recorder != null && recorder.IsRecording) return;
 
-        slot = Mathf.Clamp(slot, 0, SlotCount - 1);
-        SelectedSlot = slot;
+        SelectedSlot = Mathf.Clamp(slot, 0, SlotCount - 1);
         OnSlotsChanged?.Invoke();
     }
 
@@ -93,64 +92,63 @@ public class TerminalSession : MonoBehaviour
         terminalFacingRight = facingRight;
     }
 
-    private void SaveSpawnForNextLoad()
+    public void RequestRestartAndEnterTerminal()
     {
-        if (string.IsNullOrEmpty(terminalSpawnKey)) return;
-        if (SaveLoadManager.instance == null) return;
+        if (!BeginRestart(PendingAction.EnterTerminal))
+            return;
 
-        var data = new SpawnData
-        {
-            spawnPintKey = terminalSpawnKey,
-            facingRight = terminalFacingRight
-        };
-
-        SaveLoadManager.instance.Save(data, SaveLoadManager.instance.folderName, SaveLoadManager.instance.fileName);
+        SetState(TerminalState.EnteringTerminal);
+        SaveSpawnForNextLoad();
+        RestartLevel();
     }
 
     public void RequestRestartAndStartRecording(int profileIndex)
     {
-        if (restartInProgress) return;
-        restartInProgress = true;
+        if (!BeginRestart(PendingAction.StartRecording))
+            return;
 
-        pendingAction = PendingAction.StartRecording;
         pendingProfileIndex = profileIndex;
 
         SetState(TerminalState.EnteringRecord);
-
         SaveSpawnForNextLoad();
-
-        Time.timeScale = 1f;
-
-        if (LevelManager.instance != null)
-        {
-            LevelManager.instance.RestartLevel();
-        }
-            
-        else
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        RestartLevel();
     }
 
     public void SaveClipToSelectedSlotAndRestart(ReplayClip clip)
     {
-        if (clip == null) return;
-        if (restartInProgress) return;
-        restartInProgress = true;
+        if (clip == null)
+            return;
+
+        if (!BeginRestart(PendingAction.EnterTerminal))
+            return;
 
         Clips[SelectedSlot] = clip;
         ClipProfileIds[SelectedSlot] = clip.profileId;
         OnSlotsChanged?.Invoke();
 
-        pendingAction = PendingAction.EnterTerminal;
         SetState(TerminalState.EnteringTerminal);
-
-        Time.timeScale = 1f;
-
         SaveSpawnForNextLoad();
+        RestartLevel();
+    }
 
-        if (LevelManager.instance != null) 
-            LevelManager.instance.RestartLevel();
-        else 
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    public void ExitTerminalPaused()
+    {
+        Time.timeScale = 1f;
+        SetState(TerminalState.Normal);
+
+        var hero = FindFirstObjectByType<Player>();
+        if (hero != null && hero.gatherInput != null)
+            hero.gatherInput.EnablePlayerMap();
+    }
+
+    public void UnfreezeAfterTerminalPlay()
+    {
+        Time.timeScale = 1f;
+        SetState(TerminalState.Playback);
+
+        var hero = FindFirstObjectByType<Player>();
+        if (hero != null && hero.gatherInput != null)
+            hero.gatherInput.EnablePlayerMap();
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -161,7 +159,6 @@ public class TerminalSession : MonoBehaviour
         if (hero == null)
         {
             Debug.LogError("TerminalSession: Player not found after scene reload.");
-            restartInProgress = false;
             return;
         }
 
@@ -185,7 +182,6 @@ public class TerminalSession : MonoBehaviour
 
             EnterTerminalPaused(hero, switcher);
             SetState(TerminalState.TerminalPaused);
-            Debug.Log("TerminalSession: Entered TerminalPaused after reload.");
             return;
         }
 
@@ -193,40 +189,56 @@ public class TerminalSession : MonoBehaviour
         {
             pendingAction = PendingAction.None;
 
-            // гарантируем что стартовый профиль не применится автоматически
-            var applier = hero.GetComponent<ProfileApplier>();
-            if (applier != null) applier.DisableAutoApplyOnStart();
-
-            // переключаем тело на выбранный профиль
-            if (pendingProfileIndex >= 0)
-                switcher.SwitchTo(pendingProfileIndex);
+            PrepareHeroForRecording(hero, switcher, pendingProfileIndex);
 
             pendingProfileIndex = -1;
 
-            // мир живой
             Time.timeScale = 1f;
 
-            // включаем управление
             if (hero.gatherInput != null)
                 hero.gatherInput.EnablePlayerMap();
 
             recorder.StartRecording();
             SetState(TerminalState.Recording);
 
-            Debug.Log("TerminalSession: Started recording after reload.");
             return;
         }
 
-        // ===== NO PENDING ACTION: NORMAL LOAD =====
+        // No pending action -> normal load
         Time.timeScale = 1f;
         SetState(TerminalState.Normal);
 
-        // всегда GG (0)
         switcher.SwitchTo(0);
 
-        // управление включено
         if (hero.gatherInput != null)
             hero.gatherInput.EnablePlayerMap();
+    }
+
+    private void PrepareHeroForRecording(Player hero, CloneSwitcher switcher, int profileIndex)
+    {
+        var applier = hero.GetComponent<ProfileApplier>();
+        if (applier != null)
+            applier.DisableAutoApplyOnStart();
+
+        if (profileIndex >= 0)
+            switcher.SwitchTo(profileIndex);
+    }
+
+    private void EnterTerminalPaused(Player hero, CloneSwitcher switcher)
+    {
+        // freeze world
+        Time.timeScale = 0f;
+
+        // lock hero input + ensure idle and no movement
+        if (hero.gatherInput != null)
+            hero.gatherInput.DisablePlayerMap();
+
+        if (hero.physicsControl != null && hero.physicsControl.rb != null)
+            hero.physicsControl.rb.linearVelocity = Vector2.zero;
+
+        hero.stateMachine.ForceChange(PlayerStates.State.Idle);
+
+        switcher.SwitchTo(0);
     }
 
     private void BindRecorder(ReplayRecorder recorder)
@@ -248,63 +260,38 @@ public class TerminalSession : MonoBehaviour
         SaveClipToSelectedSlotAndRestart(clip);
     }
 
-    public void RequestRestartAndEnterTerminal()
+    private bool BeginRestart(PendingAction action)
     {
-        if (restartInProgress) return;
+        if (restartInProgress)
+            return false;
+
         restartInProgress = true;
+        pendingAction = action;
+        return true;
+    }
 
-        pendingAction = PendingAction.EnterTerminal;
-        SetState(TerminalState.EnteringTerminal);
-
-        SaveSpawnForNextLoad();
-
+    private void RestartLevel()
+    {
         Time.timeScale = 1f;
 
         if (LevelManager.instance != null)
-        {
             LevelManager.instance.RestartLevel();
-        }
-            
         else
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
-    public void ExitTerminalPaused()
+    private void SaveSpawnForNextLoad()
     {
-        Time.timeScale = 1f;
-        SetState(TerminalState.Normal);
+        if (string.IsNullOrEmpty(terminalSpawnKey)) return;
+        if (SaveLoadManager.instance == null) return;
 
-        var hero = FindFirstObjectByType<Player>();
-        if (hero != null && hero.gatherInput != null)
-            hero.gatherInput.EnablePlayerMap();
-    }
+        var data = new SpawnData
+        {
+            spawnPintKey = terminalSpawnKey,
+            facingRight = terminalFacingRight
+        };
 
-    private void EnterTerminalPaused(Player hero, CloneSwitcher switcher)
-    {
-        // freeze world
-        Time.timeScale = 0f;
-
-        // lock hero input + ensure idle and no movement
-        if (hero.gatherInput != null)
-            hero.gatherInput.DisablePlayerMap();
-
-        if (hero.physicsControl != null && hero.physicsControl.rb != null)
-            hero.physicsControl.rb.linearVelocity = Vector2.zero;
-
-        hero.stateMachine.ForceChange(PlayerStates.State.Idle);
-
-        switcher.SwitchTo(0);
-        Debug.Log("TerminalSession: EnterTerminalPaused()");
-    }
-
-    public void UnfreezeAfterTerminalPlay()
-    {
-        SetState(TerminalState.Playback);
-        Time.timeScale = 1f;
-
-        var hero = FindFirstObjectByType<Player>();
-        if (hero != null && hero.gatherInput != null)
-            hero.gatherInput.EnablePlayerMap();
+        SaveLoadManager.instance.Save(data, SaveLoadManager.instance.folderName, SaveLoadManager.instance.fileName);
     }
 
     private void SetState(TerminalState newState)

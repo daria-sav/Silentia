@@ -7,11 +7,7 @@ public class TerminalInput : MonoBehaviour
     [SerializeField] private PlayerInput playerInput;
 
     [Header("Action Maps")]
-    [SerializeField] private string playerMapName = "Player";
     [SerializeField] private string terminalMapName = "Terminal";
-
-    [Header("Player actions")]
-    [SerializeField] private string interactActionName = "Interact";
 
     [Header("Terminal actions")]
     [SerializeField] private string exitActionName = "Exit";
@@ -23,18 +19,11 @@ public class TerminalInput : MonoBehaviour
     [SerializeField] private string profile5ActionName = "Profile5";
     [SerializeField] private string profile6ActionName = "Profile6";
 
-    private InputActionMap playerMap;
     private InputActionMap terminalMap;
-
-    private InputAction aInteract;
     private InputAction aExit, aPlay;
     private InputAction aP1, aP2, aP3, aP4, aP5, aP6;
 
     private bool initialized;
-
-    // ---- zone arming (fix "pressed earlier" bug) ----
-    private bool inZone;
-    private bool armed; // becomes true only after release inside zone
 
     private void Awake()
     {
@@ -52,13 +41,11 @@ public class TerminalInput : MonoBehaviour
             return;
         }
 
-        Init();
-
-        // Terminal map should be off by default (only during TerminalPaused)
+        InitializeOnce();
         if (terminalMap != null) terminalMap.Disable();
     }
 
-    private void Init()
+    private void InitializeOnce()
     {
         if (initialized) return;
 
@@ -69,10 +56,8 @@ public class TerminalInput : MonoBehaviour
             return;
         }
 
-        playerMap = asset.FindActionMap(playerMapName, true);
         terminalMap = asset.FindActionMap(terminalMapName, true);
 
-        aInteract = playerMap.FindAction(interactActionName, true);
 
         aExit = terminalMap.FindAction(exitActionName, true);
         aPlay = terminalMap.FindAction(playActionName, true);
@@ -87,63 +72,20 @@ public class TerminalInput : MonoBehaviour
         initialized = true;
     }
 
-    // called from TerminalController each frame (paused state)
     public void SetTerminalPaused(bool paused)
     {
-        Init();
         if (!initialized) return;
 
         if (paused) terminalMap.Enable();
         else terminalMap.Disable();
     }
 
-    // called from TerminalController trigger
-    public void NotifyEnteredZone()
-    {
-        inZone = true;
-
-        // IMPORTANT: do NOT arm immediately.
-        // If E was pressed earlier, we wait for a release inside zone.
-        armed = false;
-    }
-
-    public void NotifyExitedZone()
-    {
-        inZone = false;
-        armed = false;
-    }
-
-    // called from TerminalController.Update when inZone && not paused
-    public void UpdateArming()
-    {
-        if (!inZone) { armed = false; return; }
-
-        Init();
-        if (!initialized) return;
-
-        // Arm only after E is NOT held while inside zone
-        // (prevents "pressed earlier triggers later")
-        if (!aInteract.IsPressed())
-            armed = true;
-    }
-
-    // ===== Player (live) =====
-    public bool InteractDown()
-    {
-        Init();
-        if (!initialized) return false;
-        if (!inZone || !armed) return false;
-
-        return aInteract.WasPressedThisFrame();
-    }
-
     // ===== Terminal (paused) =====
-    public bool ExitDown() { Init(); return initialized && aExit.WasPressedThisFrame(); }
-    public bool PlayDown() { Init(); return initialized && aPlay.WasPressedThisFrame(); }
+    public bool ExitDown() => initialized && aExit.WasPressedThisFrame();
+    public bool PlayDown() => initialized && aPlay.WasPressedThisFrame();
 
     public int ProfileDown()
     {
-        Init();
         if (!initialized) return -1;
 
         if (aP1.WasPressedThisFrame()) return 1;

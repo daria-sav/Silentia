@@ -19,6 +19,7 @@ public class GatherInput : MonoBehaviour
     public InputActionReference moveActionRef;
     public InputActionReference jumpActionRef;
     public InputActionReference dashActionRef;
+    public InputActionReference interactActionRef;
 
     [Header("Mode")]
     [SerializeField] private InputMode mode = InputMode.Live;
@@ -31,7 +32,6 @@ public class GatherInput : MonoBehaviour
 
     public bool jumpDownTick { get; private set; }
     public bool jumpUpTick { get; private set; }
-
     public bool dashDownTick { get; private set; }
     public bool dashUpTick { get; private set; }
 
@@ -40,15 +40,14 @@ public class GatherInput : MonoBehaviour
     private bool jumpUpRaw;
     private bool dashDownRaw;
     private bool dashUpRaw;
+    private bool interactDownFrameRaw;
 
     private void OnEnable()
     {
         if (playerInput == null)
             return;
 
-        moveActionRef?.action?.Enable();
-        jumpActionRef?.action?.Enable();
-        dashActionRef?.action?.Enable();
+        EnableActions();
 
         if (jumpActionRef != null)
         {
@@ -60,6 +59,11 @@ public class GatherInput : MonoBehaviour
         {
             dashActionRef.action.started += OnDashStarted;
             dashActionRef.action.canceled += OnDashCanceled;
+        }
+
+        if (interactActionRef != null)
+        {
+            interactActionRef.action.started += OnInteractStarted;
         }
     }
 
@@ -76,11 +80,15 @@ public class GatherInput : MonoBehaviour
             dashActionRef.action.started -= OnDashStarted;
             dashActionRef.action.canceled -= OnDashCanceled;
         }
-        if (playerMap != null) 
-            playerMap.Disable();
+
+        if (interactActionRef != null)
+        {
+            interactActionRef.action.started -= OnInteractStarted;
+        }
+
+        playerMap?.Disable();
     }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         if (playerInput == null)
@@ -90,40 +98,38 @@ public class GatherInput : MonoBehaviour
             return;
 
         playerMap = playerInput.actions.FindActionMap("Player");
-        if (playerMap != null)
-            playerMap.Enable();
-    //    uiMap = playerInput.actions.FindActionMap("UI");
+        playerMap?.Enable();
 
-    //    // also good stuff
-    //    //playerInput.actions.Enable();
-    //    //jumpActionRef.action.Disable();
-    }
+        EnableActions();
+        //    uiMap = playerInput.actions.FindActionMap("UI");
 
-    // Update is called once per frame
-    void Update()
-    {
-        if (mode != InputMode.Live) return;
-
-        //horizontalInput = moveActionRef != null ? moveActionRef.action.ReadValue<float>() : 0f;
+        //    // also good stuff
+        //    //playerInput.actions.Enable();
+        //    //jumpActionRef.action.Disable();
     }
 
     private void FixedUpdate()
     {
-        if (mode == InputMode.Live)
-        {
-            horizontalInput = moveActionRef != null ? moveActionRef.action.ReadValue<float>() : 0f;
-            // build ONE-TICK snapshot from raw events
-            jumpDownTick = jumpDownRaw;
-            jumpUpTick = jumpUpRaw;
-            dashDownTick = dashDownRaw;
-            dashUpTick = dashUpRaw;
+        if (mode != InputMode.Live)
+            return;
 
-            // clear raw so they won't repeat next tick
-            jumpDownRaw = false;
-            jumpUpRaw = false;
-            dashDownRaw = false;
-            dashUpRaw = false;
-        }
+        horizontalInput = moveActionRef != null ? moveActionRef.action.ReadValue<float>() : 0f;
+
+        jumpDownTick = jumpDownRaw;
+        jumpUpTick = jumpUpRaw;
+        dashDownTick = dashDownRaw;
+        dashUpTick = dashUpRaw;
+
+        jumpDownRaw = jumpUpRaw = false;
+        dashDownRaw = dashUpRaw = false;
+    }
+
+    private void EnableActions()
+    {
+        moveActionRef?.action?.Enable();
+        jumpActionRef?.action?.Enable();
+        dashActionRef?.action?.Enable();
+        interactActionRef?.action?.Enable();
     }
 
     // ================== LIVE INPUT CALLBACKS ==================
@@ -153,6 +159,50 @@ public class GatherInput : MonoBehaviour
         if (mode != InputMode.Live) return;
         dashUpRaw = true;
         dashHeld = false;
+    }
+
+    private void OnInteractStarted(InputAction.CallbackContext _)
+    {
+        if (mode != InputMode.Live) return;
+        interactDownFrameRaw = true;
+
+#if UNITY_EDITOR
+        // Debug.Log("[GatherInput] Interact started");
+#endif
+    }
+
+    public bool ConsumeInteractDown()
+    {
+        if (!interactDownFrameRaw) return false;
+        interactDownFrameRaw = false;
+        return true;
+    }
+
+    public void DisablePlayerMap()
+    {
+        if (playerMap == null && playerInput != null)
+            playerMap = playerInput.actions.FindActionMap("Player");
+
+        playerMap?.Disable();
+    }
+
+    public void EnablePlayerMap()
+    {
+        if (playerMap == null && playerInput != null)
+            playerMap = playerInput.actions.FindActionMap("Player");
+
+        playerMap?.Enable();
+
+        // reset transient inputs
+        horizontalInput = 0f;
+        jumpHeld = dashHeld = false;
+        jumpDownTick = jumpUpTick = false;
+        dashDownTick = dashUpTick = false;
+        jumpDownRaw = jumpUpRaw = false;
+        dashDownRaw = dashUpRaw = false;
+        interactDownFrameRaw = false;
+
+        mode = InputMode.Live;
     }
 
     // ================== SNAPSHOT FOR A FIXED TICK ==================
@@ -208,33 +258,5 @@ public class GatherInput : MonoBehaviour
 
     public void ClearJumpDownTick() => jumpDownTick = false;
     public void ClearDashDownTick() => dashDownTick = false;
-
-    public void DisablePlayerMap()
-    {
-        if (playerMap == null && playerInput != null)
-            playerMap = playerInput.actions.FindActionMap("Player");
-
-        if (playerMap != null)
-            playerMap.Disable();
-    }
-
-    public void EnablePlayerMap()
-    {
-        if (playerMap == null && playerInput != null)
-            playerMap = playerInput.actions.FindActionMap("Player");
-
-        if (playerMap != null)
-            playerMap.Enable();
-
-        // Reset tick values so no stuck input after unfreeze
-        horizontalInput = 0f;
-        jumpHeld = false;
-        dashHeld = false;
-        jumpDownTick = jumpUpTick = false;
-        dashDownTick = dashUpTick = false;
-        jumpDownRaw = jumpUpRaw = false;
-        dashDownRaw = dashUpRaw = false;
-
-        mode = InputMode.Live;
-    }
+    public void ClearInteractBuffered() => interactDownFrameRaw = false;
 }

@@ -5010,7 +5010,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 4.65625
+  orthographic size: 4.4791665
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -12356,6 +12356,7 @@ MonoBehaviour:
   facingRightAtTerminal: 1
   terminalInput: {fileID: 1712017264}
   slotUiPanel: {fileID: 1404490655}
+  gatherInput: {fileID: 3177874434632536394}
 --- !u!212 &1712017262
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -12442,9 +12443,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TerminalInput
   playerInput: {fileID: 3177874434632536381}
-  playerMapName: Player
   terminalMapName: Terminal
-  interactActionName: Interact
   exitActionName: Exit
   playActionName: Play
   profile1ActionName: Profile1
@@ -13135,6 +13134,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.PlayerInput
+--- !u!114 &3177874434632536394 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6877654709472543452, guid: b2c7ff61d24f9d74c9a3b6b90c17ded2, type: 3}
+  m_PrefabInstance: {fileID: 5359115114394504786}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 86250109}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 885241871dc0cbb4d87fb5ea10845991, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GatherInput
 --- !u!1001 &3361344682145913383
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13333,6 +13343,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6877654709472543452, guid: b2c7ff61d24f9d74c9a3b6b90c17ded2, type: 3}
+      propertyPath: interactActionRef
+      value: 
+      objectReference: {fileID: 4242293931169304803, guid: 1b41bb87599c1334f9155036f7cfacb1, type: 3}
     - target: {fileID: 8050064758163116981, guid: b2c7ff61d24f9d74c9a3b6b90c17ded2, type: 3}
       propertyPath: cloneSwitcher
       value: 
