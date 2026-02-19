@@ -8,11 +8,14 @@ public class Spikes : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        KnockBackAbility knockBackAbility = collision.GetComponentInParent<KnockBackAbility>();
-        knockBackAbility.StartKnockBack(knockBackDuration, knockBackForce, transform);
-        // StartCoroutine(knockBackAbility.KnockBack(knockBackDuration, knockBackForce, transform));
-
         PlayerStats playerStats = collision.GetComponent<PlayerStats>();
+        if (playerStats == null)
+            return;
+
+        KnockBackAbility knockBackAbility = collision.GetComponentInParent<KnockBackAbility>();
+        if (knockBackAbility != null)
+            knockBackAbility.StartKnockBack(knockBackDuration, knockBackForce, transform);
+
         playerStats.DamagePlayer(spikeDamage);
     }
 }
