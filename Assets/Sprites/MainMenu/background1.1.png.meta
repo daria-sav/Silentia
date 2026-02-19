@@ -1,28 +1,10 @@
 fileFormatVersion: 2
-guid: 6de059ced4f5da447bc76eb922474c21
+guid: 5d100c0db1f97054594010d2e7b31ff8
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -1243892369805425323
-    second: terminal_0
-  - first:
-      213: -1284552943717870988
-    second: terminal_1
-  - first:
-      213: -8930457117623946567
-    second: terminal_2
-  - first:
-      213: -5415111598989206646
-    second: terminal_3
-  - first:
-      213: -7532032805088189771
-    second: terminal_4
-  - first:
-      213: 4439340164270354432
-    second: terminal_5
-  - first:
-      213: -3487397690578903004
-    second: terminal_6
+      213: 5774590460440115770
+    second: background1.1_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -64,7 +46,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -144,89 +126,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: terminal_0
+      name: "\u0414\u0435\u0434\u0443\u043B\u044F\u0421\u043E\u0412\u0441\u0435\u0445\u0420\u0430\u043A\u0443\u0440\u0441\u043E\u04321_0"
       rect:
         serializedVersion: 2
-        x: 0
-        y: 3
-        width: 30
-        height: 58
+        x: 20
+        y: 10
+        width: 25
+        height: 46
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: a112c3a21ad85ef448a9637f06a44fb9
-      internalID: -1134876457
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: terminal_1
-      rect:
-        serializedVersion: 2
-        x: 30
-        y: 3
-        width: 30
-        height: 58
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 8c5cf9ad6ef4a6f41a4692d36e0daac1
-      internalID: 425014413
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: terminal_2
-      rect:
-        serializedVersion: 2
-        x: 60
-        y: 3
-        width: 30
-        height: 58
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 5ff67140979e86e40b239670005971f8
-      internalID: 1996177016
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: terminal_3
-      rect:
-        serializedVersion: 2
-        x: 90
-        y: 4
-        width: 30
-        height: 58
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 652af5e5e7546454eb99c6397cccd3ea
-      internalID: -953832383
+      spriteID: 99ce8d85a6f1bd200800000000000000
+      internalID: 205792749593095321
       vertices: []
       indices: 
       edges: []
@@ -243,14 +159,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries:
-      - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":30.0,"y":62.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
+      entries: []
     nameFileIdTable:
-      terminal_0: -1134876457
-      terminal_1: 425014413
-      terminal_2: 1996177016
-      terminal_3: -953832383
+      "\u0414\u0435\u0434\u0443\u043B\u044F\u0421\u043E\u0412\u0441\u0435\u0445\u0420\u0430\u043A\u0443\u0440\u0441\u043E\u04321_0": 205792749593095321
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
