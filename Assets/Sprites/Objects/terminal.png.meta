@@ -147,10 +147,10 @@ TextureImporter:
       name: terminal_0
       rect:
         serializedVersion: 2
-        x: 4
-        y: 3
-        width: 22
-        height: 49
+        x: 0
+        y: 0
+        width: 30
+        height: 62
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -159,8 +159,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a544836245532f44e839341146959bf4
-      internalID: -1569313308
+      spriteID: 037bf8871add8c147bce68212ebeed31
+      internalID: -419075008
       vertices: []
       indices: 
       edges: []
@@ -169,10 +169,10 @@ TextureImporter:
       name: terminal_1
       rect:
         serializedVersion: 2
-        x: 34
-        y: 3
-        width: 22
-        height: 16
+        x: 30
+        y: 0
+        width: 30
+        height: 62
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -181,8 +181,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2ab6a0dd2f6948a4eb4d3538b84526cc
-      internalID: 146674197
+      spriteID: 874accb7f2b7927448b083b046a16017
+      internalID: 526135399
       vertices: []
       indices: 
       edges: []
@@ -191,10 +191,10 @@ TextureImporter:
       name: terminal_2
       rect:
         serializedVersion: 2
-        x: 42
-        y: 15
-        width: 7
-        height: 39
+        x: 60
+        y: 0
+        width: 30
+        height: 62
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -203,8 +203,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: bbb56a0b9c5b2d249a41ec056735eea6
-      internalID: -2079956771
+      spriteID: a8e6eebd7b1ceb44fbe5e4bcb1303083
+      internalID: -27997267
       vertices: []
       indices: 
       edges: []
@@ -213,10 +213,10 @@ TextureImporter:
       name: terminal_3
       rect:
         serializedVersion: 2
-        x: 64
-        y: 3
-        width: 22
-        height: 16
+        x: 90
+        y: 0
+        width: 30
+        height: 62
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -225,74 +225,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 92daf6df5fbbbe84c97399d951e35776
-      internalID: 896635481
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: terminal_4
-      rect:
-        serializedVersion: 2
-        x: 72
-        y: 17
-        width: 7
-        height: 39
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 1a53a5b1420dc1d42ad8d44a4324fe51
-      internalID: -431415713
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: terminal_5
-      rect:
-        serializedVersion: 2
-        x: 94
-        y: 4
-        width: 22
-        height: 16
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: d53b79ac9a4304f4398415d5144971f3
-      internalID: -822730714
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: terminal_6
-      rect:
-        serializedVersion: 2
-        x: 102
-        y: 16
-        width: 7
-        height: 39
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 74c6ef51f0cfe7d4b94ea55fdef991a6
-      internalID: 788653182
+      spriteID: bf2da1f5df099af4e98cd9ae7c2e5092
+      internalID: -971278669
       vertices: []
       indices: 
       edges: []
@@ -311,15 +245,12 @@ TextureImporter:
     spriteCustomMetadata:
       entries:
       - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":30.0,"y":62.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      terminal_0: -1569313308
-      terminal_1: 146674197
-      terminal_2: -2079956771
-      terminal_3: 896635481
-      terminal_4: -431415713
-      terminal_5: -822730714
-      terminal_6: 788653182
+      terminal_0: -419075008
+      terminal_1: 526135399
+      terminal_2: -27997267
+      terminal_3: -971278669
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
