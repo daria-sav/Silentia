@@ -13,6 +13,8 @@ public class Player : MonoBehaviour
     private BaseAbility[] playerAbilities;
     public bool facingRight = true;
 
+    public bool restartLevelOnDeath = true;
+
     private void Awake()
     {
         stateMachine = new StateMachine();

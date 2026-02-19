@@ -79,6 +79,7 @@ MonoBehaviour:
   anim: {fileID: 6229535482587655609}
   visual: {fileID: 6004155436835460010}
   facingRight: 1
+  restartLevelOnDeath: 0
 --- !u!114 &8083592287813908564
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -111,6 +112,7 @@ MonoBehaviour:
   moveActionRef: {fileID: 4605370425151655201, guid: 1b41bb87599c1334f9155036f7cfacb1, type: 3}
   jumpActionRef: {fileID: 1104379796043896753, guid: 1b41bb87599c1334f9155036f7cfacb1, type: 3}
   dashActionRef: {fileID: -9086795085070252477, guid: 1b41bb87599c1334f9155036f7cfacb1, type: 3}
+  interactActionRef: {fileID: 0}
   mode: 1
 --- !u!114 &9209526098558632861
 MonoBehaviour:

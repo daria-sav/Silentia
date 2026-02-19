@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class ControlledMovingPlatform : MonoBehaviour
+public class ControlledMovingPlatform : MonoBehaviour, IButtonTarget
 {
     [SerializeField] private float moveSpeed = 2f;
     [SerializeField] private int startIndex = 0;
@@ -35,6 +35,11 @@ public class ControlledMovingPlatform : MonoBehaviour
     public void SetMoving(bool moving)
     {
         isMoving = moving;
+    }
+
+    public void SetPressed(bool pressed)
+    {
+        SetMoving(pressed);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
