@@ -15,6 +15,12 @@ public class DeathAbility : BaseAbility
 
     public void ResetGame()
     {
+        if (!RestartPolicy.AllowLevelRestart)
+            return;
+
+        if (player != null && player.restartLevelOnDeath == false)
+            return;
+
         LevelManager.instance.RestartLevel();
     }
 }
