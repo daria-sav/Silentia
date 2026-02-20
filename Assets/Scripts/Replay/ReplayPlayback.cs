@@ -20,6 +20,8 @@ public class ReplayPlayback : MonoBehaviour
 
     private int kfIndex;
 
+    private bool destroyedByDeath;
+
     private void Awake()
     {
         if (input == null) input = GetComponent<GatherInput>();
@@ -92,6 +94,19 @@ public class ReplayPlayback : MonoBehaviour
         input.ApplyReplayFrame(frame);
 
         ApplyDriftCorrection(tick);
+
+        // If ghost died during playback -> remove it from the scene
+        if (!destroyedByDeath && player != null && player.stateMachine != null &&
+            player.stateMachine.currentState == PlayerStates.State.Death)
+        {
+            destroyedByDeath = true;
+            IsPlaying = false;
+            RestartPolicy.AllowLevelRestart = true;
+
+            // Destroy whole ghost root
+            Destroy(gameObject);
+            return;
+        }
 
         tick++;
 
