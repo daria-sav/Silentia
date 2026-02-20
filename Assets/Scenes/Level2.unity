@@ -28326,6 +28326,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eaeb6cd244eeff84fa66adf4e92722af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TerminalSession
+  ghostRootPrefab: {fileID: 3199879368619415138, guid: c01bec4a2487102448c806b48623ac5b, type: 3}
+  ghostSpawnKey: Terminal
 --- !u!4 &2084121570
 Transform:
   m_ObjectHideFlags: 0
@@ -28377,11 +28379,11 @@ PrefabInstance:
     - target: {fileID: 6208789655142431773, guid: f4f56ea1c14158e47b95f2677c49e21c, type: 3}
       propertyPath: 'spawnPoints.Array.data[1]'
       value: 
-      objectReference: {fileID: 1160469481}
+      objectReference: {fileID: 224962114}
     - target: {fileID: 6208789655142431773, guid: f4f56ea1c14158e47b95f2677c49e21c, type: 3}
       propertyPath: 'spawnPoints.Array.data[2]'
       value: 
-      objectReference: {fileID: 224962114}
+      objectReference: {fileID: 1160469481}
     - target: {fileID: 8298093364697880551, guid: f4f56ea1c14158e47b95f2677c49e21c, type: 3}
       propertyPath: m_Name
       value: SpawnControl

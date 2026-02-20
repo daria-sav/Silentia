@@ -8,16 +8,20 @@ public class SpawnControl : MonoBehaviour
 
     void Start()
     {
-        // SaveLoadManager.instance.DeleteFolder(SaveLoadManager.instance.folderName);
         player = FindAnyObjectByType<Player>().transform;
         SaveLoadManager.instance.Load(spawnData, SaveLoadManager.instance.folderName, SaveLoadManager.instance.fileName);
+
+
         foreach (SpawnIdentifier spawnPoint in spawnPoints)
         {
             if (spawnPoint.spawnKey == spawnData.spawnPintKey)
             {
                 player.transform.position = spawnPoint.transform.position;
+
+
                 break;
             }
+
         }
 
         if (spawnData.facingRight == false)
@@ -25,6 +29,4 @@ public class SpawnControl : MonoBehaviour
             player.GetComponent<Player>().ForceFlip();
         }
     }
-
-    
 }

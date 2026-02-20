@@ -15,6 +15,11 @@ public class TerminalSession : MonoBehaviour
 
     public event Action OnSlotsChanged;
 
+    [Header("Ghost playback (auto during recording)")]
+    [SerializeField] private GameObject ghostRootPrefab;
+    [SerializeField] private string ghostSpawnKey = "Terminal";
+    private Transform ghostSpawnPointRuntime;
+
     public enum TerminalState
     {
         Normal,
@@ -155,6 +160,8 @@ public class TerminalSession : MonoBehaviour
     {
         restartInProgress = false;
 
+        ResolveGhostSpawnPoint();
+
         var hero = FindFirstObjectByType<Player>();
         if (hero == null)
         {
@@ -198,8 +205,7 @@ public class TerminalSession : MonoBehaviour
             if (hero.gatherInput != null)
                 hero.gatherInput.EnablePlayerMap();
 
-            recorder.StartRecording();
-            SetState(TerminalState.Recording);
+            StartCoroutine(BeginRecordingNextFrame(recorder));
 
             return;
         }
@@ -370,5 +376,83 @@ public class TerminalSession : MonoBehaviour
         }
 
         return true;
+    }
+
+    private void PlayAllExistingClipsExcept(int ignoreSlot)
+    {
+        if (ghostRootPrefab == null) return;
+
+        for (int i = 0; i < SlotCount; i++)
+        {
+            if (i == ignoreSlot) continue;
+
+            var clip = Clips[i];
+            if (clip == null) continue;
+
+            string profileId = ClipProfileIds[i];
+            SpawnAndPlayGhostForClip(clip, profileId);
+        }
+    }
+
+    private void SpawnAndPlayGhostForClip(ReplayClip clip, string profileId)
+    {
+        Vector3 spawnPos;
+
+        if (ghostSpawnPointRuntime != null)
+            spawnPos = ghostSpawnPointRuntime.position;
+        else
+        {
+            var hero = FindFirstObjectByType<Player>();
+            spawnPos = hero != null ? hero.transform.position : Vector3.zero;
+        }
+
+        var ghost = Instantiate(ghostRootPrefab, spawnPos, Quaternion.identity);
+
+        var applier = ghost.GetComponent<ProfileApplier>();
+        if (applier != null) applier.DisableAutoApplyOnStart();
+
+        var switcher = ghost.GetComponent<CloneSwitcher>() ?? ghost.GetComponentInChildren<CloneSwitcher>();
+        if (switcher == null)
+        {
+            Destroy(ghost);
+            return;
+        }
+
+        int idx = switcher.profiles.FindIndex(p => p != null && p.id == profileId);
+        if (idx < 0)
+        {
+            Destroy(ghost);
+            return;
+        }
+
+        switcher.SwitchTo(idx);
+
+        var playback = ghost.GetComponent<ReplayPlayback>() ?? ghost.AddComponent<ReplayPlayback>();
+        playback.StartPlayback(clip);
+    }
+
+    private void ResolveGhostSpawnPoint()
+    {
+        ghostSpawnPointRuntime = null;
+
+        var points = FindObjectsByType<SpawnIdentifier>(FindObjectsSortMode.None);
+
+        foreach (var p in points)
+        {
+            if (p != null && p.spawnKey == ghostSpawnKey)
+            {
+                ghostSpawnPointRuntime = p.transform;
+                return;
+            }
+        }
+    }
+
+    private System.Collections.IEnumerator BeginRecordingNextFrame(ReplayRecorder recorder)
+    {
+        yield return null; 
+
+        recorder.StartRecording();
+        SetState(TerminalState.Recording);
+        PlayAllExistingClipsExcept(SelectedSlot);
     }
 }
