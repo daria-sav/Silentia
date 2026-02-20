@@ -310,4 +310,65 @@ public class TerminalSession : MonoBehaviour
         State = newState;
         OnStateChanged?.Invoke(State);
     }
+
+    public bool TryGetProfileId(int profileIndex, out string profileId)
+    {
+        profileId = null;
+
+        var hero = FindFirstObjectByType<Player>();
+        var switcher = hero != null ? hero.GetComponent<CloneSwitcher>() : null;
+        if (switcher == null || switcher.profiles == null) return false;
+
+        int idx = profileIndex; 
+
+        if (idx < 0 || idx >= switcher.profiles.Count) return false;
+        var p = switcher.profiles[idx];
+        if (p == null) return false;
+
+        profileId = p.id;
+        return !string.IsNullOrEmpty(profileId);
+    }
+
+    public bool IsProfileAlreadyUsed(string profileId, int ignoreSlot, out int usedSlot)
+    {
+        usedSlot = -1;
+        if (string.IsNullOrEmpty(profileId)) return false;
+
+        for (int i = 0; i < SlotCount; i++)
+        {
+            if (i == ignoreSlot) continue;
+            if (!string.IsNullOrEmpty(ClipProfileIds[i]) && ClipProfileIds[i] == profileId)
+            {
+                usedSlot = i;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public bool CanStartRecordingWithProfile(int profileIndex, out string message)
+    {
+        message = null;
+
+        if (State != TerminalState.TerminalPaused)
+        {
+            message = "You can only start recording from the terminal menu.";
+            return false;
+        }
+
+        if (!TryGetProfileId(profileIndex, out var profileId))
+        {
+            message = "Profile not found.";
+            return false;
+        }
+
+        int usedSlot;
+        if (IsProfileAlreadyUsed(profileId, ignoreSlot: SelectedSlot, out usedSlot))
+        {
+            message = $"This clone is already used in Slot {usedSlot + 1}.";
+            return false;
+        }
+
+        return true;
+    }
 }

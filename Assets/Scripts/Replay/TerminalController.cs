@@ -17,6 +17,7 @@ public class TerminalController : MonoBehaviour
     [Header("UI")]
     [SerializeField] private GameObject slotUiPanel;
     [SerializeField] private GameObject terminalHintsPanel;
+    [SerializeField] private TerminalToast terminalToast;
 
     private TerminalSession session;
     private bool subscribed;
@@ -89,7 +90,15 @@ public class TerminalController : MonoBehaviour
         int profileIndex = terminalInput.ProfileDown();
         if (profileIndex != -1)
         {
-            session.RequestRestartAndStartRecording(profileIndex);
+            if (session.CanStartRecordingWithProfile(profileIndex, out string msg))
+            {
+                session.RequestRestartAndStartRecording(profileIndex);
+            }
+            else
+            {
+                if (terminalToast != null)
+                    terminalToast.Show(msg);
+            }
             return;
         }
 
