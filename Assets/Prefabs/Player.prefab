@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 5397987977702431784}
   - component: {fileID: 8050064758163116981}
   - component: {fileID: 2292556360748104979}
-  - component: {fileID: 5084206612246077478}
   - component: {fileID: 7388456643531923596}
   - component: {fileID: 6877654709472543452}
   - component: {fileID: 8921923339780491767}
@@ -27,10 +26,11 @@ GameObject:
   - component: {fileID: 811093759964038326}
   - component: {fileID: 5380277254304922262}
   - component: {fileID: 2348857377672144134}
+  - component: {fileID: 1932727613136316972}
   - component: {fileID: 481309553074376692}
   m_Layer: 7
   m_Name: Player
-  m_TagString: Player
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -94,8 +94,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ReplayRecorder
   input: {fileID: 6877654709472543452}
-  cloneSwitcher: {fileID: 0}
+  cloneSwitcher: {fileID: 1535010861346565358}
   maxSeconds: 60
+  keyframeEveryTicks: 10
 --- !u!114 &2292556360748104979
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -108,19 +109,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5175ebca3ad36949984c97976f95fcc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerBrain
---- !u!114 &5084206612246077478
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1126334027215873197}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e4b994e5a0eeb744896aebbb7a9c6431, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::InputDebugTick
-  input: {fileID: 6877654709472543452}
 --- !u!114 &7388456643531923596
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -139,6 +127,7 @@ MonoBehaviour:
   anim: {fileID: 3902770287820551483}
   visual: {fileID: 3677654106536987432}
   facingRight: 1
+  restartLevelOnDeath: 1
 --- !u!114 &6877654709472543452
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -155,6 +144,7 @@ MonoBehaviour:
   moveActionRef: {fileID: 4605370425151655201, guid: 1b41bb87599c1334f9155036f7cfacb1, type: 3}
   jumpActionRef: {fileID: 1104379796043896753, guid: 1b41bb87599c1334f9155036f7cfacb1, type: 3}
   dashActionRef: {fileID: -9086795085070252477, guid: 1b41bb87599c1334f9155036f7cfacb1, type: 3}
+  interactActionRef: {fileID: 4242293931169304803, guid: 1b41bb87599c1334f9155036f7cfacb1, type: 3}
   mode: 0
 --- !u!114 &8921923339780491767
 MonoBehaviour:
@@ -226,8 +216,10 @@ MonoBehaviour:
   profiles:
   - {fileID: 11400000, guid: a77bebd0952ed5b40bc249de38860ec0, type: 2}
   - {fileID: 11400000, guid: 996de7b505d664c4d99d01b51388020e, type: 2}
+  - {fileID: 11400000, guid: 317ef33424953e4448cf227047c63027, type: 2}
+  - {fileID: 11400000, guid: c3ddfbe6bf7e1994890e6d9377883188, type: 2}
   bodyParent: {fileID: 1404600219807740496}
-  enableHotkeys: 1
+  enableHotkeys: 0
 --- !u!114 &8229787506685479791
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -353,6 +345,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DeathAbility
   thisAbilityState: 12
   isPermitted: 1
+--- !u!114 &1932727613136316972
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1126334027215873197}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 60852000fdc42484ba9921d6f9fa0e06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StopRecordingHotkey
 --- !u!50 &481309553074376692
 Rigidbody2D:
   serializedVersion: 5

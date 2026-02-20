@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &5321166413607149232
+--- !u!1 &8383219097052174965
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,56 +8,52 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 5512706164205213385}
-  - component: {fileID: 8214134905987782204}
-  - component: {fileID: 8954468124316799119}
-  - component: {fileID: -1731894951944747222}
-  m_Layer: 0
-  m_Name: Gate
+  - component: {fileID: 2610118077934382226}
+  - component: {fileID: 6118825184300221580}
+  - component: {fileID: 8952165954101323432}
+  - component: {fileID: 4006916624655062699}
+  m_Layer: 12
+  m_Name: EdgeDeath
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &5512706164205213385
+--- !u!4 &2610118077934382226
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5321166413607149232}
+  m_GameObject: {fileID: 8383219097052174965}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 9.39, y: -5.48, z: 0}
+  m_LocalPosition: {x: -2.56, y: -11.71, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8214134905987782204
+--- !u!114 &6118825184300221580
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5321166413607149232}
+  m_GameObject: {fileID: 8383219097052174965}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5435a0886d83cdb4f9e490f366ff3a58, type: 3}
+  m_Script: {fileID: 11500000, guid: 29b4b5d0209abe0458398055b147cb6e, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Gate
-  levelToLoad: Level2
-  spawnDataForOtherLevel:
-    sceneName: Level1
-    spawnPintKey: Start
-    facingRight: 1
---- !u!61 &8954468124316799119
+  m_EditorClassIdentifier: Assembly-CSharp::EdgeTrap
+  damage: 10
+--- !u!61 &8952165954101323432
 BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5321166413607149232}
+  m_GameObject: {fileID: 8383219097052174965}
   m_Enabled: 1
   serializedVersion: 3
   m_Density: 1
@@ -85,7 +81,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 1.7016852}
+  m_Offset: {x: 0.07198882, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -95,16 +91,16 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 4.4033713}
+  m_Size: {x: 15.601248, y: 0.95617217}
   m_EdgeRadius: 0
---- !u!50 &-1731894951944747222
+--- !u!50 &4006916624655062699
 Rigidbody2D:
   serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5321166413607149232}
+  m_GameObject: {fileID: 8383219097052174965}
   m_BodyType: 1
   m_Simulated: 1
   m_UseFullKinematicContacts: 0

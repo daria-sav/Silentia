@@ -53,7 +53,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b77e0321a6a15ba4fbd4d831179d0db2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelManager
-  fadeDuration: 1
+  fadeDuration: 0.6
 --- !u!223 &6560356180212210505
 Canvas:
   m_ObjectHideFlags: 0
