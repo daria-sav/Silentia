@@ -159,20 +159,20 @@ TextureImporter:
       name: walking_animation_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
+        x: 24
+        y: 10
         width: 31
         height: 45
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      alignment: 9
+      pivot: {x: 0.42, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: db8ee295e8a8e734392e407c4bd3729e
-      internalID: -6027796
+      spriteID: b68ac474389c210458413b13d2df1d82
+      internalID: 1822267400
       vertices: []
       indices: 
       edges: []
@@ -181,20 +181,20 @@ TextureImporter:
       name: walking_animation_1
       rect:
         serializedVersion: 2
-        x: 33
-        y: 0
+        x: 86
+        y: 10
         width: 31
         height: 45
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      alignment: 9
+      pivot: {x: 0.42, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e3f25956c32576740ab5a12fc65e535c
-      internalID: 995842086
+      spriteID: 9568bcac93666854aba41533026c9275
+      internalID: 1177880862
       vertices: []
       indices: 
       edges: []
@@ -203,20 +203,20 @@ TextureImporter:
       name: walking_animation_2
       rect:
         serializedVersion: 2
-        x: 66
-        y: 0
+        x: 150
+        y: 10
         width: 31
         height: 45
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      alignment: 9
+      pivot: {x: 0.42, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 67197e6d3f39a6c4e9f47e9f8ba4c15a
-      internalID: -196120461
+      spriteID: c97f498b7328e1943a4504db9aadc9a4
+      internalID: 1834237093
       vertices: []
       indices: 
       edges: []
@@ -225,20 +225,20 @@ TextureImporter:
       name: walking_animation_3
       rect:
         serializedVersion: 2
-        x: 99
-        y: 0
+        x: 214
+        y: 10
         width: 31
         height: 45
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      alignment: 9
+      pivot: {x: 0.44, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7136aa0fe20b15040a2579bb8727a4e9
-      internalID: -1722526571
+      spriteID: dcebd77bc5867f1448b26aa622ed4860
+      internalID: 895397907
       vertices: []
       indices: 
       edges: []
@@ -247,20 +247,20 @@ TextureImporter:
       name: walking_animation_4
       rect:
         serializedVersion: 2
-        x: 132
-        y: 0
+        x: 281
+        y: 10
         width: 31
         height: 45
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      alignment: 9
+      pivot: {x: 0.38, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 443692190237162459373b235fc0e46c
-      internalID: -1813882136
+      spriteID: 98062e9775f91eb49a8bf20194782ca8
+      internalID: -941966530
       vertices: []
       indices: 
       edges: []
@@ -269,20 +269,20 @@ TextureImporter:
       name: walking_animation_5
       rect:
         serializedVersion: 2
-        x: 165
-        y: 0
+        x: 343
+        y: 10
         width: 31
         height: 45
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      alignment: 9
+      pivot: {x: 0.48, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 139954707a4f3aa4a90bab0989feff2a
-      internalID: 2014380272
+      spriteID: 7becdd48395a65344a487e4863678ed9
+      internalID: 89434906
       vertices: []
       indices: 
       edges: []
@@ -291,20 +291,20 @@ TextureImporter:
       name: walking_animation_6
       rect:
         serializedVersion: 2
-        x: 198
-        y: 0
+        x: 406
+        y: 10
         width: 31
         height: 45
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      alignment: 9
+      pivot: {x: 0.44, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e81d9e630641ff743af39a9ca0b56d20
-      internalID: 1716444755
+      spriteID: 8cc04bdc86d88884386cfe244f327ce2
+      internalID: -2071659117
       vertices: []
       indices: 
       edges: []
@@ -313,20 +313,20 @@ TextureImporter:
       name: walking_animation_7
       rect:
         serializedVersion: 2
-        x: 231
-        y: 0
+        x: 470
+        y: 10
         width: 31
         height: 45
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      alignment: 9
+      pivot: {x: 0.44, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ea66bbbfcec9aba40873d5244e7479c5
-      internalID: -351571922
+      spriteID: ad9d10156f25cac459ed25051609fe56
+      internalID: -161423892
       vertices: []
       indices: 
       edges: []
@@ -335,20 +335,20 @@ TextureImporter:
       name: walking_animation_8
       rect:
         serializedVersion: 2
-        x: 264
-        y: 0
+        x: 534
+        y: 10
         width: 31
         height: 45
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      alignment: 9
+      pivot: {x: 0.44, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 224b25941161e284aa50cacb6db34da7
-      internalID: 1243659159
+      spriteID: 6582ec76332f43043ac4e9c09442ae74
+      internalID: -1039617045
       vertices: []
       indices: 
       edges: []
@@ -357,20 +357,20 @@ TextureImporter:
       name: walking_animation_9
       rect:
         serializedVersion: 2
-        x: 297
-        y: 0
+        x: 597
+        y: 10
         width: 31
         height: 45
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      alignment: 9
+      pivot: {x: 0.44, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 875566da257342342958281dd45fbb61
-      internalID: 1914555997
+      spriteID: f9beeae84ef32ad4e8eecadafd86a060
+      internalID: -1790627042
       vertices: []
       indices: 
       edges: []
@@ -379,20 +379,20 @@ TextureImporter:
       name: walking_animation_10
       rect:
         serializedVersion: 2
-        x: 330
-        y: 0
+        x: 662
+        y: 10
         width: 31
         height: 45
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      alignment: 9
+      pivot: {x: 0.44, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5e9166839a0281d4d9b99a523f74ff9d
-      internalID: 409150850
+      spriteID: e507cdc81912f8a47b1787fad5d157dc
+      internalID: 668935409
       vertices: []
       indices: 
       edges: []
@@ -411,21 +411,19 @@ TextureImporter:
     spriteCustomMetadata:
       entries:
       - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":11.0,"y":1.0},"gridSpriteSize":{"x":31.0,"y":45.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":2.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
-      - key: SpriteEditor.SliceOnImport
-        value: False
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":48.0,"y":45.0},"gridSpriteOffset":{"x":14.0,"y":0.0},"gridSpritePadding":{"x":16.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      walking_animation_0: -6027796
-      walking_animation_1: 995842086
-      walking_animation_10: 409150850
-      walking_animation_2: -196120461
-      walking_animation_3: -1722526571
-      walking_animation_4: -1813882136
-      walking_animation_5: 2014380272
-      walking_animation_6: 1716444755
-      walking_animation_7: -351571922
-      walking_animation_8: 1243659159
-      walking_animation_9: 1914555997
+      walking_animation_0: 1822267400
+      walking_animation_1: 1177880862
+      walking_animation_10: 668935409
+      walking_animation_2: 1834237093
+      walking_animation_3: 895397907
+      walking_animation_4: -941966530
+      walking_animation_5: 89434906
+      walking_animation_6: -2071659117
+      walking_animation_7: -161423892
+      walking_animation_8: -1039617045
+      walking_animation_9: -1790627042
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
