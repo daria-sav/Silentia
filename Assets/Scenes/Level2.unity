@@ -151,6 +151,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ParallaxEffect
   XparallaxValue: 0.29
   YparallaxValue: 0.11
+  pixelsPerUnit: 16
+  snapToPixelGrid: 1
+  loopX: 1
 --- !u!212 &3231742
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -356,6 +359,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 625ba317038c2334fb9bb3329570272b, type: 3}
+--- !u!114 &224962114 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5978580975735254768, guid: f4f56ea1c14158e47b95f2677c49e21c, type: 3}
+  m_PrefabInstance: {fileID: 768088381335172510}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb5d7c7153a978445ba2af1801f210f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpawnIdentifier
 --- !u!114 &323194182 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1415502308673539501, guid: 2e9b74675328be94da20bd085cc113b9, type: 3}
@@ -5361,6 +5375,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ParallaxEffect
   XparallaxValue: 0.15
   YparallaxValue: 0.03
+  pixelsPerUnit: 16
+  snapToPixelGrid: 1
+  loopX: 1
 --- !u!212 &478581103
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -5500,7 +5517,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 9.625
+  orthographic size: 7.78125
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -5525,7 +5542,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.2340193, y: -0.73999786, z: -10}
+  m_LocalPosition: {x: -1.4136925, y: -1.8650975, z: -10}
   m_LocalScale: {x: 1, y: 2.075, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -24699,6 +24716,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ParallaxEffect
   XparallaxValue: 0.25
   YparallaxValue: 0.08
+  pixelsPerUnit: 16
+  snapToPixelGrid: 1
+  loopX: 1
 --- !u!212 &1888968409
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -25014,6 +25034,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ParallaxEffect
   XparallaxValue: 0.2
   YparallaxValue: 0.05
+  pixelsPerUnit: 16
+  snapToPixelGrid: 1
+  loopX: 1
 --- !u!212 &2027160086
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -25162,6 +25185,18 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: -2.64
       objectReference: {fileID: 0}
+    - target: {fileID: 6208789655142431773, guid: f4f56ea1c14158e47b95f2677c49e21c, type: 3}
+      propertyPath: spawnPoints.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6208789655142431773, guid: f4f56ea1c14158e47b95f2677c49e21c, type: 3}
+      propertyPath: 'spawnPoints.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1160469481}
+    - target: {fileID: 6208789655142431773, guid: f4f56ea1c14158e47b95f2677c49e21c, type: 3}
+      propertyPath: 'spawnPoints.Array.data[2]'
+      value: 
+      objectReference: {fileID: 224962114}
     - target: {fileID: 8298093364697880551, guid: f4f56ea1c14158e47b95f2677c49e21c, type: 3}
       propertyPath: m_Name
       value: SpawnControl
@@ -25268,7 +25303,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2717554264437240678, guid: db406eacada9fbf47acbdfd37ff197c2, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.7399998
+      value: -3.7399998
       objectReference: {fileID: 0}
     - target: {fileID: 2717554264437240678, guid: db406eacada9fbf47acbdfd37ff197c2, type: 3}
       propertyPath: m_LocalPosition.z

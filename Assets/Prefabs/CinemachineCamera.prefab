@@ -30,7 +30,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -3.4941182, y: -1.8492479, z: -10}
-  m_LocalScale: {x: 49.6, y: 34.9, z: 3.9345}
+  m_LocalScale: {x: 96.72, y: 210.18526, z: 3.9345}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -60,7 +60,7 @@ MonoBehaviour:
     CustomLookAtTarget: 0
   Lens:
     FieldOfView: 60
-    OrthographicSize: 8
+    OrthographicSize: 9
     NearClipPlane: 0.3
     FarClipPlane: 1000
     Dutch: 0
@@ -102,8 +102,8 @@ MonoBehaviour:
       Size: {x: 0.8, y: 0.8}
       Offset: {x: 0, y: 0}
   CenterOnActivate: 1
-  TargetOffset: {x: 0, y: 0, z: 0}
-  Damping: {x: 0, y: 0.1, z: 0}
+  TargetOffset: {x: 0, y: -3, z: 0}
+  Damping: {x: 0, y: 100, z: 0}
   Lookahead:
     Enabled: 0
     Time: 0
