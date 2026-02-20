@@ -12,6 +12,7 @@ public class TerminalInput : MonoBehaviour
     [Header("Terminal actions")]
     [SerializeField] private string exitActionName = "Exit";
     [SerializeField] private string playActionName = "Play";
+    [SerializeField] private string deleteActionName = "Delete";
     [SerializeField] private string profile1ActionName = "Profile1";
     [SerializeField] private string profile2ActionName = "Profile2";
     [SerializeField] private string profile3ActionName = "Profile3";
@@ -20,7 +21,7 @@ public class TerminalInput : MonoBehaviour
     [SerializeField] private string profile6ActionName = "Profile6";
 
     private InputActionMap terminalMap;
-    private InputAction aExit, aPlay;
+    private InputAction aExit, aPlay, aDelete;
     private InputAction aP1, aP2, aP3, aP4, aP5, aP6;
 
     private bool initialized;
@@ -61,6 +62,7 @@ public class TerminalInput : MonoBehaviour
 
         aExit = terminalMap.FindAction(exitActionName, true);
         aPlay = terminalMap.FindAction(playActionName, true);
+        aDelete = terminalMap.FindAction(deleteActionName, true);
 
         aP1 = terminalMap.FindAction(profile1ActionName, true);
         aP2 = terminalMap.FindAction(profile2ActionName, true);
@@ -83,6 +85,7 @@ public class TerminalInput : MonoBehaviour
     // ===== Terminal (paused) =====
     public bool ExitDown() => initialized && aExit.WasPressedThisFrame();
     public bool PlayDown() => initialized && aPlay.WasPressedThisFrame();
+    public bool DeleteDown() => initialized && aDelete != null && aDelete.WasPressedThisFrame();
 
     public int ProfileDown()
     {

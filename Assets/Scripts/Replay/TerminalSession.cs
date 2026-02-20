@@ -280,6 +280,16 @@ public class TerminalSession : MonoBehaviour
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
+    public void ClearSelectedSlot()
+    {
+        int s = Mathf.Clamp(SelectedSlot, 0, SlotCount - 1);
+
+        Clips[s] = null;
+        ClipProfileIds[s] = null;
+
+        OnSlotsChanged?.Invoke();
+    }
+
     private void SaveSpawnForNextLoad()
     {
         if (string.IsNullOrEmpty(terminalSpawnKey)) return;

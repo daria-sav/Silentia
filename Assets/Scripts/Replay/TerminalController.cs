@@ -14,8 +14,9 @@ public class TerminalController : MonoBehaviour
     [SerializeField] private bool facingRightAtTerminal = true;
     [SerializeField] private TerminalInput terminalInput;
 
-    [Header("Slot UI")]
+    [Header("UI")]
     [SerializeField] private GameObject slotUiPanel;
+    [SerializeField] private GameObject terminalHintsPanel;
 
     private TerminalSession session;
     private bool subscribed;
@@ -74,6 +75,14 @@ public class TerminalController : MonoBehaviour
         if (terminalInput.ExitDown())
         {
             session.ExitTerminalPaused();
+            return;
+        }
+
+        if (terminalInput.DeleteDown())
+        {
+            if (session.HasClip(session.SelectedSlot))
+                session.ClearSelectedSlot();
+
             return;
         }
 
@@ -149,10 +158,14 @@ public class TerminalController : MonoBehaviour
         if (session == null)
         {
             slotUiPanel.SetActive(false);
+            if (terminalHintsPanel != null) terminalHintsPanel.SetActive(false);
             return;
         }
 
-        slotUiPanel.SetActive(session.State == TerminalSession.TerminalState.TerminalPaused);
+        bool show = session.State == TerminalSession.TerminalState.TerminalPaused;
+
+        slotUiPanel.SetActive(show);
+        if (terminalHintsPanel != null) terminalHintsPanel.SetActive(show);
     }
 
     private void OnTriggerEnter2D(Collider2D other)
