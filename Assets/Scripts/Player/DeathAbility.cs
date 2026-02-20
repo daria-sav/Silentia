@@ -15,11 +15,15 @@ public class DeathAbility : BaseAbility
 
     public void ResetGame()
     {
-        if (!RestartPolicy.AllowLevelRestart)
+        if (player != null && player.gameObject.name.Contains("GhostRoot"))
             return;
 
-        if (player != null && player.restartLevelOnDeath == false)
+        if (TerminalSession.Instance != null &&
+        TerminalSession.Instance.State == TerminalSession.TerminalState.Recording)
+        {
+            TerminalSession.Instance.RequestRestartAndEnterTerminal();
             return;
+        }
 
         LevelManager.instance.RestartLevel();
     }

@@ -113,7 +113,6 @@ MonoBehaviour:
   downSprite: {fileID: 1708138338, guid: 07c7ae494175ae64997d2c743de173f9, type: 3}
   targetBehaviours:
   - {fileID: 0}
-  - {fileID: 0}
 --- !u!50 &8855233356475161706
 Rigidbody2D:
   serializedVersion: 5

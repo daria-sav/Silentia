@@ -9,7 +9,7 @@ public class ReplayRecorder : MonoBehaviour
     public CloneSwitcher cloneSwitcher;
 
     [Header("Limits")]
-    public float maxSeconds = 60f;
+    public float maxSeconds = 15f;
 
     public bool IsRecording { get; private set; }
     public ReplayClip CurrentClip { get; private set; }
