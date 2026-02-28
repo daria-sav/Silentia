@@ -36,7 +36,7 @@ public class ReplayPlayback : MonoBehaviour
         clip = replayClip;
         tick = 0;
         IsPlaying = true;
-        RestartPolicy.AllowLevelRestart = false;
+        RestartPolicy.Lock();
 
         if (clip != null)
         {
@@ -68,7 +68,7 @@ public class ReplayPlayback : MonoBehaviour
         if (tick >= clip.FrameCount)
         {
             IsPlaying = false;
-            RestartPolicy.AllowLevelRestart = true;
+            RestartPolicy.Unlock();
 
             if (input != null)
             {
@@ -101,7 +101,7 @@ public class ReplayPlayback : MonoBehaviour
         {
             destroyedByDeath = true;
             IsPlaying = false;
-            RestartPolicy.AllowLevelRestart = true;
+            RestartPolicy.Unlock();
 
             // Destroy whole ghost root
             Destroy(gameObject);
@@ -194,6 +194,7 @@ public class ReplayPlayback : MonoBehaviour
 
     private void OnDisable()
     {
-        if (IsPlaying) RestartPolicy.AllowLevelRestart = true;
+        if (IsPlaying)
+            RestartPolicy.Unlock();
     }
 }

@@ -51,6 +51,8 @@ public class TerminalSession : MonoBehaviour
 
     private ReplayRecorder boundRecorder;
 
+    private string lastSceneName;
+
     private void Awake()
     {
         // Singleton + survive scene reload
@@ -62,6 +64,7 @@ public class TerminalSession : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
+        lastSceneName = SceneManager.GetActiveScene().name;
 
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
@@ -158,6 +161,12 @@ public class TerminalSession : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        if (!string.IsNullOrEmpty(lastSceneName) && lastSceneName != scene.name)
+        {
+            ClearAllSlots();
+        }
+
+        lastSceneName = scene.name;
         restartInProgress = false;
 
         ResolveGhostSpawnPoint();
@@ -445,6 +454,17 @@ public class TerminalSession : MonoBehaviour
                 return;
             }
         }
+    }
+
+    private void ClearAllSlots()
+    {
+        for (int i = 0; i < SlotCount; i++)
+        {
+            Clips[i] = null;
+            ClipProfileIds[i] = null;
+        }
+        SelectedSlot = 0;
+        OnSlotsChanged?.Invoke();
     }
 
     private System.Collections.IEnumerator BeginRecordingNextFrame(ReplayRecorder recorder)

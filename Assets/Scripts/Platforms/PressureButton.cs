@@ -19,8 +19,18 @@ public class PressureButton : MonoBehaviour
     private readonly List<IButtonTarget> targets = new();
     private int pressCount;
 
+    private Collider2D myCollider;
+
     private void Awake()
     {
+        myCollider = GetComponent<Collider2D>();
+        if (myCollider != null && !myCollider.isTrigger)
+        {
+#if UNITY_EDITOR
+            Debug.LogWarning("[PressureButton] Collider is not Trigger. Turn on 'Is Trigger' on this object's Collider2D.", this);
+#endif
+        }
+
         if (spriteRenderer == null)
             spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 
@@ -34,12 +44,9 @@ public class PressureButton : MonoBehaviour
         SetVisual(false);
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        if (!IsInPressLayers(collision.collider.gameObject))
-            return;
-
-        if (!HasTopContact(collision))
+        if (!IsInPressLayers(other.gameObject))
             return;
 
         pressCount++;
@@ -47,9 +54,9 @@ public class PressureButton : MonoBehaviour
             SetPressed(true);
     }
 
-    private void OnCollisionExit2D(Collision2D collision)
+    private void OnTriggerExit2D(Collider2D other)
     {
-        if (!IsInPressLayers(collision.collider.gameObject))
+        if (!IsInPressLayers(other.gameObject))
             return;
 
         pressCount = Mathf.Max(0, pressCount - 1);
@@ -61,13 +68,6 @@ public class PressureButton : MonoBehaviour
     {
         int bit = 1 << obj.layer;
         return (pressLayers.value & bit) != 0;
-    }
-
-    private bool HasTopContact(Collision2D collision)
-    {
-        foreach (var c in collision.contacts)
-            if (c.normal.y < -0.5f) return true;
-        return false;
     }
 
     private void SetPressed(bool pressed)
