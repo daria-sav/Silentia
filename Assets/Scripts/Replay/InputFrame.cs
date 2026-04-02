@@ -6,6 +6,7 @@ public struct InputFrame
     public int tick;
 
     public float moveX;
+    public float moveY;
 
     // Jump
     public bool jumpDown;

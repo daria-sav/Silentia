@@ -5,8 +5,19 @@ public class DeathAbility : BaseAbility
     public override void EnterAbility()
     {
         player.gatherInput.DisablePlayerMap();
-        linkedPhysics.ResetVelocity();
+
+        if (linkedMotor != null)
+            linkedMotor.ExternalFreeze(true);
+
         linkedAnimator.SetBool("Death", true);
+    }
+
+    public override void ExitAbility()
+    {
+        if (linkedMotor != null)
+            linkedMotor.ExternalFreeze(false);
+
+        linkedAnimator.SetBool("Death", false);
     }
     public override void UpdateAnimator()
     {

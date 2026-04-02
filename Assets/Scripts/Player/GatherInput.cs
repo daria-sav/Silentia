@@ -26,6 +26,7 @@ public class GatherInput : MonoBehaviour
 
     // Values used by gameplay THIS fixed tick
     public float horizontalInput { get; private set; }
+    public Vector2 move { get; private set; }
 
     public bool jumpHeld { get; private set; }
     public bool dashHeld { get; private set; }
@@ -113,7 +114,8 @@ public class GatherInput : MonoBehaviour
         if (mode != InputMode.Live)
             return;
 
-        horizontalInput = moveActionRef != null ? moveActionRef.action.ReadValue<float>() : 0f;
+        move = moveActionRef != null ? moveActionRef.action.ReadValue<Vector2>() : Vector2.zero;
+        horizontalInput = move.x;
 
         jumpDownTick = jumpDownRaw;
         jumpUpTick = jumpUpRaw;
@@ -194,6 +196,7 @@ public class GatherInput : MonoBehaviour
         playerMap?.Enable();
 
         // reset transient inputs
+        move = Vector2.zero;
         horizontalInput = 0f;
         jumpHeld = dashHeld = false;
         jumpDownTick = jumpUpTick = false;
@@ -212,7 +215,8 @@ public class GatherInput : MonoBehaviour
         {
             tick = tick,
 
-            moveX = horizontalInput,
+            moveX = move.x,
+            moveY = move.y,
 
             jumpDown = jumpDownTick,
             jumpUp = jumpUpTick,
@@ -229,6 +233,7 @@ public class GatherInput : MonoBehaviour
     {
         mode = newMode;
 
+        move = Vector2.zero;
         horizontalInput = 0f;
         jumpHeld = false;
         dashHeld = false;
@@ -244,7 +249,8 @@ public class GatherInput : MonoBehaviour
     {
         mode = InputMode.Replay;
 
-        horizontalInput = frame.moveX;
+        move = new Vector2(frame.moveX, frame.moveY);
+        horizontalInput = move.x;
 
         jumpHeld = frame.jumpHeld;
         dashHeld = frame.dashHeld;
@@ -259,4 +265,5 @@ public class GatherInput : MonoBehaviour
     public void ClearJumpDownTick() => jumpDownTick = false;
     public void ClearDashDownTick() => dashDownTick = false;
     public void ClearInteractBuffered() => interactDownFrameRaw = false;
+    public void ClearJumpUpTick() => jumpUpTick = false;
 }

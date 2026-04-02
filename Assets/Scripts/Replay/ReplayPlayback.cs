@@ -143,7 +143,7 @@ public class ReplayPlayback : MonoBehaviour
 
         // reset ability internal state (important for determinism)
         if (jumpAbility != null)
-            jumpAbility.ResetJumpState();
+            //jumpAbility.ResetJumpState();
 
         // normalize physics state
         if (physics != null)

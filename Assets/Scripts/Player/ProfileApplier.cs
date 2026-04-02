@@ -47,7 +47,7 @@ public class ProfileApplier : MonoBehaviour
         if (jump != null)
         {
             jump.SetJumpForce(profile.jumpForce);
-            jump.SetMaxJumpNumber(profile.maxJumps);
+            //jump.SetMaxJumpNumber(profile.maxJumps);
             jump.SetAirSpeed(profile.airSpeed);
             jump.SetGravityDivider(profile.gravityDivider);
         }

@@ -4,13 +4,12 @@ public class BodyConnector : MonoBehaviour
 {
     [SerializeField] private BodyMarkers currentBody;
 
-    private Player player;
-    private PhysicsControl physicsControl;
+    private Player player; 
+    private PlayerMovement motor;
 
     private void Awake()
     {
         player = GetComponent<Player>();
-        physicsControl = GetComponent<PhysicsControl>();
 
         if (currentBody == null)
             currentBody = GetComponentInChildren<BodyMarkers>(true);
@@ -28,16 +27,16 @@ public class BodyConnector : MonoBehaviour
 
         currentBody = body;
 
-        physicsControl.SetCheckPoints(
-            body.leftGroundPoint,
-            body.rightGroundPoint,
-            body.wallCheckUpper,
-            body.wallCheckLower
-        );
-
         player.visual = body.flipRoot;
 
         if (body.animator != null)
             player.anim = body.animator;
+
+        motor = GetComponentInChildren<PlayerMovement>(true);
+        if (motor != null)
+            motor.SetChecks(body.groundCheckPoint, body.frontWallCheckPoint, body.backWallCheckPoint);
+
+        player.RefreshMotorFromChildren();
+        player.RefreshStatsFromChildren();
     }
 }

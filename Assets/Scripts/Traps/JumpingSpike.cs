@@ -26,6 +26,11 @@ public class JumpingSpike : MonoBehaviour
     [SerializeField] private float knockBackDuration = 0.2f;
     [SerializeField] private Vector2 knockBackForce = new Vector2(10f, 15f);
 
+    [Header("Death pacing")]
+    [SerializeField] private float deathDelaySeconds = 0.25f;
+    [SerializeField] private bool waitForGroundBeforeDeath = false;
+    [SerializeField] private float maxWaitForGround = 0.6f;
+
     private Rigidbody2D rb;
     private SpriteRenderer sr;
 
@@ -169,7 +174,7 @@ public class JumpingSpike : MonoBehaviour
 
         KnockBackAbility knockBackAbility = collision.GetComponentInParent<KnockBackAbility>();
         if (knockBackAbility != null)
-            knockBackAbility.StartKnockBack(knockBackDuration, knockBackForce, transform);
+            knockBackAbility.StartKnockBack(knockBackDuration, knockBackForce, transform, deathDelaySeconds, waitForGroundBeforeDeath, maxWaitForGround);
 
         playerStats.DamagePlayer(spikeDamage);
     }

@@ -10,49 +10,75 @@ public class KnockBackAbility : BaseAbility
         currentKnockBack = null;
     }
 
-    public void StartKnockBack(float duration, Vector2 force, Transform enemyObject)
+    public void StartKnockBack(float duration, Vector2 force, Transform enemyObject, float deathDelaySeconds, bool waitForGroundBeforeDeath, float maxWaitForGround)
     {
         if (player.playerStats.GetCanTakeDamage() == false)
             return;
 
         if (currentKnockBack == null)
         {
-            currentKnockBack = StartCoroutine(KnockBack(duration, force, enemyObject));
+            currentKnockBack = StartCoroutine(KnockBack(duration, force, enemyObject, deathDelaySeconds, waitForGroundBeforeDeath, maxWaitForGround));
         }
         else
         {
             // do nothing OR
             StopCoroutine(currentKnockBack);
-            currentKnockBack = StartCoroutine(KnockBack(duration, force, enemyObject));
+            currentKnockBack = StartCoroutine(KnockBack(duration, force, enemyObject, deathDelaySeconds, waitForGroundBeforeDeath, maxWaitForGround));
         }
     }
 
-    public IEnumerator KnockBack (float duration, Vector2 force, Transform enemyObject)
+    public IEnumerator KnockBack(float duration, Vector2 force, Transform enemyObject, float deathDelaySeconds, bool waitForGroundBeforeDeath, float maxWaitForGround)
     {
         linkedStateMachine.ChangeState(PlayerStates.State.KnockBack);
-        linkedPhysics.ResetVelocity();
-        if (transform.position.x >= enemyObject.transform.position.x)
+
+        if (linkedMotor == null)
         {
-            linkedPhysics.rb.linearVelocity = force;
+            Debug.LogError("[KnockBackAbility] linkedMotor is null");
+            yield break;
+        }
+
+        Vector2 v = force;
+
+        float playerX = linkedMotor.RB.position.x;
+
+        Collider2D srcCol = enemyObject.GetComponent<Collider2D>() ?? enemyObject.GetComponentInParent<Collider2D>();
+
+        float sourceX;
+        if (srcCol != null)
+        {
+            Vector2 closest = srcCol.ClosestPoint(linkedMotor.RB.position);
+            sourceX = closest.x;
         }
         else
         {
-            linkedPhysics.rb.linearVelocity = new Vector2(-force.x, force.y);
+            sourceX = enemyObject.position.x;
         }
+
+        float dirX = playerX - sourceX;
+
+        if (Mathf.Abs(dirX) < 0.001f)
+        {
+            dirX = (player != null && player.facingRight) ? 1f : -1f;
+        }
+
+        v.x = Mathf.Sign(dirX) * Mathf.Abs(force.x);
+
+        linkedMotor.ExternalImpulse(v, duration);
+
         yield return new WaitForSeconds(duration);
-        // return to other states
+
+        linkedMotor.ClearExternalLock();
+
         if (player.playerStats.GetCurrentHealth() > 0)
         {
-            if (linkedPhysics.isGrounded)
+            bool grounded = linkedMotor.LastOnGroundTime > 0;
+
+            if (grounded)
             {
-                if (linkedInput.horizontalInput != 0)
-                {
+                if (Mathf.Abs(linkedInput.move.x) > 0.01f)
                     linkedStateMachine.ChangeState(PlayerStates.State.Walk);
-                }
                 else
-                {
                     linkedStateMachine.ChangeState(PlayerStates.State.Idle);
-                }
             }
             else
             {
@@ -61,7 +87,22 @@ public class KnockBackAbility : BaseAbility
         }
         else
         {
+            if (deathDelaySeconds > 0f)
+                yield return new WaitForSeconds(deathDelaySeconds);
+
+            if (waitForGroundBeforeDeath)
+            {
+                float t = 0f;
+                while (t < maxWaitForGround && linkedMotor.LastOnGroundTime <= 0f)
+                {
+                    t += Time.deltaTime;
+                    yield return null;
+                }
+            }
+            player.playerStats.SetDeferDeath(false);
+
             linkedStateMachine.ChangeState(PlayerStates.State.Death);
+            yield break;
         }
     }
 

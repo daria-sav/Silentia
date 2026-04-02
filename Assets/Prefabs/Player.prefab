@@ -21,13 +21,13 @@ GameObject:
   - component: {fileID: 8229787506685479791}
   - component: {fileID: 3350090745708460597}
   - component: {fileID: 6742797920859023061}
-  - component: {fileID: 3529100915196060077}
   - component: {fileID: 6828817047029496879}
   - component: {fileID: 811093759964038326}
   - component: {fileID: 5380277254304922262}
+  - component: {fileID: 5984180878372381298}
+  - component: {fileID: 7253031294074278652}
   - component: {fileID: 2348857377672144134}
   - component: {fileID: 1932727613136316972}
-  - component: {fileID: 481309553074376692}
   m_Layer: 7
   m_Name: Player
   m_TagString: Untagged
@@ -158,7 +158,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27f1000cdb4c9f843ad5fd20db32b5e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PhysicsControl
-  rb: {fileID: 481309553074376692}
+  rb: {fileID: 0}
   coyoteSetTime: 0.15
   coyoteTimer: 0
   groundCheckRadius: 0.05
@@ -269,23 +269,6 @@ MonoBehaviour:
   minimumAirTime: 0.2
   setMaxJumpTime: 0.2
   gravityDivider: 2
---- !u!114 &3529100915196060077
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1126334027215873197}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd456377f3be30841bc14a940d80f65c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::WallJumpAbility
-  thisAbilityState: 5
-  isPermitted: 1
-  wallJumpActionRef: {fileID: 1104379796043896753, guid: 1b41bb87599c1334f9155036f7cfacb1, type: 3}
-  wallJumpForce: {x: 8, y: 10}
-  wallJumpMaxTime: 0.4
 --- !u!114 &6828817047029496879
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -300,7 +283,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WallSlideAbility
   thisAbilityState: 6
   isPermitted: 1
-  maxSlideSpeed: 0.5
 --- !u!114 &811093759964038326
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -315,8 +297,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DashAbility
   thisAbilityState: 7
   isPermitted: 1
-  dashForce: 15
-  maxDashDuration: 0.3
 --- !u!114 &5380277254304922262
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -331,6 +311,31 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::KnockBackAbility
   thisAbilityState: 11
   isPermitted: 1
+--- !u!114 &5984180878372381298
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1126334027215873197}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ccd9c6f389defb42b797b72e6ec4ef5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MotorInputFeeder
+--- !u!114 &7253031294074278652
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1126334027215873197}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42a12650d4b7732498b76ee02d02d32b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MotorStateDriver
+  moveDeadzone: 0.01
 --- !u!114 &2348857377672144134
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -357,33 +362,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60852000fdc42484ba9921d6f9fa0e06, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StopRecordingHotkey
---- !u!50 &481309553074376692
-Rigidbody2D:
-  serializedVersion: 5
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1126334027215873197}
-  m_BodyType: 0
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDamping: 0
-  m_AngularDamping: 0.05
-  m_GravityScale: 8
-  m_Material: {fileID: 6200000, guid: dc41fd90a59ff3345b9b892e808f49d0, type: 2}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_Interpolate: 1
-  m_SleepingMode: 1
-  m_CollisionDetection: 1
-  m_Constraints: 4
 --- !u!1 &7527469357280293808
 GameObject:
   m_ObjectHideFlags: 0

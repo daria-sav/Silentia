@@ -111,7 +111,7 @@ public class CloneSwitcher : MonoBehaviour
         // apply profile (stats + permissions)
         profileApplier.ApplyProfile(profile);
         CurrentProfile = profile;
-        jumpAbility.ResetJumpState();
+        //jumpAbility.ResetJumpState();
 
         // update the links in the abilities (so that linkedAnimator becomes new)
         foreach (var ab in abilities)
@@ -119,11 +119,6 @@ public class CloneSwitcher : MonoBehaviour
 
         // restore velocity
         physicsControl.rb.linearVelocity = savedVelocity;
-
-        Debug.Log(CurrentProfile.id);
-
-        Debug.Log($"[SWITCH RESULT {gameObject.name}] profile={CurrentProfile.id} maxJumps={profile.maxJumps}");
-        Debug.Log($"[SWITCH RESULT {gameObject.name}] jump.max={jumpAbility.DebugMaxJumps()} jump.num={jumpAbility.DebugNumJumps()}");
     }
 
     private void SetLayerRecursively(GameObject obj, int layer)

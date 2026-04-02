@@ -35,6 +35,7 @@ public class PhysicsControl : MonoBehaviour
     private void Awake()
     {
         player = GetComponent<Player>();
+        rb = GetComponentInChildren<Rigidbody2D>(true);
     }
     public void SetCheckPoints(Transform leftGround, Transform rightGround, Transform wallUpper, Transform wallLower)
     {
@@ -65,8 +66,8 @@ public class PhysicsControl : MonoBehaviour
     {
         Vector2 dir = player != null && player.facingRight ? Vector2.right : Vector2.left;
 
-        wallHitUpper = Physics2D.Raycast(wallCheckPointUpper.position, dir, wallCheckDistance, whatToDetect);
-        wallHitLower = Physics2D.Raycast(wallCheckPointLower.position, dir, wallCheckDistance, whatToDetect);
+        //wallHitUpper = Physics2D.Raycast(wallCheckPointUpper.position, dir, wallCheckDistance, whatToDetect);
+        //wallHitLower = Physics2D.Raycast(wallCheckPointLower.position, dir, wallCheckDistance, whatToDetect);
 
         Debug.DrawRay(wallCheckPointUpper.position, (Vector3)dir * wallCheckDistance, Color.blue);
         Debug.DrawRay(wallCheckPointLower.position, (Vector3)dir * wallCheckDistance, Color.blue);
@@ -81,8 +82,8 @@ public class PhysicsControl : MonoBehaviour
 
     private bool CheckGround()
     {
-        leftGroundHit = Physics2D.Raycast(leftGroundPoint.position, Vector2.down, groundCheckRadius, whatToDetect);
-        rightGroundHit = Physics2D.Raycast(rightGroundPoint.position, Vector2.down, groundCheckRadius, whatToDetect);
+        //leftGroundHit = Physics2D.Raycast(leftGroundPoint.position, Vector2.down, groundCheckRadius, whatToDetect);
+        //rightGroundHit = Physics2D.Raycast(rightGroundPoint.position, Vector2.down, groundCheckRadius, whatToDetect);
 
         Debug.DrawRay(leftGroundPoint.position, new Vector3(0, -groundCheckRadius, 0), Color.red);
         Debug.DrawRay(rightGroundPoint.position, new Vector3(0, -groundCheckRadius, 0), Color.red);
@@ -132,7 +133,7 @@ public class PhysicsControl : MonoBehaviour
 
     private void FixedUpdate()
     {
-        isGrounded = CheckGround();
+        //isGrounded = CheckGround();
 
         if (!isGrounded)
         {
@@ -140,11 +141,11 @@ public class PhysicsControl : MonoBehaviour
         }
         else
         {
-            if (rb.linearVelocityY <= 0.05)
+            //if (rb.linearVelocityY <= 0.05)
                 coyoteTimer = coyoteSetTime;
         }
             
 
-        isTouchingWall = CheckWall();
+        //isTouchingWall = CheckWall();
     }
 }

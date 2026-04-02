@@ -35,7 +35,12 @@ public class PlayerBrain : MonoBehaviour
         if (input.jumpDownTick)
         {
             Debug.Log($"GHOST BRAIN {gameObject.name}: saw jumpDownTick");
-            Debug.Log($"[BRAIN] state={player.stateMachine.currentState} grounded={player.physicsControl.isGrounded} coyote={player.physicsControl.coyoteTimer:F2} num={jump.DebugNumJumps()} canAdd={jump.DebugCanAdd()}");
+        }
+
+        if (input.jumpUpTick && jump != null)
+        {
+            jump.OnJumpReleased();
+            input.ClearJumpUpTick();
         }
     }
 }

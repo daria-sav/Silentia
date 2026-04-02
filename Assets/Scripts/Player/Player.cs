@@ -15,12 +15,17 @@ public class Player : MonoBehaviour
 
     public bool restartLevelOnDeath = true;
 
+    public PlayerMovement motor { get; private set; }
+
     private void Awake()
     {
         stateMachine = new StateMachine();
         playerAbilities = GetComponents<BaseAbility>();
         stateMachine.abilitiesArr = playerAbilities;
         RefreshStatsFromChildren();
+
+        RefreshMotorFromChildren();
+        stateMachine.ForceChange(PlayerStates.State.Idle);
     }
 
     private void Update()
@@ -33,8 +38,19 @@ public class Player : MonoBehaviour
             }
             ability.UpdateAnimator();
         }
-        Flip();
-        Debug.Log("Current state is: " + stateMachine.currentState);
+        //Flip();
+        //Debug.Log("Current state is: " + stateMachine.currentState);
+    }
+
+    private void LateUpdate()
+    {
+        if (motor == null || visual == null) return;
+
+        var s = visual.localScale;
+        s.x = motor.IsFacingRight ? Mathf.Abs(s.x) : -Mathf.Abs(s.x);
+        visual.localScale = s;
+
+        facingRight = motor.IsFacingRight;
     }
 
     private void FixedUpdate()
@@ -84,5 +100,15 @@ public class Player : MonoBehaviour
     public void RefreshStatsFromChildren()
     {
         playerStats = GetComponentInChildren<PlayerStats>(true);
+    }
+
+    public void RefreshMotorFromChildren()
+    {
+        motor = GetComponentInChildren<PlayerMovement>(true);
+        if (motor == null)
+            Debug.LogError("[Player] PlayerMovement not found in children!");
+
+        foreach (var a in GetComponents<BaseAbility>())
+            a.RefreshLinks();
     }
 }

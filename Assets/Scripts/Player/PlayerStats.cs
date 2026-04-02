@@ -18,6 +18,9 @@ public class PlayerStats : MonoBehaviour
     private SpriteRenderer spriter;
     private bool canTakeDamage = true;
 
+    public bool DeferDeath { get; private set; }
+    public void SetDeferDeath(bool value) => DeferDeath = value;
+
     void Start()
     {
         currentHealth = maxHealth;
@@ -58,6 +61,9 @@ public class PlayerStats : MonoBehaviour
         if (currentHealth <= 0)
         {
             if (player == null) EnsureRenderer();
+
+            if (DeferDeath)
+                return;
 
             if (player.stateMachine.currentState != PlayerStates.State.KnockBack)
                 player.stateMachine.ChangeState(PlayerStates.State.Death);

@@ -2,6 +2,11 @@ using UnityEngine;
 
 public class BodyMarkers : MonoBehaviour
 {
+    [Header("Motor checks (OverlapBox)")]
+    public Transform groundCheckPoint;
+    public Transform frontWallCheckPoint;
+    public Transform backWallCheckPoint;
+
     [Header("Checks")]
     public Transform leftGroundPoint;
     public Transform rightGroundPoint;

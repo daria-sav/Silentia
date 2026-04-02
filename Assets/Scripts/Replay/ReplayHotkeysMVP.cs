@@ -117,8 +117,8 @@ public class ReplayHotkeysMVP : MonoBehaviour
         var mj = ghost.GetComponent<MultipleJumpAbility>();
         if (mj != null)
         {
-            mj.ResetJumpState();
-            Debug.Log($"[GHOST AFTER PROFILE] max={mj.DebugMaxJumps()} num={mj.DebugNumJumps()}");
+            //mj.ResetJumpState();
+            //Debug.Log($"[GHOST AFTER PROFILE] max={mj.DebugMaxJumps()} num={mj.DebugNumJumps()}");
         }
 
         ghost.transform.position = clip.startPosition;
