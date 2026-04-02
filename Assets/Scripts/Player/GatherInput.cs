@@ -111,6 +111,8 @@ public class GatherInput : MonoBehaviour
 
     private void FixedUpdate()
     {
+        Debug.Log($"[GI] mode={mode} move={move} moveAction={moveActionRef?.action?.ReadValue<Vector2>()} mapEnabled={playerMap?.enabled}");
+
         if (mode != InputMode.Live)
             return;
 

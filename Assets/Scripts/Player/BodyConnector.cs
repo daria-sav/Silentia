@@ -36,6 +36,10 @@ public class BodyConnector : MonoBehaviour
         if (motor != null)
             motor.SetChecks(body.groundCheckPoint, body.frontWallCheckPoint, body.backWallCheckPoint);
 
+        var physics = GetComponent<PhysicsControl>();
+        if (physics != null)
+            physics.RefreshFromBody(body);
+
         player.RefreshMotorFromChildren();
         player.RefreshStatsFromChildren();
     }

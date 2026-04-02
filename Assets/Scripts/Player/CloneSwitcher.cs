@@ -74,7 +74,7 @@ public class CloneSwitcher : MonoBehaviour
         // delete the current body
         if (currentBody != null)
         {
-            Destroy(currentBody.gameObject);
+            DestroyImmediate(currentBody.gameObject);
         }
 
         // create a new body

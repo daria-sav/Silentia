@@ -73,6 +73,8 @@ public class TerminalController : MonoBehaviour
         if (terminalInput == null || session == null)
             return;
 
+        Debug.Log($"[TC] HandlePausedInput called. terminalMap enabled? exitDown={terminalInput.ExitDown()}");
+
         if (terminalInput.ExitDown())
         {
             session.ExitTerminalPaused();

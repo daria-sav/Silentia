@@ -125,6 +125,8 @@ public class PlayerMovement : MonoBehaviour
     {
         if (data == null) return;
 
+        //Debug.Log($"[PM] object='{gameObject.name}' moveInput={moveInput} lockTimer={externalLockTimer} frozen={externalFrozen}");
+
         float dt = Time.fixedDeltaTime;
 
         if (externalLockTimer > 0f)

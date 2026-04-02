@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 //[DefaultExecutionOrder(-100)]
 public class Player : MonoBehaviour
@@ -56,7 +57,7 @@ public class Player : MonoBehaviour
     private void FixedUpdate()
     {
         if (gameObject.name.Contains("GhostRoot"))
-            Debug.Log($"[GHOST FIXED] state={stateMachine.currentState} v={physicsControl.rb.linearVelocity}");
+            //Debug.Log($"[GHOST FIXED] state={stateMachine.currentState} v={physicsControl.rb.linearVelocity}");
         foreach (BaseAbility ability in playerAbilities)
         {
             if (ability.thisAbilityState == stateMachine.currentState)
@@ -104,11 +105,21 @@ public class Player : MonoBehaviour
 
     public void RefreshMotorFromChildren()
     {
-        motor = GetComponentInChildren<PlayerMovement>(true);
+        var found = GetComponentInChildren<PlayerMovement>(true);
+        Debug.Log($"[Player.RefreshMotor] found={found != null} on '{(found != null ? found.gameObject.name : "NULL")}' caller={new System.Diagnostics.StackTrace()}");
+        motor = found;
+        //motor = GetComponentInChildren<PlayerMovement>(true);
         if (motor == null)
             Debug.LogError("[Player] PlayerMovement not found in children!");
 
         foreach (var a in GetComponents<BaseAbility>())
             a.RefreshLinks();
+    }
+
+    void Start()
+    {
+        var allPI = FindObjectsByType<PlayerInput>(FindObjectsSortMode.None);
+        Debug.Log($"[Player] PlayerInput count in scene: {allPI.Length}");
+        foreach (var pi in allPI) Debug.Log($"  -> PlayerInput on '{pi.gameObject.name}'");
     }
 }

@@ -119,18 +119,6 @@ public class PhysicsControl : MonoBehaviour
         rb.linearVelocity = Vector2.zero;
     }
 
-    //private void Update()
-    //{
-    //    if (!isGrounded)
-    //    {
-    //        coyoteTimer -= Time.deltaTime;
-    //    }
-    //    else
-    //    {
-    //        coyoteTimer = coyoteSetTime;
-    //    }
-    //}
-
     private void FixedUpdate()
     {
         //isGrounded = CheckGround();
@@ -147,5 +135,12 @@ public class PhysicsControl : MonoBehaviour
             
 
         //isTouchingWall = CheckWall();
+    }
+    public void RefreshFromBody(BodyMarkers body)
+    {
+        rb = GetComponentInChildren<Rigidbody2D>(true);
+        if (body != null)
+            SetCheckPoints(body.leftGroundPoint, body.rightGroundPoint,
+                           body.wallCheckUpper, body.wallCheckLower);
     }
 }
