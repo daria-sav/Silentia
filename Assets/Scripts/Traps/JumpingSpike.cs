@@ -1,6 +1,13 @@
 using System.Collections;
 using UnityEngine;
 
+/// <summary>
+/// Autonomous spike trap that moves between ground and ceiling points in a fixed loop.
+///
+/// The trap pauses at each end, moves upward and downward with configurable speed,
+/// changes its visual state based on movement and approach distance, and applies
+/// damage plus knockback when the player enters its trigger.
+/// </summary>
 [RequireComponent(typeof(Rigidbody2D))]
 public class JumpingSpike : MonoBehaviour
 {
@@ -32,18 +39,21 @@ public class JumpingSpike : MonoBehaviour
     [SerializeField] private float maxWaitForGround = 0.6f;
 
     private Rigidbody2D rb;
-    private SpriteRenderer sr;
+    private SpriteRenderer spriteRenderer;
 
     private enum State { PausedOnGround, MovingUp, PausedOnCeiling, MovingDown }
     private State state;
 
-    private Coroutine routine;
+    // ─────────────── LIFECYCLE ───────────────
 
+    #region Unity Lifecycle
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        sr = GetComponentInChildren<SpriteRenderer>();
-        if (sr == null) sr = GetComponent<SpriteRenderer>();
+        spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+
+        if (spriteRenderer == null) 
+            spriteRenderer = GetComponent<SpriteRenderer>();
 
         rb.bodyType = RigidbodyType2D.Kinematic;
         rb.gravityScale = 0f;
@@ -52,12 +62,31 @@ public class JumpingSpike : MonoBehaviour
 
     private void Start()
     {
+        if (groundCheck == null)
+            Debug.LogWarning($"{nameof(JumpingSpike)}: Ground check is not assigned.", this);
+
+        if (ceilingCheck == null)
+            Debug.LogWarning($"{nameof(JumpingSpike)}: Ceiling check is not assigned.", this);
+
+        if (spriteRenderer == null)
+            Debug.LogWarning($"{nameof(JumpingSpike)}: SpriteRenderer was not found.", this);
+
         state = State.PausedOnGround;
         ApplyVisuals(idle: true, onCeiling: false);
 
-        routine = StartCoroutine(StateLoop());
+        StartCoroutine(StateLoop());
     }
 
+    private void OnDisable()
+    {
+        if (rb != null)
+            rb.linearVelocity = Vector2.zero;
+    }
+    #endregion
+
+    // ─────────────── STATE LOOP ───────────────
+
+    #region State Machine
     private IEnumerator StateLoop()
     {
         while (true)
@@ -67,6 +96,7 @@ public class JumpingSpike : MonoBehaviour
                 case State.PausedOnGround:
                     rb.linearVelocity = Vector2.zero;
                     ApplyVisuals(idle: true, onCeiling: false);
+
                     yield return new WaitForSeconds(pauseOnGround);
                     state = State.MovingUp;
                     break;
@@ -95,6 +125,7 @@ public class JumpingSpike : MonoBehaviour
                 case State.PausedOnCeiling:
                     rb.linearVelocity = Vector2.zero;
                     ApplyVisuals(idle: true, onCeiling: true);
+
                     yield return new WaitForSeconds(pauseOnCeiling);
                     state = State.MovingDown;
                     break;
@@ -123,51 +154,76 @@ public class JumpingSpike : MonoBehaviour
             yield return null;
         }
     }
+    #endregion
 
+    // ─────────────── DETECTION ───────────────
+
+    #region Detection
     private bool IsTouchingGround()
     {
-        if (groundCheck == null) return false;
+        if (groundCheck == null) 
+            return false;
+
         RaycastHit2D hit = Physics2D.Raycast(groundCheck.position, Vector2.down, checkDistance, whatToDetect);
         Debug.DrawRay(groundCheck.position, Vector3.down * checkDistance, Color.red);
+
         return hit.collider != null;
     }
 
     private bool IsTouchingCeiling()
     {
-        if (ceilingCheck == null) return false;
+        if (ceilingCheck == null) 
+            return false;
+
         RaycastHit2D hit = Physics2D.Raycast(ceilingCheck.position, Vector2.up, checkDistance, whatToDetect);
         Debug.DrawRay(ceilingCheck.position, Vector3.up * checkDistance, Color.magenta);
+
         return hit.collider != null;
     }
 
     private bool IsNearGround()
     {
-        if (groundCheck == null) return false;
+        if (groundCheck == null) 
+            return false;
+
         RaycastHit2D hit = Physics2D.Raycast(groundCheck.position, Vector2.down, approachDistance, whatToDetect);
         return hit.collider != null;
     }
 
     private bool IsNearCeiling()
     {
-        if (ceilingCheck == null) return false;
+        if (ceilingCheck == null) 
+            return false;
+
         RaycastHit2D hit = Physics2D.Raycast(ceilingCheck.position, Vector2.up, approachDistance, whatToDetect);
         return hit.collider != null;
     }
+    #endregion
 
+    // ─────────────── VISUALS ────────────────
+
+    #region Visuals
     private void ApplyVisuals(bool idle, bool onCeiling, bool approaching = false)
     {
-        if (sr == null) return;
+        if (spriteRenderer == null) return;
 
         if (idle)
-            sr.sprite = idleSprite;
+            spriteRenderer.sprite = idleSprite;
         else
-            sr.sprite = approaching ? approachSprite : moveSprite;
+            spriteRenderer.sprite = approaching ? approachSprite : moveSprite;
 
-        sr.flipY = onCeiling;
+        spriteRenderer.flipY = onCeiling;
     }
+    #endregion
 
+    // ─────────────── DAMAGE ────────────────
+
+    #region Trigger Handling
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        if (collision == null)
+            return;
+
         PlayerStats playerStats = collision.GetComponent<PlayerStats>();
         if (playerStats == null)
             return;
@@ -178,4 +234,5 @@ public class JumpingSpike : MonoBehaviour
 
         playerStats.DamagePlayer(spikeDamage);
     }
+    #endregion
 }

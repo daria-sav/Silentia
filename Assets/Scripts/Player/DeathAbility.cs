@@ -1,15 +1,30 @@
 using UnityEngine;
 
+/// <summary>
+/// Handles player death logic
+/// and drives the Death animator parameter.
+/// </summary>
 public class DeathAbility : BaseAbility
 {
+    private const string DeathAnimParameterName = "Death";
+    private int deathParameterID;
+
+    protected override void InitializeLinks()
+    {
+        base.InitializeLinks();
+        deathParameterID = Animator.StringToHash(DeathAnimParameterName);
+    }
+
     public override void EnterAbility()
     {
-        player.gatherInput.DisablePlayerMap();
+        if (player != null && player.gatherInput != null)
+            player.gatherInput.DisablePlayerMap();
 
         if (linkedMotor != null)
             linkedMotor.ExternalFreeze(true);
 
-        linkedAnimator.SetBool("Death", true);
+        if (linkedAnimator != null)
+            linkedAnimator.SetBool(deathParameterID, true);
     }
 
     public override void ExitAbility()
@@ -17,11 +32,13 @@ public class DeathAbility : BaseAbility
         if (linkedMotor != null)
             linkedMotor.ExternalFreeze(false);
 
-        linkedAnimator.SetBool("Death", false);
+        if (linkedAnimator != null)
+            linkedAnimator.SetBool(deathParameterID, false);
     }
+
     public override void UpdateAnimator()
     {
-        linkedAnimator.SetBool("Death", linkedStateMachine.currentState == PlayerStates.State.Death);
+        linkedAnimator.SetBool(deathParameterID, linkedStateMachine.currentState == PlayerStates.State.Death);
     }
 
     public void ResetGame()
@@ -30,12 +47,12 @@ public class DeathAbility : BaseAbility
             return;
 
         if (TerminalSession.Instance != null &&
-        TerminalSession.Instance.State == TerminalSession.TerminalState.Recording)
+            TerminalSession.Instance.State == TerminalSession.TerminalState.Recording)
         {
             TerminalSession.Instance.RequestRestartAndEnterTerminal();
             return;
         }
 
-        LevelManager.instance.RestartLevel();
+        LevelManager.Instance.RestartLevel();
     }
 }

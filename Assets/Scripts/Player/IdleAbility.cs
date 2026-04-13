@@ -1,18 +1,21 @@
 using UnityEngine;
 
+/// <summary>
+/// Drives the Idle animator parameter.
+/// </summary>
 public class IdleAbility : BaseAbility
 {
-    private string idleAnimParameterName = "Idle";
-    private int idleParameterInt;
+    private const string idleAnimParameterName = "Idle";
+    private int idleParameterID;
 
-    protected override void Initialization()
+    protected override void InitializeLinks()
     {
-        base.Initialization();
-        idleParameterInt = Animator.StringToHash(idleAnimParameterName);
+        base.InitializeLinks();
+        idleParameterID = Animator.StringToHash(idleAnimParameterName);
     }
 
     public override void UpdateAnimator()
     {
-        linkedAnimator.SetBool(idleParameterInt, linkedStateMachine.currentState == PlayerStates.State.Idle);
+        linkedAnimator.SetBool(idleParameterID, linkedStateMachine.currentState == PlayerStates.State.Idle);
     }
 }

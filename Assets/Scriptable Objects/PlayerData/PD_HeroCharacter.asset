@@ -12,42 +12,41 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3b8a0e0762aa404e95b72bf2151ebcb, type: 3}
   m_Name: PD_HeroCharacter
   m_EditorClassIdentifier: Assembly-CSharp::PlayerData
-  gravityStrength: -77.77777
-  gravityScale: 7.9284167
-  fallGravityMult: 1.8
-  maxFallSpeed: 25
-  fastFallGravityMult: 2
+  calculatedGravityStrength: -77.77777
+  calculatedGravityScale: 7.9284167
+  fallGravityMultiplier: 1.5
+  maxNormalFallSpeed: 25
+  fastFallGravityMultiplier: 2
   maxFastFallSpeed: 30
-  runMaxSpeed: 11
-  runAcceleration: 2.5
-  runAccelAmount: 11.363636
-  runDecceleration: 5
-  runDeccelAmount: 22.727272
-  accelInAir: 0.65
-  deccelInAir: 0.65
-  doConserveMomentum: 1
-  jumpHeight: 3.5
-  jumpTimeToApex: 0.3
-  jumpForce: 23.333332
-  jumpCutGravityMult: 2
-  jumpHangGravityMult: 0.5
-  jumpHangTimeThreshold: 1
-  jumpHangAccelerationMult: 1.1
-  jumpHangMaxSpeedMult: 1.3
+  maxRunSpeed: 11
+  groundAcceleration: 2.5
+  calculatedGroundAccelerationForce: 11.363636
+  groundDeceleration: 6
+  calculatedGroundDecelerationForce: 27.272728
+  airAccelerationMultiplier: 0.65
+  airDecelerationMultiplier: 0.65
+  preserveMomentum: 1
+  desiredJumpHeight: 3.5
+  timeToJumpApex: 0.3
+  maxAirJumps: 0
+  calculatedJumpForce: 23.333332
+  jumpReleaseGravityMultiplier: 2
+  apexHangGravityMultiplier: 0.5
+  apexHangVelocityThreshold: 1
+  apexHangAccelerationMultiplier: 1.1
+  apexHangMaxSpeedMultiplier: 1.3
   wallJumpForce: {x: 15, y: 25}
-  wallJumpRunLerp: 0.5
-  wallJumpTime: 0.15
-  doTurnOnWallJump: 0
-  slideSpeed: 0
-  slideAccel: 0
+  wallJumpMovementLerp: 0.5
+  wallJumpMovementLockTime: 0.15
+  wallSlideSpeed: -2
+  wallSlideAcceleration: 8
   coyoteTime: 0.1
   jumpInputBufferTime: 0.1
-  dashAmount: 1
+  maxDashCount: 0
   dashSpeed: 20
-  dashSleepTime: 0.05
-  dashAttackTime: 0.15
-  dashEndTime: 0.15
-  dashEndSpeed: {x: 15, y: 15}
-  dashEndRunLerp: 0.5
+  dashFreezeTime: 0.05
+  dashActiveTime: 0.15
+  dashRecoveryTime: 0.15
+  dashRecoverySpeed: {x: 10, y: 5}
   dashRefillTime: 0.1
-  dashInputBufferTime: 0.01
+  dashInputBufferTime: 0.1

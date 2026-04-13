@@ -1,6 +1,10 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+/// <summary>
+/// Reads terminal-only input from the Terminal action map.
+/// Used by TerminalController while the terminal is paused.
+/// </summary>
 public class TerminalInput : MonoBehaviour
 {
     [Header("Links")]
@@ -26,6 +30,9 @@ public class TerminalInput : MonoBehaviour
 
     private bool initialized;
 
+    // ─────────────── LIFECYCLE ───────────────
+
+    #region Lifecycle
     private void Awake()
     {
         if (playerInput == null)
@@ -43,12 +50,18 @@ public class TerminalInput : MonoBehaviour
         }
 
         InitializeOnce();
-        if (terminalMap != null) terminalMap.Disable();
+        if (terminalMap != null) 
+            terminalMap.Disable();
     }
+    #endregion
 
+    // ───────────── INITIALIZATION ────────────
+
+    #region Initialization
     private void InitializeOnce()
     {
-        if (initialized) return;
+        if (initialized) 
+            return;
 
         var asset = playerInput.actions;
         if (asset == null)
@@ -73,23 +86,30 @@ public class TerminalInput : MonoBehaviour
 
         initialized = true;
     }
+    #endregion
 
+    // ────────────────── API ──────────────────
+
+    #region Public API
     public void SetTerminalPaused(bool paused)
     {
-        if (!initialized) return;
+        if (!initialized) 
+            return;
 
-        if (paused) terminalMap.Enable();
-        else terminalMap.Disable();
+        if (paused) 
+            terminalMap.Enable();
+        else 
+            terminalMap.Disable();
     }
 
-    // ===== Terminal (paused) =====
     public bool ExitDown() => initialized && aExit.WasPressedThisFrame();
     public bool PlayDown() => initialized && aPlay.WasPressedThisFrame();
     public bool DeleteDown() => initialized && aDelete != null && aDelete.WasPressedThisFrame();
 
     public int ProfileDown()
     {
-        if (!initialized) return -1;
+        if (!initialized) 
+            return -1;
 
         if (aP1.WasPressedThisFrame()) return 1;
         if (aP2.WasPressedThisFrame()) return 2;
@@ -100,4 +120,5 @@ public class TerminalInput : MonoBehaviour
 
         return -1;
     }
+    #endregion
 }

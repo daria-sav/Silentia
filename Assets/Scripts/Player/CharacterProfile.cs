@@ -1,24 +1,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Defines a playable clone: which body prefab to use
+/// and which ability states are allowed.
+/// </summary>
 [CreateAssetMenu(menuName = "Characters/Character Profile")]
 public class CharacterProfile : ScriptableObject
 {
     [Header("Identity")]
-    public string id; // "Hero", "Clone1"...
+    public string id; // may be change to enum later
 
     [Header("Body")]
-    public GameObject bodyPrefab; // after spawn him as a child!!!
-
-    [Header("Movement")]
-    public float walkSpeed = 4f;
-    public float baseGravity = 8f;
-
-    [Header("Jump")]
-    public float jumpForce = 12f;
-    public int maxJumps = 2;
-    public float airSpeed = 5f;
-    public float gravityDivider = 2f;
+    public GameObject bodyPrefab; // body prefab to spawn under the persistent player root
 
     [Header("Permitted States")]
     public List<PlayerStates.State> permittedStates;

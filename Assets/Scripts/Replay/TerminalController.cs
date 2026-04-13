@@ -1,17 +1,19 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
+/// <summary>
+/// Scene-local terminal object. Detects player proximity,
+/// handles interact input to open the terminal menu,
+/// and routes paused-mode input (slot selection, record, play, exit)
+/// to TerminalSession.
+/// </summary>
 [RequireComponent(typeof(Collider2D))]
 public class TerminalController : MonoBehaviour
 {
-    [Header("Ghost playback")]
-    [SerializeField] private GameObject ghostRootPrefab;
-    [SerializeField] private Transform ghostSpawnPoint;
-
-
     [Header("Terminal spawn control")]
     [SerializeField] private string terminalSpawnKey = "Terminal";
     [SerializeField] private bool facingRightAtTerminal = true;
+
+    [Header("Input")]
     [SerializeField] private TerminalInput terminalInput;
 
     [Header("UI")]
@@ -25,15 +27,18 @@ public class TerminalController : MonoBehaviour
     private GatherInput gatherInput;
     private bool playerInZone;
 
+    // ───────────── LIFECYCLE ───────────────
+
+    #region Lifecycle
     private void Reset()
     {
-        var col = GetComponent<Collider2D>();
-        col.isTrigger = true;
+        GetComponent<Collider2D>().isTrigger = true;
     }
 
     private void Awake()
     {
-        if (terminalInput == null) terminalInput = GetComponent<TerminalInput>();
+        if (terminalInput == null) 
+            terminalInput = GetComponent<TerminalInput>();
     }
 
     private void OnEnable()
@@ -46,7 +51,11 @@ public class TerminalController : MonoBehaviour
     {
         UnbindSession();
     }
+    #endregion
 
+    // ──────────── UPDATE LOOP ────────────────
+
+    #region Update Loop
     private void Update()
     {
         TryBindSession();
@@ -60,20 +69,19 @@ public class TerminalController : MonoBehaviour
             terminalInput.SetTerminalPaused(paused);
 
         if (paused)
-        {
             HandlePausedInput();
-            return;
-        }
-
-        HandleNormalInput();
+        else
+            HandleNormalInput();
     }
+    #endregion
 
+    // ──────────── INPUT HANDLING ─────────────
+
+    #region Input Handling
     private void HandlePausedInput()
     {
         if (terminalInput == null || session == null)
             return;
-
-        Debug.Log($"[TC] HandlePausedInput called. terminalMap enabled? exitDown={terminalInput.ExitDown()}");
 
         if (terminalInput.ExitDown())
         {
@@ -96,17 +104,14 @@ public class TerminalController : MonoBehaviour
             {
                 session.RequestRestartAndStartRecording(profileIndex);
             }
-            else
-            {
-                if (terminalToast != null)
-                    terminalToast.Show(msg);
-            }
+            else if (terminalToast != null)
+                terminalToast.Show(msg);
             return;
         }
 
         if (terminalInput.PlayDown())
         {
-            TryPlayAllClips();
+            session.PlayAllClips();
             session.UnfreezeAfterTerminalPlay();
         }
     }
@@ -118,16 +123,17 @@ public class TerminalController : MonoBehaviour
 
         if (gatherInput.ConsumeInteractDown())
         {
-#if UNITY_EDITOR
-            Debug.Log("[TerminalController] Interact -> entering terminal");
-#endif
             if (slotUiPanel != null)
                 slotUiPanel.SetActive(false);
 
             session.RequestRestartAndEnterTerminal();
         }
     }
+    #endregion
 
+    // ──────────── SESSION BINDING ────────────
+
+    #region Session Binding
     private void TryBindSession()
     {
         if (session != null)
@@ -160,25 +166,27 @@ public class TerminalController : MonoBehaviour
     {
         UpdateSlotUiVisibility();
     }
+    #endregion
 
+    // ───────────────── UI ────────────────────
+
+    #region UI
     private void UpdateSlotUiVisibility()
     {
         if (slotUiPanel == null)
             return;
 
-        if (session == null)
-        {
-            slotUiPanel.SetActive(false);
-            if (terminalHintsPanel != null) terminalHintsPanel.SetActive(false);
-            return;
-        }
-
-        bool show = session.State == TerminalSession.TerminalState.TerminalPaused;
+        bool show = session != null && session.State == TerminalSession.TerminalState.TerminalPaused;
 
         slotUiPanel.SetActive(show);
-        if (terminalHintsPanel != null) terminalHintsPanel.SetActive(show);
+        if (terminalHintsPanel != null)
+            terminalHintsPanel.SetActive(show);
     }
+    #endregion
 
+    // ──────────── TRIGGER ZONE ───────────────
+
+    #region Trigger Zone
     private void OnTriggerEnter2D(Collider2D other)
     {
         var player = other.GetComponentInParent<Player>();
@@ -189,9 +197,6 @@ public class TerminalController : MonoBehaviour
         gatherInput = player.gatherInput != null ? player.gatherInput : player.GetComponent<GatherInput>();
         gatherInput?.ClearInteractBuffered();
 
-#if UNITY_EDITOR
-        Debug.Log("[TerminalController] ENTER zone");
-#endif
         UpdateSlotUiVisibility();
 
         TerminalSession.Instance?.SetTerminalSpawn(terminalSpawnKey, facingRightAtTerminal);
@@ -202,82 +207,9 @@ public class TerminalController : MonoBehaviour
         var player = other.GetComponentInParent<Player>();
         if (player == null) return;
 
-#if UNITY_EDITOR
-        Debug.Log("[TerminalController] EXIT zone");
-#endif
-
         playerInZone = false;
         gatherInput = null;
         UpdateSlotUiVisibility();
     }
-
-    private void TryPlayAllClips()
-    {
-        if (session == null)
-            return;
-
-        if (ghostRootPrefab == null)
-        {
-            Debug.LogError("TerminalController: ghostRootPrefab is not assigned.");
-            return;
-        }
-
-        var hero = FindFirstObjectByType<Player>();
-        var recorder = hero != null ? hero.GetComponent<ReplayRecorder>() : null;
-
-        if (recorder != null && recorder.IsRecording)
-        {
-#if UNITY_EDITOR
-            Debug.Log("TerminalController: Cannot play while recording.");
-#endif
-            return;
-        }
-
-        bool playedAny = false;
-
-        for (int i = 0; i < TerminalSession.SlotCount; i++)
-        {
-            var clip = session.Clips[i];
-            if (clip == null) continue;
-
-            string profileId = session.ClipProfileIds[i];
-            SpawnAndPlayGhostForClip(clip, profileId);
-            playedAny = true;
-        }
-
-#if UNITY_EDITOR
-        if (!playedAny) Debug.Log("TerminalController: No clips to play.");
-#endif
-    }
-
-    private void SpawnAndPlayGhostForClip(ReplayClip clip, string profileId)
-    {
-        Vector3 spawnPos = ghostSpawnPoint != null ? ghostSpawnPoint.position : transform.position;
-
-        var ghost = Instantiate(ghostRootPrefab, spawnPos, Quaternion.identity);
-
-        var applier = ghost.GetComponent<ProfileApplier>();
-        if (applier != null) applier.DisableAutoApplyOnStart();
-
-        var switcher = ghost.GetComponent<CloneSwitcher>() ?? ghost.GetComponentInChildren<CloneSwitcher>();
-        if (switcher == null)
-        {
-            Debug.LogError("Ghost has no CloneSwitcher");
-            Destroy(ghost);
-            return;
-        }
-
-        int idx = switcher.profiles.FindIndex(p => p != null && p.id == profileId);
-        if (idx < 0)
-        {
-            Debug.LogError($"Ghost profile not found for id={profileId}");
-            Destroy(ghost);
-            return;
-        }
-
-        switcher.SwitchTo(idx);
-
-        var playback = ghost.GetComponent<ReplayPlayback>() ?? ghost.AddComponent<ReplayPlayback>();
-        playback.StartPlayback(clip);
-    }
+    #endregion
 }

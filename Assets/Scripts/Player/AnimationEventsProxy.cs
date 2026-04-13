@@ -18,11 +18,11 @@ public class AnimationEventsProxy : MonoBehaviour
             return;
         }
 
-        // 1) Ghosts NEVER restart the level
+        // ghosts never restart the level
         if (player.gameObject.name.Contains("GhostRoot"))
             return;
 
-        // 2) If this is the real hero AND we are recording -> STOP RECORDING (this will trigger terminal restart)
+        // if this is the real hero -> stop record 
         var recorder = player.GetComponent<ReplayRecorder>();
         if (recorder != null && recorder.IsRecording)
         {
@@ -30,7 +30,7 @@ public class AnimationEventsProxy : MonoBehaviour
             return;
         }
 
-        // 3) If terminal session says Recording (extra safety) -> go to terminal restart
+        // if terminal session is Recording -> go to terminal restart
         if (TerminalSession.Instance != null &&
             TerminalSession.Instance.State == TerminalSession.TerminalState.Recording)
         {
@@ -38,12 +38,10 @@ public class AnimationEventsProxy : MonoBehaviour
             return;
         }
 
-        // 4) IMPORTANT: do NOT block hero death restart because ghosts are playing
-
-        // 5) Normal behavior
+        // normal behavior
         var deathAbility = player.GetComponent<DeathAbility>();
         if (deathAbility != null) deathAbility.ResetGame();
-        else if (LevelManager.instance != null) LevelManager.instance.RestartLevel();
+        else if (LevelManager.Instance != null) LevelManager.Instance.RestartLevel();
         else Debug.LogError("AnimationEventsProxy: LevelManager.instance is null");
     }
 }

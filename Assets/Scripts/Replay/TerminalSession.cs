@@ -2,6 +2,14 @@ using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+/// <summary>
+/// Central manager for the replay system. Handles the full lifecycle:
+/// entering the terminal, selecting slots, starting/stopping recordings,
+/// saving clips, and spawning ghosts for playback.
+///
+/// Singleton with DontDestroyOnLoad — survives scene reloads so that
+/// recorded clips persist between level restarts.
+/// </summary>
 public class TerminalSession : MonoBehaviour
 {
     public static TerminalSession Instance { get; private set; }
@@ -15,7 +23,7 @@ public class TerminalSession : MonoBehaviour
 
     public event Action OnSlotsChanged;
 
-    [Header("Ghost playback (auto during recording)")]
+    [Header("Ghost playback")]
     [SerializeField] private GameObject ghostRootPrefab;
     [SerializeField] private string ghostSpawnKey = "Terminal";
     private Transform ghostSpawnPointRuntime;
@@ -43,19 +51,21 @@ public class TerminalSession : MonoBehaviour
     private PendingAction pendingAction = PendingAction.None;
     private int pendingProfileIndex = -1;
 
-    // ===== Spawn persist =====
+    // spawn persist
     private string terminalSpawnKey;
     private bool terminalFacingRight = true;
 
+    // internals 
     private bool restartInProgress;
-
     private ReplayRecorder boundRecorder;
-
     private string lastSceneName;
+    private Player cachedHero;
 
+    // ───────────── LIFECYCLE ───────────────
+
+    #region Lifecycle
     private void Awake()
     {
-        // Singleton + survive scene reload
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
@@ -78,12 +88,14 @@ public class TerminalSession : MonoBehaviour
             Instance = null;
         }
     }
+    #endregion
 
+    // ────────────── SLOT API ─────────────────
+
+    #region Slot API
     public void SelectSlot(int slot)
     {
-        var hero = FindFirstObjectByType<Player>();
-        var recorder = hero != null ? hero.GetComponent<ReplayRecorder>() : null;
-        if (recorder != null && recorder.IsRecording) return;
+        if (boundRecorder != null && boundRecorder.IsRecording) return;
 
         SelectedSlot = Mathf.Clamp(slot, 0, SlotCount - 1);
         OnSlotsChanged?.Invoke();
@@ -94,6 +106,31 @@ public class TerminalSession : MonoBehaviour
         return slot >= 0 && slot < SlotCount && Clips[slot] != null;
     }
 
+    public void ClearSelectedSlot()
+    {
+        int selected = Mathf.Clamp(SelectedSlot, 0, SlotCount - 1);
+
+        Clips[selected] = null;
+        ClipProfileIds[selected] = null;
+
+        OnSlotsChanged?.Invoke();
+    }
+
+    private void ClearAllSlots()
+    {
+        for (int i = 0; i < SlotCount; i++)
+        {
+            Clips[i] = null;
+            ClipProfileIds[i] = null;
+        }
+        SelectedSlot = 0;
+        OnSlotsChanged?.Invoke();
+    }
+    #endregion
+
+    // ──────────── TERMINAL FLOW ──────────────
+
+    #region Terminal Flow
     public void SetTerminalSpawn(string spawnKey, bool facingRight)
     {
         terminalSpawnKey = spawnKey;
@@ -141,203 +178,28 @@ public class TerminalSession : MonoBehaviour
 
     public void ExitTerminalPaused()
     {
-        Time.timeScale = 1f;
-        SetState(TerminalState.Normal);
-
-        var hero = FindFirstObjectByType<Player>();
-        if (hero != null && hero.gatherInput != null)
-            hero.gatherInput.EnablePlayerMap();
+        ResumeWorld(TerminalState.Normal);
     }
 
     public void UnfreezeAfterTerminalPlay()
     {
-        Time.timeScale = 1f;
-        SetState(TerminalState.Playback);
-
-        var hero = FindFirstObjectByType<Player>();
-        if (hero != null && hero.gatherInput != null)
-            hero.gatherInput.EnablePlayerMap();
+        ResumeWorld(TerminalState.Playback);
     }
+    #endregion
 
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        if (!string.IsNullOrEmpty(lastSceneName) && lastSceneName != scene.name)
-        {
-            ClearAllSlots();
-        }
+    // ──────────── PROFILE VALIDATION ─────────
 
-        lastSceneName = scene.name;
-        restartInProgress = false;
-
-        ResolveGhostSpawnPoint();
-
-        var hero = FindFirstObjectByType<Player>();
-        if (hero == null)
-        {
-            Debug.LogError("TerminalSession: Player not found after scene reload.");
-            return;
-        }
-
-        var switcher = hero.GetComponent<CloneSwitcher>();
-        var recorder = hero.GetComponent<ReplayRecorder>();
-
-        if (switcher == null || recorder == null)
-        {
-            Debug.LogError("TerminalSession: Missing CloneSwitcher or ReplayRecorder on Player.");
-            return;
-        }
-
-        BindRecorder(recorder);
-
-        switcher.SetHotkeysEnabled(false);
-
-        if (pendingAction == PendingAction.EnterTerminal)
-        {
-            pendingAction = PendingAction.None;
-            pendingProfileIndex = -1;
-
-            EnterTerminalPaused(hero, switcher);
-            SetState(TerminalState.TerminalPaused);
-            return;
-        }
-
-        if (pendingAction == PendingAction.StartRecording)
-        {
-            pendingAction = PendingAction.None;
-
-            PrepareHeroForRecording(hero, switcher, pendingProfileIndex);
-
-            pendingProfileIndex = -1;
-
-            Time.timeScale = 1f;
-
-            if (hero.gatherInput != null)
-                hero.gatherInput.EnablePlayerMap();
-
-            StartCoroutine(BeginRecordingNextFrame(recorder));
-
-            return;
-        }
-
-        // No pending action -> normal load
-        Time.timeScale = 1f;
-        SetState(TerminalState.Normal);
-
-        switcher.SwitchTo(0);
-
-        if (hero.gatherInput != null)
-            hero.gatherInput.EnablePlayerMap();
-    }
-
-    private void PrepareHeroForRecording(Player hero, CloneSwitcher switcher, int profileIndex)
-    {
-        var applier = hero.GetComponent<ProfileApplier>();
-        if (applier != null)
-            applier.DisableAutoApplyOnStart();
-
-        if (profileIndex >= 0)
-            switcher.SwitchTo(profileIndex);
-    }
-
-    private void EnterTerminalPaused(Player hero, CloneSwitcher switcher)
-    {
-        // freeze world
-        Time.timeScale = 0f;
-
-        // lock hero input + ensure idle and no movement
-        if (hero.gatherInput != null)
-            hero.gatherInput.DisablePlayerMap();
-
-        if (hero.physicsControl != null && hero.physicsControl.rb != null)
-            hero.physicsControl.rb.linearVelocity = Vector2.zero;
-
-        hero.stateMachine.ForceChange(PlayerStates.State.Idle);
-
-        switcher.SwitchTo(0);
-    }
-
-    private void BindRecorder(ReplayRecorder recorder)
-    {
-        if (boundRecorder == recorder) return;
-
-        if (boundRecorder != null)
-            boundRecorder.OnRecordingStopped -= HandleRecordingStopped;
-
-        boundRecorder = recorder;
-
-        if (boundRecorder != null)
-            boundRecorder.OnRecordingStopped += HandleRecordingStopped;
-    }
-
-    private void HandleRecordingStopped(ReplayClip clip)
-    {
-        // clip is already complete here
-        SaveClipToSelectedSlotAndRestart(clip);
-    }
-
-    private bool BeginRestart(PendingAction action)
-    {
-        if (restartInProgress)
-            return false;
-
-        restartInProgress = true;
-        pendingAction = action;
-        return true;
-    }
-
-    private void RestartLevel()
-    {
-        Time.timeScale = 1f;
-
-        if (LevelManager.instance != null)
-            LevelManager.instance.RestartLevel();
-        else
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-    }
-
-    public void ClearSelectedSlot()
-    {
-        int s = Mathf.Clamp(SelectedSlot, 0, SlotCount - 1);
-
-        Clips[s] = null;
-        ClipProfileIds[s] = null;
-
-        OnSlotsChanged?.Invoke();
-    }
-
-    private void SaveSpawnForNextLoad()
-    {
-        if (string.IsNullOrEmpty(terminalSpawnKey)) return;
-        if (SaveLoadManager.instance == null) return;
-
-        var data = new SpawnData
-        {
-            spawnPintKey = terminalSpawnKey,
-            facingRight = terminalFacingRight
-        };
-
-        SaveLoadManager.instance.Save(data, SaveLoadManager.instance.folderName, SaveLoadManager.instance.fileName);
-    }
-
-    private void SetState(TerminalState newState)
-    {
-        if (State == newState) return;
-        State = newState;
-        OnStateChanged?.Invoke(State);
-    }
-
+    #region Profile Validation
     public bool TryGetProfileId(int profileIndex, out string profileId)
     {
         profileId = null;
 
-        var hero = FindFirstObjectByType<Player>();
-        var switcher = hero != null ? hero.GetComponent<CloneSwitcher>() : null;
+        var switcher = cachedHero != null ? cachedHero.GetComponent<CloneSwitcher>() : null;
         if (switcher == null || switcher.profiles == null) return false;
 
-        int idx = profileIndex; 
+        if (profileIndex < 0 || profileIndex >= switcher.profiles.Count) return false;
 
-        if (idx < 0 || idx >= switcher.profiles.Count) return false;
-        var p = switcher.profiles[idx];
+        var p = switcher.profiles[profileIndex];
         if (p == null) return false;
 
         profileId = p.id;
@@ -377,14 +239,23 @@ public class TerminalSession : MonoBehaviour
             return false;
         }
 
-        int usedSlot;
-        if (IsProfileAlreadyUsed(profileId, ignoreSlot: SelectedSlot, out usedSlot))
+        if (IsProfileAlreadyUsed(profileId, ignoreSlot: SelectedSlot, out int usedSlot))
         {
             message = $"This clone is already used in Slot {usedSlot + 1}.";
             return false;
         }
 
         return true;
+    }
+    #endregion
+
+    // ──────────── GHOST SPAWNING ─────────────
+
+    #region Ghost Spawning
+    // spawns ghosts for ALL filled slots
+    public void PlayAllClips()
+    {
+        PlayAllExistingClipsExcept(-1);
     }
 
     private void PlayAllExistingClipsExcept(int ignoreSlot)
@@ -395,30 +266,22 @@ public class TerminalSession : MonoBehaviour
         {
             if (i == ignoreSlot) continue;
 
-            var clip = Clips[i];
-            if (clip == null) continue;
+            if (Clips[i] == null) continue;
 
-            string profileId = ClipProfileIds[i];
-            SpawnAndPlayGhostForClip(clip, profileId);
+            SpawnAndPlayGhostForClip(Clips[i], ClipProfileIds[i]);
         }
     }
 
-    private void SpawnAndPlayGhostForClip(ReplayClip clip, string profileId)
+    public void SpawnAndPlayGhostForClip(ReplayClip clip, string profileId)
     {
-        Vector3 spawnPos;
-
-        if (ghostSpawnPointRuntime != null)
-            spawnPos = ghostSpawnPointRuntime.position;
-        else
-        {
-            var hero = FindFirstObjectByType<Player>();
-            spawnPos = hero != null ? hero.transform.position : Vector3.zero;
-        }
+        Vector3 spawnPos = ghostSpawnPointRuntime != null
+            ? ghostSpawnPointRuntime.position
+            : (cachedHero != null ? cachedHero.transform.position : Vector3.zero);
 
         var ghost = Instantiate(ghostRootPrefab, spawnPos, Quaternion.identity);
 
-        var applier = ghost.GetComponent<ProfileApplier>();
-        if (applier != null) applier.DisableAutoApplyOnStart();
+        var bodySetup = ghost.GetComponent<BodySetup>();
+        if (bodySetup != null) bodySetup.DisableAutoApplyOnStart();
 
         var switcher = ghost.GetComponent<CloneSwitcher>() ?? ghost.GetComponentInChildren<CloneSwitcher>();
         if (switcher == null)
@@ -439,6 +302,178 @@ public class TerminalSession : MonoBehaviour
         var playback = ghost.GetComponent<ReplayPlayback>() ?? ghost.AddComponent<ReplayPlayback>();
         playback.StartPlayback(clip);
     }
+    #endregion
+
+    // ──────────── SCENE LOADING ──────────────
+
+    #region Scene Loading
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (!string.IsNullOrEmpty(lastSceneName) && lastSceneName != scene.name)
+        {
+            ClearAllSlots();
+        }
+
+        lastSceneName = scene.name;
+        restartInProgress = false;
+
+        ResolveGhostSpawnPoint();
+
+        cachedHero = FindFirstObjectByType<Player>();
+
+        if (cachedHero == null)
+        {
+            Debug.LogError("TerminalSession: Player not found after scene reload.");
+            return;
+        }
+
+        var switcher = cachedHero.GetComponent<CloneSwitcher>();
+        var recorder = cachedHero.GetComponent<ReplayRecorder>();
+
+        if (switcher == null || recorder == null)
+        {
+            Debug.LogError("TerminalSession: Missing CloneSwitcher or ReplayRecorder on Player.");
+            return;
+        }
+
+        BindRecorder(recorder);
+
+        // execute pending action from before the restart
+        if (pendingAction == PendingAction.EnterTerminal)
+        {
+            pendingAction = PendingAction.None;
+            pendingProfileIndex = -1;
+
+            EnterTerminalPaused(cachedHero, switcher);
+            SetState(TerminalState.TerminalPaused);
+            return;
+        }
+
+        if (pendingAction == PendingAction.StartRecording)
+        {
+            pendingAction = PendingAction.None;
+
+            PrepareHeroForRecording(cachedHero, switcher, pendingProfileIndex);
+
+            pendingProfileIndex = -1;
+
+            Time.timeScale = 1f;
+
+            cachedHero.gatherInput?.EnablePlayerMap();
+
+            StartCoroutine(BeginRecordingNextFrame(recorder));
+
+            return;
+        }
+
+        // no pending action -> normal load
+        Time.timeScale = 1f;
+        SetState(TerminalState.Normal);
+
+        switcher.SwitchTo(0);
+
+        cachedHero.gatherInput?.EnablePlayerMap();
+    }
+    #endregion
+
+    // ──────────── INTERNAL HELPERS ────────────
+
+    #region Internal Helpers
+    private void ResumeWorld(TerminalState newState)
+    {
+        Time.timeScale = 1f;
+        SetState(newState);
+
+        if (cachedHero != null && cachedHero.gatherInput != null)
+            cachedHero.gatherInput.EnablePlayerMap();
+    }
+
+    private void PrepareHeroForRecording(Player hero, CloneSwitcher switcher, int profileIndex)
+    {
+        var bodySetup = hero.GetComponent<BodySetup>();
+        if (bodySetup != null)
+            bodySetup.DisableAutoApplyOnStart();
+
+        if (profileIndex >= 0)
+            switcher.SwitchTo(profileIndex);
+    }
+
+    private void EnterTerminalPaused(Player hero, CloneSwitcher switcher)
+    {
+        // freeze world
+        Time.timeScale = 0f;
+
+        hero.gatherInput?.DisablePlayerMap();
+
+        if (hero.motor != null)
+            hero.motor.RB.linearVelocity = Vector2.zero;
+
+        hero.stateMachine.ForceChange(PlayerStates.State.Idle);
+
+        switcher.SwitchTo(0);
+    }
+
+    private void BindRecorder(ReplayRecorder recorder)
+    {
+        if (boundRecorder == recorder) return;
+
+        if (boundRecorder != null)
+            boundRecorder.OnRecordingStopped -= HandleRecordingStopped;
+
+        boundRecorder = recorder;
+
+        if (boundRecorder != null)
+            boundRecorder.OnRecordingStopped += HandleRecordingStopped;
+    }
+
+    private void HandleRecordingStopped(ReplayClip clip)
+    {
+        // clip is already complete here
+        SaveClipToSelectedSlotAndRestart(clip);
+    }
+
+    private bool BeginRestart(PendingAction action)
+    {
+        if (restartInProgress)
+            return false;
+
+        restartInProgress = true;
+        pendingAction = action;
+        return true;
+    }
+
+    private void RestartLevel()
+    {
+        Time.timeScale = 1f;
+
+        if (LevelManager.Instance != null)
+            LevelManager.Instance.RestartLevel();
+        else
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    private void SaveSpawnForNextLoad()
+    {
+        if (string.IsNullOrEmpty(terminalSpawnKey)) 
+            return;
+
+        if (SaveLoadManager.Instance == null) 
+            return;
+
+        string currentSceneName = SceneManager.GetActiveScene().name;
+
+        SaveLoadManager.Instance.SaveSpawnData(
+            currentSceneName,
+            terminalSpawnKey,
+            terminalFacingRight);
+    }
+
+    private void SetState(TerminalState newState)
+    {
+        if (State == newState) return;
+        State = newState;
+        OnStateChanged?.Invoke(State);
+    }
 
     private void ResolveGhostSpawnPoint()
     {
@@ -456,17 +491,6 @@ public class TerminalSession : MonoBehaviour
         }
     }
 
-    private void ClearAllSlots()
-    {
-        for (int i = 0; i < SlotCount; i++)
-        {
-            Clips[i] = null;
-            ClipProfileIds[i] = null;
-        }
-        SelectedSlot = 0;
-        OnSlotsChanged?.Invoke();
-    }
-
     private System.Collections.IEnumerator BeginRecordingNextFrame(ReplayRecorder recorder)
     {
         yield return null; 
@@ -475,4 +499,5 @@ public class TerminalSession : MonoBehaviour
         SetState(TerminalState.Recording);
         PlayAllExistingClipsExcept(SelectedSlot);
     }
+    #endregion
 }

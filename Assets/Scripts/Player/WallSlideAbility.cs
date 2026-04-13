@@ -1,13 +1,16 @@
 using UnityEngine;
 
+/// <summary>
+/// Drives the WallSlide animator parameter.
+/// </summary>
 public class WallSlideAbility : BaseAbility
 {
-    private string wallSlideAnimParameterName = "WallSlide";
+    private const string wallSlideAnimParameterName = "WallSlide";
     private int wallSlideParameterID;
 
-    protected override void Initialization()
+    protected override void InitializeLinks()
     {
-        base.Initialization();
+        base.InitializeLinks();
         wallSlideParameterID = Animator.StringToHash(wallSlideAnimParameterName);
     }
 

@@ -1,62 +1,76 @@
 using UnityEngine;
 
+/// <summary>
+/// Base class for all player abilities.
+///
+/// Provides shared references to the main player systems:
+/// input, state machine, animator and movement motor.
+/// Also defines the common ability lifecycle:
+/// enter, exit, update, fixed update and animator update.
+/// </summary>
 public class BaseAbility : MonoBehaviour
 {
+    // shared owner
     protected Player player;
 
+    // shared systems
     protected GatherInput linkedInput;
     protected StateMachine linkedStateMachine;
-    protected PhysicsControl linkedPhysics;
     protected Animator linkedAnimator;
+    protected PlayerMovement linkedMotor;
 
+    [Header("Ability Settings")]
     public PlayerStates.State thisAbilityState;
     public bool isPermitted = true;
 
-    protected PlayerMovement linkedMotor;
+    // ─────────────── LIFECYCLE ───────────────
 
+    #region Lifecycle
     protected virtual void Awake()
     {
-        Initialization();
+        InitializeLinks();
     }
+    #endregion
 
+    // ────────────────── API ──────────────────
+
+    #region Public API
     public void RefreshLinks()
     {
-        Initialization();
+        InitializeLinks();
     }
+    #endregion
 
-    public virtual void EnterAbility()
-    {
+    // ───────────── ABILITY FLOW ──────────────
 
-    }
+    #region Ability Flow
+    public virtual void EnterAbility() { }
 
-    public virtual void ExitAbility()
-    {
+    public virtual void ExitAbility() { }
 
-    }
+    public virtual void ProcessAbility() { }
 
-    public virtual void ProcessAbility()
-    {
+    public virtual void ProcessFixedAbility() { }
 
-    }
+    public virtual void UpdateAnimator() { }
+    #endregion
 
-    public virtual void ProcessFixedAbility()
-    {
+    // ──────────────── HELPERS ────────────────
 
-    }
-
-    public virtual void UpdateAnimator()
-    {
-
-    }
-
-    protected virtual void Initialization()
+    #region Helpers
+    // rebuilds cached references after player/body reconfiguration
+    protected virtual void InitializeLinks()
     {
         player = GetComponent<Player>();
-        if (player == null) return;
+
+        if (player == null)
+        {
+            Debug.LogError($"[{GetType().Name}] Player component not found on the same GameObject.");
+            return;
+        }
 
         linkedInput = player.gatherInput;
         linkedStateMachine = player.stateMachine;
-        linkedPhysics = player.physicsControl;
         linkedAnimator = player.anim;
 
         linkedMotor = player.motor;
@@ -67,4 +81,5 @@ public class BaseAbility : MonoBehaviour
         if (linkedMotor == null)
             Debug.LogError($"[{GetType().Name}] linkedMotor not found (player.motor is null and none in children).");
     }
+    #endregion
 }

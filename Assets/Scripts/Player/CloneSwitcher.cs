@@ -2,6 +2,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+/// <summary>
+/// Manages switching between character profiles (clones).
+/// Handles the destroy/instantiate cycle for the body prefab
+/// and delegates all reconnection to BodySetup.
+/// </summary>
 public class CloneSwitcher : MonoBehaviour
 {
     [Header("Profiles in order")]
@@ -10,29 +15,22 @@ public class CloneSwitcher : MonoBehaviour
     [Header("Body Parent (where Body instances will live)")]
     public Transform bodyParent;
 
-    private BodyConnector bodyConnector;
-    private ProfileApplier profileApplier;
-    private Player player;
-    private PhysicsControl physicsControl;
     public CharacterProfile CurrentProfile { get; private set; }
 
+    private BodySetup bodySetup;
+    private Player player;
     private BaseAbility[] abilities;
-
     private BodyMarkers currentBody;
 
-    private MultipleJumpAbility jumpAbility;
+    // ───────────── LIFECYCLE ───────────────
 
-    [SerializeField] private bool enableHotkeys = true;
-
+    #region Lifecycle
     private void Awake()
     {
-        bodyConnector = GetComponent<BodyConnector>();
-        profileApplier = GetComponent<ProfileApplier>();
+        bodySetup = GetComponent<BodySetup>();
         player = GetComponent<Player>();
-        physicsControl = GetComponent<PhysicsControl>();
         abilities = GetComponents<BaseAbility>();
 
-        // if there is not separate bodyParent, use the current Body_Current
         if (bodyParent == null)
         {
             var found = GetComponentInChildren<BodyMarkers>(true);
@@ -40,26 +38,15 @@ public class CloneSwitcher : MonoBehaviour
         }
 
         currentBody = GetComponentInChildren<BodyMarkers>(true);
+
         if (profiles != null && profiles.Count > 0)
             CurrentProfile = profiles[0];
-
-        jumpAbility = GetComponent<MultipleJumpAbility>();
     }
+    #endregion
 
-    private void Update()
-    {
-        if (!enableHotkeys) return;
-        if (Keyboard.current == null) return;
+    // ────────────────── API ──────────────────
 
-        if (Keyboard.current.digit0Key.wasPressedThisFrame) SwitchTo(0);
-        if (Keyboard.current.digit1Key.wasPressedThisFrame) SwitchTo(1);
-        if (Keyboard.current.digit2Key.wasPressedThisFrame) SwitchTo(2);
-        if (Keyboard.current.digit3Key.wasPressedThisFrame) SwitchTo(3);
-        if (Keyboard.current.digit4Key.wasPressedThisFrame) SwitchTo(4);
-        if (Keyboard.current.digit5Key.wasPressedThisFrame) SwitchTo(5);
-        if (Keyboard.current.digit6Key.wasPressedThisFrame) SwitchTo(6);
-    }
-
+    #region Public API
     public void SwitchTo(int index)
     {
         if (profiles == null || index < 0 || index >= profiles.Count) return;
@@ -67,17 +54,17 @@ public class CloneSwitcher : MonoBehaviour
         CharacterProfile profile = profiles[index];
         if (profile == null || profile.bodyPrefab == null) return;
 
-        // save the state of motion
-        Vector2 savedVelocity = physicsControl.rb.linearVelocity;
+        // save state that must survive the body swap ????????
+        Vector2 savedVelocity = (player.motor != null) ? player.motor.RB.linearVelocity : Vector2.zero;
         bool savedFacingRight = player.facingRight;
 
-        // delete the current body
+        // destroy old body immediately
         if (currentBody != null)
         {
             DestroyImmediate(currentBody.gameObject);
         }
 
-        // create a new body
+        // instantiate new body
         GameObject bodyObj = Instantiate(profile.bodyPrefab, bodyParent);
         bodyObj.transform.localPosition = Vector3.zero;
         bodyObj.transform.localRotation = Quaternion.identity;
@@ -94,31 +81,36 @@ public class CloneSwitcher : MonoBehaviour
 
         currentBody = newMarkers;
 
-        // connect the dots/visual/anim
-        bodyConnector.ApplyBody(newMarkers);
-
-        // Ensure visual faces the same direction as before switching
-        Vector3 s = player.visual.localScale;
-        s.x = savedFacingRight ? Mathf.Abs(s.x) : -Mathf.Abs(s.x);
-        player.visual.localScale = s;
-
-        // Make sure the flag matches the visual
-        player.facingRight = savedFacingRight;
-
-        var newStats = bodyObj.GetComponentInChildren<PlayerStats>(true);
-        player.SetCurrentStats(newStats);
-
-        // apply profile (stats + permissions)
-        profileApplier.ApplyProfile(profile);
+        // reconnect visual, animator, checks, motor, stats
+        bodySetup.ApplyBodyAndProfile(newMarkers, profile);
         CurrentProfile = profile;
-        //jumpAbility.ResetJumpState();
 
-        // update the links in the abilities (so that linkedAnimator becomes new)
-        foreach (var ab in abilities)
-            ab.RefreshLinks();
+        // restore saved state
+        RestoreState(savedVelocity, savedFacingRight);
+    }
+    #endregion
 
-        // restore velocity
-        physicsControl.rb.linearVelocity = savedVelocity;
+    // ──────────── HELPERS ────────────────────
+
+    #region Helpers
+    private void RestoreState(Vector2 velocity, bool facingRight)
+    {
+        // facing direction
+        player.facingRight = facingRight;
+
+        if (player.motor != null)
+            player.motor.UpdateFacingDirection(facingRight);
+
+        if (player.visual != null)
+        {
+            var s = player.visual.localScale;
+            s.x = facingRight ? Mathf.Abs(s.x) : -Mathf.Abs(s.x);
+            player.visual.localScale = s;
+        }
+
+        // velocity
+        if (player.motor != null)
+            player.motor.RB.linearVelocity = velocity;
     }
 
     private void SetLayerRecursively(GameObject obj, int layer)
@@ -131,6 +123,5 @@ public class CloneSwitcher : MonoBehaviour
         foreach (Transform child in obj.transform)
             SetLayerRecursively(child.gameObject, layer);
     }
-
-    public void SetHotkeysEnabled(bool enabled) => enableHotkeys = enabled;
+    #endregion
 }

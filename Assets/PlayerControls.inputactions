@@ -50,6 +50,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "StopRecord",
+                    "type": "Button",
+                    "id": "cfbbeaf6-72b8-4f08-af97-5bdecfa4823a",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -78,7 +87,7 @@
                 {
                     "name": "",
                     "id": "69d6bb99-16d5-4365-95e5-7a5fc5866f52",
-                    "path": "<Keyboard>/x",
+                    "path": "<Keyboard>/q",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -217,6 +226,17 @@
                     "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "a9e783d6-fd1c-481a-92a8-46428078238f",
+                    "path": "<Keyboard>/x",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "StopRecord",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         },

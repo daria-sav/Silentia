@@ -1,6 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Pressure-triggered button that sends a pressed / released signal to all assigned targets.
+///
+/// The button tracks valid pressers by layer, changes its visual state, and notifies
+/// all components implementing <see cref="IButtonTarget"/> when its pressed state changes.
+/// Multiple valid objects can stand on the button at the same time.
+/// </summary>
 [RequireComponent(typeof(Collider2D))]
 public class PressureButton : MonoBehaviour
 {
@@ -17,13 +24,17 @@ public class PressureButton : MonoBehaviour
     [SerializeField] private List<MonoBehaviour> targetBehaviours = new();
 
     private readonly List<IButtonTarget> targets = new();
-    private int pressCount;
+    private readonly HashSet<Transform> pressers = new();
 
     private Collider2D myCollider;
 
+    // ─────────────── LIFECYCLE ───────────────
+
+    #region Unity Lifecycle
     private void Awake()
     {
         myCollider = GetComponent<Collider2D>();
+
         if (myCollider != null && !myCollider.isTrigger)
         {
 #if UNITY_EDITOR
@@ -35,22 +46,32 @@ public class PressureButton : MonoBehaviour
             spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 
         targets.Clear();
-        foreach (var mb in targetBehaviours)
+
+        foreach (MonoBehaviour mb in targetBehaviours)
         {
-            if (mb is IButtonTarget t)
-                targets.Add(t);
+            if (mb is IButtonTarget target)
+                targets.Add(target);
         }
 
         SetVisual(false);
     }
+    #endregion
 
+    // ─────────────── TRIGGER LOGIC ───────────────
+
+    #region Trigger Handling
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (!IsInPressLayers(other.gameObject))
             return;
 
-        pressCount++;
-        if (pressCount == 1)
+        Transform root = other.transform.root;
+
+        bool wasPressed = pressers.Count > 0;
+        pressers.Add(root);
+        bool isPressed = pressers.Count > 0;
+
+        if (wasPressed != isPressed)
             SetPressed(true);
     }
 
@@ -59,11 +80,20 @@ public class PressureButton : MonoBehaviour
         if (!IsInPressLayers(other.gameObject))
             return;
 
-        pressCount = Mathf.Max(0, pressCount - 1);
-        if (pressCount == 0)
+        Transform root = other.transform.root;
+
+        bool wasPressed = pressers.Count > 0;
+        pressers.Remove(root);
+        bool isPressed = pressers.Count > 0;
+
+        if (wasPressed != isPressed)
             SetPressed(false);
     }
+    #endregion
 
+    // ─────────────── HELPERS ────────────────
+
+    #region Internal Helpers
     private bool IsInPressLayers(GameObject obj)
     {
         int bit = 1 << obj.layer;
@@ -80,8 +110,14 @@ public class PressureButton : MonoBehaviour
 
     private void SetVisual(bool pressed)
     {
-        if (spriteRenderer == null) return;
-        if (pressed && downSprite != null) spriteRenderer.sprite = downSprite;
-        else if (!pressed && upSprite != null) spriteRenderer.sprite = upSprite;
+        if (spriteRenderer == null) 
+            return;
+
+        if (pressed && downSprite != null) 
+            spriteRenderer.sprite = downSprite;
+
+        else if (!pressed && upSprite != null) 
+            spriteRenderer.sprite = upSprite;
     }
+    #endregion
 }

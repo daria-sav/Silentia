@@ -1,6 +1,15 @@
 using System;
 using UnityEngine;
 
+/// <summary>
+/// Records player input each fixed tick into a ReplayClip.
+/// Input is captured early (before PlayerBrain consumes it),
+/// while keyframe position/velocity recording is delegated to
+/// ReplayLateKeyframer which runs after the motor.
+///
+/// Keyframes are saved periodically and on critical input events
+/// (jumpDown, jumpUp, dashDown) for precise drift correction.
+/// </summary>
 [DefaultExecutionOrder(-300)]
 public class ReplayRecorder : MonoBehaviour
 {
@@ -11,29 +20,35 @@ public class ReplayRecorder : MonoBehaviour
     [Header("Limits")]
     public float maxSeconds = 15f;
 
+    [Header("Drift correction")]
+    [SerializeField] private int keyframeEveryTicks = 10; // ~0.2s if fixedDeltaTime=0.02
+
     public bool IsRecording { get; private set; }
     public ReplayClip CurrentClip { get; private set; }
 
     public event Action<ReplayClip> OnRecordingStopped;
 
+    private Player player;
+    private ReplayLateKeyframer lateKeyframer;
     private int tick;
     private int maxTicks;
 
-    private Player player;
-    private PhysicsControl physics;
+    // ───────────── LIFECYCLE ───────────────
 
-    [Header("Drift correction")]
-    [SerializeField] private int keyframeEveryTicks = 10; // ~0.2s if fixedDeltaTime=0.02
-
+    #region Lifecycle
     private void Awake()
     {
         if (input == null) input = GetComponent<GatherInput>();
         if (cloneSwitcher == null) cloneSwitcher = GetComponent<CloneSwitcher>();
 
         player = GetComponent<Player>();
-        physics = GetComponent<PhysicsControl>();
+        lateKeyframer = GetComponent<ReplayLateKeyframer>();
     }
+    #endregion
 
+    // ────────────────── API ──────────────────
+
+    #region Public API
     public void StartRecording()
     {
         if (cloneSwitcher == null || cloneSwitcher.CurrentProfile == null)
@@ -41,8 +56,6 @@ public class ReplayRecorder : MonoBehaviour
             Debug.LogError("ReplayRecorder: CurrentProfile is null. Cannot start recording.");
             return;
         }
-
-        cloneSwitcher.SetHotkeysEnabled(false);
 
         CurrentClip = new ReplayClip(cloneSwitcher.CurrentProfile);
 
@@ -52,8 +65,10 @@ public class ReplayRecorder : MonoBehaviour
         CurrentClip.positionIterations = Physics2D.positionIterations;
 
         // start snapshot
+        var motor = player != null ? player.motor : null;
+        
         CurrentClip.startPosition = transform.position;
-        CurrentClip.startVelocity = (physics != null && physics.rb != null) ? physics.rb.linearVelocity : Vector2.zero;
+        CurrentClip.startVelocity = (motor != null) ? motor.RB.linearVelocity : Vector2.zero;
         CurrentClip.startFacingRight = (player != null) ? player.facingRight : true;
         CurrentClip.startState = (player != null && player.stateMachine != null) ? player.stateMachine.currentState : PlayerStates.State.Idle;
 
@@ -71,21 +86,20 @@ public class ReplayRecorder : MonoBehaviour
         IsRecording = false;
         Debug.Log($"REPLAY: Recording stopped. Frames={CurrentClip?.FrameCount ?? 0}");
 
-        if (CurrentClip != null && physics != null && physics.rb != null)
-            CurrentClip.AddKeyframe(tick, transform.position, physics.rb.linearVelocity);
+        // final keyframe (recorded directly since this is the last tick)
+        var motor = player != null ? player.motor : null;
+
+        if (CurrentClip != null && motor != null)
+            CurrentClip.AddKeyframe(tick, transform.position, motor.RB.linearVelocity);
 
         if (CurrentClip != null)
             OnRecordingStopped?.Invoke(CurrentClip);
-
-        int j = 0, d = 0;
-        foreach (var f in CurrentClip.frames)
-        {
-            if (f.jumpDown) j++;
-            if (f.dashDown) d++;
-        }
-
     }
+    #endregion
 
+    // ──────────── FIXED-STEP RECORDING ───────
+
+    #region Fixed-step Recording
     private void FixedUpdate()
     {
         if (!IsRecording || input == null || CurrentClip == null) return;
@@ -93,20 +107,39 @@ public class ReplayRecorder : MonoBehaviour
         var frame = input.CaptureFrame(tick);
         CurrentClip.frames.Add(frame);
 
-        // save drift-correction keyframe every N ticks
-        if (keyframeEveryTicks > 0 && (tick % keyframeEveryTicks == 0))
-        {
-            Vector2 pos = transform.position;
-            Vector2 vel = (physics != null && physics.rb != null) ? physics.rb.linearVelocity : Vector2.zero;
-            CurrentClip.AddKeyframe(tick, pos, vel);
-        }
+        // determine if this tick needs a keyframe
+        bool isPeriodicKeyframe = keyframeEveryTicks > 0 && (tick % keyframeEveryTicks == 0);
+        bool isCriticalAction = frame.jumpDown || frame.jumpUp || frame.dashDown;
+
+        if (isPeriodicKeyframe || isCriticalAction)
+            RequestKeyframe(tick);
 
         tick++;
 
-        // auto-stop for 60 seconds
         if (tick >= maxTicks)
-        {
             StopRecording();
+    }
+    #endregion
+
+    // ──────────── HELPERS ────────────────────
+
+    #region Helpers
+    private void RequestKeyframe(int keyframeTick)
+    {
+        var motor = player != null ? player.motor : null;
+
+        // prefer late keyframer (records AFTER motor processes this tick's input)
+        if (lateKeyframer != null && motor != null)
+        {
+            lateKeyframer.ScheduleKeyframe(keyframeTick, CurrentClip, motor);
+        }
+        else
+        {
+            // fallback: record now (pre-motor, less accurate but functional)
+            Vector2 pos = transform.position;
+            Vector2 vel = (motor != null) ? motor.RB.linearVelocity : Vector2.zero;
+            CurrentClip.AddKeyframe(keyframeTick, pos, vel);
         }
     }
+    #endregion
 }

@@ -1,10 +1,16 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.Rendering;
 
+/// <summary>
+/// Handles player health, damage, flash feedback,
+/// and death state transition.
+/// </summary>
 public class PlayerStats : MonoBehaviour
 {
+    [Header("References")]
     [SerializeField] private Player player;
+
+    [Header("Health")]
     [SerializeField] private float maxHealth;
     private float currentHealth;
 
@@ -19,14 +25,59 @@ public class PlayerStats : MonoBehaviour
     private bool canTakeDamage = true;
 
     public bool DeferDeath { get; private set; }
-    public void SetDeferDeath(bool value) => DeferDeath = value;
 
+    // ─────────────── LIFECYCLE ───────────────
+
+    #region Lifecycle
     void Start()
     {
         currentHealth = maxHealth;
         EnsureRenderer();
     }
+    #endregion
 
+    // ────────────────── API ──────────────────
+
+    #region Public API
+    public void SetDeferDeath(bool value) => DeferDeath = value;
+
+    public void DamagePlayer(float damage)
+    {
+        if (!canTakeDamage)
+            return;
+
+        currentHealth -= damage;
+        EnsureRenderer();
+        
+        StartCoroutine(Flash());
+
+        if (currentHealth <= 0)
+        {
+            if (player == null) 
+                EnsureRenderer();
+
+            if (DeferDeath)
+                return;
+
+            if (player.stateMachine.currentState != PlayerStates.State.KnockBack)
+                player.stateMachine.ChangeState(PlayerStates.State.Death);
+        }
+    }
+
+    public float GetCurrentHealth()
+    {
+        return currentHealth;
+    }
+
+    public bool GetCanTakeDamage()
+    {
+        return canTakeDamage;
+    }
+    #endregion
+
+    // ──────────────── HELPERS ────────────────
+
+    #region Helpers
     private bool EnsureRenderer()
     {
         if (player == null)
@@ -35,7 +86,7 @@ public class PlayerStats : MonoBehaviour
         if (player == null)
             return false;
 
-        // If SpriteRenderer was destroyed because body was switched, re-find it
+        // if the old body was replaced, find the new renderer
         if (spriter == null)
         {
             spriter = player.GetComponentInChildren<SpriteRenderer>(true);
@@ -47,29 +98,11 @@ public class PlayerStats : MonoBehaviour
 
         return true;
     }
+    #endregion
 
-    public void DamagePlayer(float damage)
-    {
-        if (canTakeDamage == false)
-            return;
+    // ───────────── FLASH EFFECT ──────────────
 
-        currentHealth -= damage;
-        EnsureRenderer();
-
-        StartCoroutine(Flash());
-
-        if (currentHealth <= 0)
-        {
-            if (player == null) EnsureRenderer();
-
-            if (DeferDeath)
-                return;
-
-            if (player.stateMachine.currentState != PlayerStates.State.KnockBack)
-                player.stateMachine.ChangeState(PlayerStates.State.Death);
-        }
-    }
-
+    #region Flash Effect
     private IEnumerator Flash()
     {
         canTakeDamage = false;
@@ -84,14 +117,5 @@ public class PlayerStats : MonoBehaviour
         if (currentHealth > 0)
             canTakeDamage = true;
     }
-
-    public float GetCurrentHealth()
-    {
-        return currentHealth;
-    } 
-
-    public bool GetCanTakeDamage()
-    {
-        return canTakeDamage;
-    }
+    #endregion
 }

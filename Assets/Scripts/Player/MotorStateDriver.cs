@@ -1,42 +1,47 @@
 using UnityEngine;
 
+/// <summary>
+/// Reads the motor's physical state every frame and translates it
+/// into the ability state machine. This drives ability Enter/Exit
+/// callbacks and animator parameter updates.
+/// </summary>
 [DefaultExecutionOrder(-120)]
 public class MotorStateDriver : MonoBehaviour
 {
-    [SerializeField] private float moveDeadzone = 0.01f;
+    [SerializeField] private float velocityDeadzone = 0.01f;
 
     private Player player;
-    private GatherInput input;
 
     private void Awake()
     {
         player = GetComponent<Player>();
-        input = GetComponent<GatherInput>();
     }
 
     private void Update()
     {
-        if (player == null || player.motor == null || input == null) return;
+        if (player == null || player.motor == null) return;
 
-        var sm = player.stateMachine;
+        var stateMachine = player.stateMachine;
+        var motor = player.motor;
 
-        if (sm.currentState == PlayerStates.State.Death || sm.currentState == PlayerStates.State.KnockBack)
+        // don't override states that are managed by their own abilities
+        if (stateMachine.currentState == PlayerStates.State.Death || stateMachine.currentState == PlayerStates.State.KnockBack)
             return;
-
-        var m = player.motor;
 
         PlayerStates.State target;
 
-        if (m.IsDashing)
+        if (motor.IsDashing)
             target = PlayerStates.State.Dash;
-        else if (m.IsSliding)
+        else if (motor.IsSliding)
             target = PlayerStates.State.WallSlide;
-        else if (m.LastOnGroundTime > 0 && Mathf.Abs(m.RB.linearVelocity.y) < 0.05f)
-            target = Mathf.Abs(input.move.x) > moveDeadzone ? PlayerStates.State.Walk : PlayerStates.State.Idle;
+        else if (motor.LastOnGroundTime > 0)
+            target = Mathf.Abs(motor.RB.linearVelocity.x) > velocityDeadzone
+                ? PlayerStates.State.Walk
+                : PlayerStates.State.Idle;
         else
             target = PlayerStates.State.Jump;
 
-        if (target != sm.currentState)
-            sm.ChangeState(target);
+        if (target != stateMachine.currentState)
+            stateMachine.ChangeState(target);
     }
 }

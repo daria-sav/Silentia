@@ -1,48 +1,18 @@
 using UnityEngine;
 
+/// <summary>
+/// Handles transitions between player states.
+///
+/// Stores the current and previous state, validates whether a target
+/// state has a matching permitted ability, exits the current ability,
+/// and enters the new one.
+/// </summary>
 public class StateMachine 
 {
     public PlayerStates.State previousState;
     public PlayerStates.State currentState;
 
     public BaseAbility[] abilitiesArr;
-
-    //public void ChangeState(PlayerStates.State newState)
-    //{
-    //    foreach (BaseAbility ability in abilitiesArr)
-    //    {
-    //        if (ability.thisAbilityState == newState)
-    //        {
-    //            if (!ability.isPermitted)
-    //            {
-    //                return;
-    //            }
-    //        }
-    //    }
-
-    //    foreach (BaseAbility ability in abilitiesArr)
-    //    {
-    //        if (ability.thisAbilityState == currentState)
-    //        {
-    //            ability.ExitAbility();
-    //            previousState = currentState;
-    //        }
-    //    }
-
-    //    foreach (BaseAbility ability in abilitiesArr)
-    //    {
-    //        if (ability.thisAbilityState == newState)
-    //        {
-    //            if (ability.isPermitted)
-    //            {
-    //                currentState = newState;
-    //                ability.EnterAbility();
-    //            }
-    //            Debug.Log("State changed to: " + newState);
-    //            break;
-    //        }
-    //    }
-    //}
 
     public bool ChangeState(PlayerStates.State newState)
     {
@@ -52,10 +22,10 @@ public class StateMachine
             return false;
         }
 
-        // Is there at least one ability for this state?
+        // check whether this state exists
         bool hasAny = false;
 
-        // Is there at least one permitted ability for this state?
+        // first permitted ability for the target state
         BaseAbility target = null;
 
         foreach (BaseAbility ability in abilitiesArr)
@@ -80,7 +50,7 @@ public class StateMachine
             return false;
         }
 
-        // Exit current state
+        // exit current state
         foreach (BaseAbility ability in abilitiesArr)
         {
             if (ability.thisAbilityState == currentState)
@@ -96,6 +66,7 @@ public class StateMachine
         return true;
     }
 
+    // changes state without calling EnterAbility/ExitAbility
     public void ForceChange(PlayerStates.State newState)
     {
         previousState = currentState;

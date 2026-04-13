@@ -1,102 +1,183 @@
 using UnityEngine;
 
+// Stores all tunable movement values for the PlayerMovement controller
 [CreateAssetMenu(menuName = "Player Data")]
 public class PlayerData : ScriptableObject
 {
-    [Header("Gravity")]
-    [HideInInspector] public float gravityStrength; //Downwards force (gravity) needed for the desired jumpHeight and jumpTimeToApex.
-    [HideInInspector] public float gravityScale; //Strength of the player's gravity as a multiplier of gravity (set in ProjectSettings/Physics2D).
-                                                 //Also the value the player's rigidbody2D.gravityScale is set to.
+    // ───────── Gravity and Falling ─────────
+
+    [Header("Gravity and Falling")]
+    [HideInInspector] public float calculatedGravityStrength;
+    [HideInInspector] public float calculatedGravityScale;
+    
     [Space(5)]
-    public float fallGravityMult; //Multiplier to the player's gravityScale when falling.
-    public float maxFallSpeed; //Maximum fall speed (terminal velocity) of the player when falling.
+    // extra gravity multiplier applied while the player is falling normally
+    public float fallGravityMultiplier = 1f;
+    // maximum downward speed during a normal fall (terminal velocity)
+    public float maxNormalFallSpeed; 
+
     [Space(5)]
-    public float fastFallGravityMult; //Larger multiplier to the player's gravityScale when they are falling and a downwards input is pressed.
-                                      //Seen in games such as Celeste, lets the player fall extra fast if they wish.
-    public float maxFastFallSpeed; //Maximum fall speed(terminal velocity) of the player when performing a faster fall.
+    // extra gravity multiplier applied when the player holds down to fall faster
+    public float fastFallGravityMultiplier = 1.5f;
+    // maximum downward speed during a fast fall
+    public float maxFastFallSpeed;
+
+    // ───────── Horizontal Movement ─────────
 
     [Space(20)]
+    [Header("Horizontal Movement")]
 
-    [Header("Run")]
-    public float runMaxSpeed; //Target speed we want the player to reach.
-    public float runAcceleration; //The speed at which our player accelerates to max speed, can be set to runMaxSpeed for instant acceleration down to 0 for none at all
-    [HideInInspector] public float runAccelAmount; //The actual force (multiplied with speedDiff) applied to the player.
-    public float runDecceleration; //The speed at which our player decelerates from their current speed, can be set to runMaxSpeed for instant deceleration down to 0 for none at all
-    [HideInInspector] public float runDeccelAmount; //Actual force (multiplied with speedDiff) applied to the player .
-    [Space(5)]
-    [Range(0f, 1)] public float accelInAir; //Multipliers applied to acceleration rate when airborne.
-    [Range(0f, 1)] public float deccelInAir;
-    [Space(5)]
-    public bool doConserveMomentum = true;
+    // maximum horizontal speed the player tries to reach
+    public float maxRunSpeed;
+    // how quickly the player speeds up on the ground
+    public float groundAcceleration;
+    
+    [HideInInspector] public float calculatedGroundAccelerationForce;
+    // how quickly the player slows down on the ground
+    public float groundDeceleration;
+    
+    [HideInInspector] public float calculatedGroundDecelerationForce;
 
+    [Space(5)]
+    // multiplier applied to ground acceleration while airborne
+    [Range(0f, 1)] public float airAccelerationMultiplier = 1f;
+    // multiplier applied to ground deceleration while airborne
+    [Range(0f, 1)] public float airDecelerationMultiplier = 1f;
+    
+
+    [Space(5)]
+    // keeps some existing horizontal momentum in situations where forcing the controller back to the target speed would feel too stiff
+    public bool preserveMomentum = true;
+
+    // ───────────── Jump Shape ──────────────
+    
     [Space(20)]
+    [Header("Jump Shape")]
 
-    [Header("Jump")]
-    public float jumpHeight; //Height of the player's jump
-    public float jumpTimeToApex; //Time between applying the jump force and reaching the desired jump height. These values also control the player's gravity and jump force.
-    [HideInInspector] public float jumpForce; //The actual force applied (upwards) to the player when they jump.
+    // target jump height used to derive gravity and initial jump force
+    public float desiredJumpHeight;
+    // time from jump start to the highest point of the jump
+    public float timeToJumpApex;
+    // extra jumps available in the air (0 = single jump, 1 = double jump, etc.)
+    public int maxAirJumps = 0;
 
-    [Header("Both Jumps")]
-    public float jumpCutGravityMult; //Multiplier to increase gravity if the player releases thje jump button while still jumping
-    [Range(0f, 1)] public float jumpHangGravityMult; //Reduces gravity while close to the apex (desired max height) of the jump
-    public float jumpHangTimeThreshold; //Speeds (close to 0) where the player will experience extra "jump hang". The player's velocity.y is closest to 0 at the jump's apex (think of the gradient of a parabola or quadratic function)
-    [Space(0.5f)]
-    public float jumpHangAccelerationMult;
-    public float jumpHangMaxSpeedMult;
+    [HideInInspector] public float calculatedJumpForce;
+
+    // ──────────── Jump Behaviour ───────────
+    
+    [Header("Jump Behaviour")]
+
+    // extra gravity used when the player releases jump early, which creates a shorter jump instead of always forcing full height
+    public float jumpReleaseGravityMultiplier;
+    // reduced gravity near the jump apex to create a brief "hang" feeling
+    [Range(0f, 1)] public float apexHangGravityMultiplier;
+    // vertical speed threshold below which the player is considered near the apex
+    public float apexHangVelocityThreshold;
+    
+
+    [Space(1f)]
+    // horizontal acceleration bonus while near the jump apex
+    public float apexHangAccelerationMultiplier = 1f;
+    // horizontal max-speed bonus while near the jump apex
+    public float apexHangMaxSpeedMultiplier = 1f;
+
+    // ────────────── Wall Jump ──────────────
 
     [Header("Wall Jump")]
-    public Vector2 wallJumpForce; //The actual force (this time set by us) applied to the player when wall jumping.
+
+    // horizontal and vertical impulse applied during a wall jump
+    public Vector2 wallJumpForce;
+
     [Space(5)]
-    [Range(0f, 1f)] public float wallJumpRunLerp; //Reduces the effect of player's movement while wall jumping.
-    [Range(0f, 1.5f)] public float wallJumpTime; //Time after wall jumping the player's movement is slowed for.
-    public bool doTurnOnWallJump; //Player will rotate to face wall jumping direction
+    // how strongly normal input affects movement right after a wall jump (lower = wall jump direction preserved longer)
+    [Range(0f, 1f)] public float wallJumpMovementLerp;
+    // duration after a wall jump during which movement control is partially limited
+    [Range(0f, 1.5f)] public float wallJumpMovementLockTime;
+
+    // ───────────── Wall Slide ──────────────
 
     [Space(20)]
+    [Header("Wall Slide")]
 
-    [Header("Slide")]
-    public float slideSpeed;
-    public float slideAccel;
+    // target downward speed while sliding on a wall
+    public float wallSlideSpeed;
+    // how quickly the player reaches the wall slide speed
+    public float wallSlideAcceleration;
 
-    [Header("Assists")]
-    [Range(0.01f, 0.5f)] public float coyoteTime; //Grace period after falling off a platform, where you can still jump
-    [Range(0.01f, 0.5f)] public float jumpInputBufferTime; //Grace period after pressing jump where a jump will be automatically performed once the requirements (eg. being grounded) are met.
+    // ──────────── Input Assists ────────────
+
+    [Header("Input Assists")]
+    // grace period after leaving the ground during which jump is still allowed
+    [Range(0.01f, 0.5f)] public float coyoteTime;
+    // grace period after pressing jump early — the input is remembered and fires when possible
+    [Range(0.01f, 0.5f)] public float jumpInputBufferTime;
+
+    // ───────────────── Dash ────────────────
 
     [Space(20)]
-
     [Header("Dash")]
-    public int dashAmount;
+
+    // number of dashes available before they need to be refilled
+    public int maxDashCount;
+    // speed during the active dash phase
     public float dashSpeed;
-    public float dashSleepTime; //Duration for which the game freezes when we press dash but before we read directional input and apply a force
+    // short freeze before the dash moves — gives the player a moment to commit direction
+    public float dashFreezeTime;
+
     [Space(5)]
-    public float dashAttackTime;
+    // duration of the main dash movement
+    public float dashActiveTime;
+
     [Space(5)]
-    public float dashEndTime; //Time after you finish the inital drag phase, smoothing the transition back to idle (or any standard state)
-    public Vector2 dashEndSpeed; //Slows down player, makes dash feel more responsive (used in Celeste)
-    [Range(0f, 1f)] public float dashEndRunLerp; //Slows the affect of player movement while dashing
+    // short recovery window after the active dash ends
+    public float dashRecoveryTime;
+    // velocity used while easing out of the dash
+    public Vector2 dashRecoverySpeed;
+
     [Space(5)]
+    // time needed before a dash charge can be restored
     public float dashRefillTime;
+
     [Space(5)]
+    // grace period after pressing dash early during which the input is remembered
     [Range(0.01f, 0.5f)] public float dashInputBufferTime;
 
+    private const float FIXED_UPDATES_PER_SECOND = 50f;
 
     private void OnValidate()
     {
-        //Calculate gravity strength using the formula (gravity = 2 * jumpHeight / timeToJumpApex^2) 
-        gravityStrength = -(2 * jumpHeight) / (jumpTimeToApex * jumpTimeToApex);
+        #region Sanitize user-facing values
+        desiredJumpHeight = Mathf.Max(0.01f, desiredJumpHeight);
+        timeToJumpApex = Mathf.Max(0.01f, timeToJumpApex);
 
-        //Calculate the rigidbody's gravity scale (ie: gravity strength relative to unity's gravity value, see project settings/Physics2D)
-        gravityScale = gravityStrength / Physics2D.gravity.y;
+        maxRunSpeed = Mathf.Max(0.01f, maxRunSpeed);
+        groundAcceleration = Mathf.Clamp(groundAcceleration, 0.01f, maxRunSpeed);
+        groundDeceleration = Mathf.Clamp(groundDeceleration, 0.01f, maxRunSpeed);
 
-        //Calculate are run acceleration & deceleration forces using formula: amount = ((1 / Time.fixedDeltaTime) * acceleration) / runMaxSpeed
-        runAccelAmount = (50 * runAcceleration) / runMaxSpeed;
-        runDeccelAmount = (50 * runDecceleration) / runMaxSpeed;
+        maxNormalFallSpeed = Mathf.Max(0.01f, maxNormalFallSpeed);
+        maxFastFallSpeed = Mathf.Max(maxNormalFallSpeed, maxFastFallSpeed);
 
-        //Calculate jumpForce using the formula (initialJumpVelocity = gravity * timeToJumpApex)
-        jumpForce = Mathf.Abs(gravityStrength) * jumpTimeToApex;
+        wallSlideAcceleration = Mathf.Max(0.01f, wallSlideAcceleration);
 
-        #region Variable Ranges
-        runAcceleration = Mathf.Clamp(runAcceleration, 0.01f, runMaxSpeed);
-        runDecceleration = Mathf.Clamp(runDecceleration, 0.01f, runMaxSpeed);
+        maxDashCount = Mathf.Max(0, maxDashCount);
+        dashSpeed = Mathf.Max(0.01f, dashSpeed);
+        dashFreezeTime = Mathf.Max(0f, dashFreezeTime);
+        dashActiveTime = Mathf.Max(0.01f, dashActiveTime);
+        dashRecoveryTime = Mathf.Max(0f, dashRecoveryTime);
+        dashRefillTime = Mathf.Max(0f, dashRefillTime);
         #endregion
+
+        // gravity = - (2 * height) / time^2
+        calculatedGravityStrength = -(2f * desiredJumpHeight) / (timeToJumpApex * timeToJumpApex);
+
+        // convert to Rigidbody2D.gravityScale (relative to project-wide Physics2D.gravity.y)
+        calculatedGravityScale = calculatedGravityStrength / Physics2D.gravity.y;
+
+        // initial jump velocity = |gravity| * time
+        calculatedJumpForce = Mathf.Abs(calculatedGravityStrength) * timeToJumpApex;
+
+        // acceleration force = (fixedUpdatesPerSecond * acceleration) / maxSpeed
+        calculatedGroundAccelerationForce = (FIXED_UPDATES_PER_SECOND * groundAcceleration) / maxRunSpeed;
+        calculatedGroundDecelerationForce = (FIXED_UPDATES_PER_SECOND * groundDeceleration) / maxRunSpeed;
     }
 }

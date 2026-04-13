@@ -51,6 +51,6 @@ public class EscapeToMenu : MonoBehaviour
             return;
 
         Time.timeScale = 1f;
-        LevelManager.instance.LoadLevelString(mainMenuSceneName);
+        LevelManager.Instance.LoadLevel(mainMenuSceneName);
     }
 }

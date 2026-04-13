@@ -1,18 +1,19 @@
+// defines all high-level player states used by the state machine and abilities
 public class PlayerStates 
 {
     public enum State
     {
         Idle, // default one
         Walk,
-        Run,
+        Run, // ??
         Jump,
-        DoubleJump,
-        WallJump, // ?
+        DoubleJump, // ??
+        WallJump, // ??
         WallSlide,
         Dash,
-        Crouch,
-        Ladders, // ?
-        Ignore,
+        Crouch, // ??
+        Ladders, // ??
+        Ignore, // ??
         KnockBack,
         Death,
     }

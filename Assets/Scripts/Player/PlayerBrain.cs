@@ -1,46 +1,65 @@
 using UnityEngine;
+using UnityEngine.Profiling;
 
+/// <summary>
+/// Reads GatherInput every fixed tick and feeds the PlayerMovement motor.
+/// Handles both continuous input (move direction) and discrete events
+/// (jump press/release, dash press).
+/// </summary>
 [DefaultExecutionOrder(-250)]
 public class PlayerBrain : MonoBehaviour
 {
     private GatherInput input;
+    private Player player;
     private MultipleJumpAbility jump;
     private DashAbility dash;
-    private Player player;
+    private ReplayRecorder recorder;
 
     private void Awake()
     {
         input = GetComponent<GatherInput>();
+        player = GetComponent<Player>();
         jump = GetComponent<MultipleJumpAbility>();
         dash = GetComponent<DashAbility>();
-        player = GetComponent<Player>();
+        recorder = GetComponent<ReplayRecorder>();
     }
 
     private void FixedUpdate()
     {
-        if (input == null) return;
+        if (input == null || player == null) return;
 
+        var motor = player.motor;
+        if (motor == null) return;
+
+        // continuous: move direction
+        motor.SetMoveInput(input.move.x, input.move.y);
+
+        // discrete: jump
         if (input.jumpDownTick && jump != null)
         {
             jump.TryToJump();
             input.ClearJumpDownTick(); 
         }
 
+        if (input.jumpUpTick && jump != null)
+        {
+            jump.OnJumpReleased();
+            input.ClearJumpUpTick();
+        }
+
+        // discrete: dash
         if (input.dashDownTick && dash != null)
         {
             dash.TryStartDash();
             input.ClearDashDownTick(); 
         }
 
-        if (input.jumpDownTick)
-        {
-            Debug.Log($"GHOST BRAIN {gameObject.name}: saw jumpDownTick");
-        }
+        // dashUpTick????
 
-        if (input.jumpUpTick && jump != null)
+        // stop recording
+        if (recorder != null && recorder.IsRecording && input.ConsumeStopRecordDown())
         {
-            jump.OnJumpReleased();
-            input.ClearJumpUpTick();
+            recorder.StopRecording();
         }
     }
 }

@@ -1,23 +1,27 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
+/// <summary>
+/// Bridges dash requests to the movement motor
+/// and drives the Dash animator parameter.
+/// </summary>
 public class DashAbility : BaseAbility
 {
-    private string dashAnimParameterName = "Dash";
+    private const string dashAnimParameterName = "Dash";
     private int dashParameterID;
 
-    protected override void Initialization()
+    protected override void InitializeLinks()
     {
-        base.Initialization();
+        base.InitializeLinks();
         dashParameterID = Animator.StringToHash(dashAnimParameterName);
     }
 
+    // requests dash from the movement motor
     public bool TryStartDash()
     {
         if (!isPermitted) return false;
         if (linkedMotor == null) return false;
 
-        linkedMotor.PressDash(linkedInput.move);
+        linkedMotor.PressDash();
         return true;
     }
 

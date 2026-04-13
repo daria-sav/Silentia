@@ -1,10 +1,12 @@
-[System.Serializable]
-public class ExampleData
-{
-    public int exampleInt;
-    public string exampleString;
-}
+using System;
 
+/// <summary>
+/// Stores the minimum data required to restore the player's last known spawn state.
+///
+/// This data is used by the main menu to decide which scene to load,
+/// and by scene-level spawn systems to place the player at the correct
+/// spawn point with the correct facing direction.
+/// </summary>
 [System.Serializable]
 public class SpawnData
 {
@@ -12,6 +14,9 @@ public class SpawnData
     public string spawnPintKey;
     public bool facingRight;
 
+    /// <summary>
+    /// Creates spawn data with default values
+    /// </summary>
     public SpawnData()
     {
         sceneName = "Level1";

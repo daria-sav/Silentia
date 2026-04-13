@@ -1,5 +1,16 @@
 using UnityEngine;
 
+/// <summary>
+/// Drives ghost playback by feeding recorded InputFrames into
+/// GatherInput each fixed tick. Drift correction is delegated
+/// to ReplayDriftCorrector which runs after the motor.
+///
+/// Execution order chain:
+///   ReplayPlayback (-400) applies input
+///   → PlayerBrain (-250) feeds motor
+///   → PlayerMovement (0) processes physics
+///   → ReplayDriftCorrector (100) corrects drift
+/// </summary>
 [DefaultExecutionOrder(-400)]
 public class ReplayPlayback : MonoBehaviour
 {
@@ -10,191 +21,192 @@ public class ReplayPlayback : MonoBehaviour
     public bool IsPlaying { get; private set; }
 
     private Player player;
-    private PhysicsControl physics;
-    private MultipleJumpAbility jumpAbility;
-
-    [Header("Drift correction")]
-    [SerializeField] private float positionEpsilon = 0.15f;      // ignore tiny drift
-    [SerializeField] private float hardSnapThreshold = 0.75f;    // snap if huge drift
-    [SerializeField] private float pullStrength = 0.5f;          // 0..1 soft pull
+    private ReplayDriftCorrector driftCorrector;
 
     private int kfIndex;
-
     private bool destroyedByDeath;
 
+    // ───────────── LIFECYCLE ───────────────
+
+    #region Lifecycle
     private void Awake()
     {
         if (input == null) input = GetComponent<GatherInput>();
-
         player = GetComponent<Player>();
-        physics = GetComponent<PhysicsControl>();
-        jumpAbility = GetComponent<MultipleJumpAbility>();
+        driftCorrector = GetComponent<ReplayDriftCorrector>();
     }
 
+    private void OnDisable()
+    {
+        if (IsPlaying)
+            ClearCorrector();
+        
+    }
+    #endregion
+
+    // ────────────────── API ──────────────────
+
+    #region Public API
     public void StartPlayback(ReplayClip replayClip)
     {
         clip = replayClip;
         tick = 0;
         IsPlaying = true;
-        RestartPolicy.Lock();
+        kfIndex = 0;
+        destroyedByDeath = false;
 
-        if (clip != null)
-        {
-            if (!Mathf.Approximately(Time.fixedDeltaTime, clip.fixedDeltaTime))
-            {
-                Debug.LogWarning($"REPLAY: fixedDeltaTime mismatch. Now={Time.fixedDeltaTime} Clip={clip.fixedDeltaTime}. Drift possible.");
-            }
-
-            if (Physics2D.velocityIterations != clip.velocityIterations || Physics2D.positionIterations != clip.positionIterations)
-            {
-                Debug.LogWarning($"REPLAY: Physics2D iterations mismatch. Now v={Physics2D.velocityIterations},p={Physics2D.positionIterations} Clip v={clip.velocityIterations},p={clip.positionIterations}. Drift possible.");
-            }
-        }
+        WarnIfSimulationMismatch();
 
         if (input != null)
             input.SetMode(GatherInput.InputMode.Replay);
 
         ApplyStartSnapshot(clip);
 
-        kfIndex = 0;
-
         Debug.Log($"REPLAY: Playback started. Profile={clip?.profileId}, frames={clip?.FrameCount}");
     }
+    #endregion
 
+    // ──────────── FIXED-STEP PLAYBACK ────────
+
+    #region Fixed-step Playback
     private void FixedUpdate()
     {
         if (!IsPlaying || clip == null || input == null) return;
 
+        // clip finished
         if (tick >= clip.FrameCount)
         {
-            IsPlaying = false;
-            RestartPolicy.Unlock();
-
-            if (input != null)
-            {
-                input.SetMode(GatherInput.InputMode.Replay);
-                input.ApplyReplayFrame(default); // clears held/down/up + moveX
-            }
-
-            if (physics != null && physics.rb != null)
-            {
-                // Stop horizontal drifting, keep vertical as-is (usually 0 on ground)
-                physics.rb.linearVelocity = new Vector2(0f, physics.rb.linearVelocityY);
-            }
-
-            if (player != null && player.stateMachine != null)
-            {
-                player.stateMachine.ForceChange(PlayerStates.State.Idle);
-            }
-            Debug.Log("REPLAY: Playback finished.");
+            FinishPlayback();
             return;
         }
 
+        // feed this tick's input (motor will process it later this FixedUpdate cycle)
         var frame = clip.GetFrame(tick);
         input.ApplyReplayFrame(frame);
 
-        ApplyDriftCorrection(tick);
+        // schedule drift correction to run AFTER the motor
+        ScheduleDriftCorrection(tick);
 
-        // If ghost died during playback -> remove it from the scene
-        if (!destroyedByDeath && player != null && player.stateMachine != null &&
-            player.stateMachine.currentState == PlayerStates.State.Death)
-        {
-            destroyedByDeath = true;
-            IsPlaying = false;
-            RestartPolicy.Unlock();
-
-            // Destroy whole ghost root
-            Destroy(gameObject);
-            return;
-        }
+        // ghost died during playback
+        if (CheckGhostDeath()) return;
 
         tick++;
-
-        if (frame.jumpDown || frame.dashDown)
-            Debug.Log($"GHOST APPLY T{tick}: jumpDown={frame.jumpDown} dashDown={frame.dashDown}");
     }
+    #endregion
 
-    private void ApplyStartSnapshot(ReplayClip c)
+    // ──────────── START / FINISH ─────────────
+
+    #region Start and Finish
+    private void ApplyStartSnapshot(ReplayClip clip)
     {
-        if (c == null) return;
+        if (clip == null) return;
 
         // position
-        transform.position = c.startPosition;
+        transform.position = clip.startPosition;
 
         // velocity
-        if (physics != null && physics.rb != null)
-            physics.rb.linearVelocity = c.startVelocity;
+        var motor = player != null ? player.motor : null;
+        if (motor != null)
+        {
+            motor.RB.linearVelocity = clip.startVelocity;
+            motor.ResetMotorState();
+            motor.SetGravityScale(motor.data != null ? motor.data.calculatedGravityScale : 1f);
+        }
 
         // facing + visual flip
         if (player != null)
         {
-            player.facingRight = c.startFacingRight;
+            player.facingRight = clip.startFacingRight;
+
+            if (player.motor != null)
+                player.motor.UpdateFacingDirection(clip.startFacingRight);
 
             if (player.visual != null)
             {
-                var s = player.visual.localScale;
-                s.x = c.startFacingRight ? Mathf.Abs(s.x) : -Mathf.Abs(s.x);
-                player.visual.localScale = s;
+                var scale = player.visual.localScale;
+                scale.x = clip.startFacingRight ? Mathf.Abs(scale.x) : -Mathf.Abs(scale.x);
+                player.visual.localScale = scale;
             }
 
             if (player.stateMachine != null)
-                player.stateMachine.ForceChange(c.startState);
-        }
-
-        // reset ability internal state (important for determinism)
-        if (jumpAbility != null)
-            //jumpAbility.ResetJumpState();
-
-        // normalize physics state
-        if (physics != null)
-        {
-            // start with a stable coyote timer state; prevents random extra coyote jump
-            physics.coyoteTimer = -1f;
-
-            // ensure gravity is enabled to base value
-            physics.EnableGravity();
+                player.stateMachine.ForceChange(clip.startState);
         }
     }
 
-    private void ApplyDriftCorrection(int currentTick)
+    private void FinishPlayback()
     {
-        if (clip == null || clip.keyframes == null || clip.keyframes.Count == 0) return;
-        if (physics == null || physics.rb == null) return;
+        IsPlaying = false;
+        ClearCorrector();
 
-        // move pointer to latest keyframe tick <= currentTick
+        // clear ghost input
+        input.ApplyReplayFrame(default);
+
+        // stop horizontal drift, keep vertical
+        var motor = player != null ? player.motor : null;
+        if (motor != null)
+            motor.RB.linearVelocity = new Vector2(0f, motor.RB.linearVelocity.y);
+
+        if (player != null && player.stateMachine != null)
+            player.stateMachine.ForceChange(PlayerStates.State.Idle);
+    }
+    #endregion
+
+    // ──────────── DRIFT CORRECTION ───────────
+
+    #region Drift Correction
+    private void ScheduleDriftCorrection(int currentTick)
+    {
+        if (driftCorrector == null) return;
+        if (clip.keyframes == null || clip.keyframes.Count == 0) return;
+
+        var motor = player != null ? player.motor : null;
+        if (motor == null) return;
+
+        // advance keyframe pointer to latest keyframe <= currentTick
         while (kfIndex + 1 < clip.keyframes.Count && clip.keyframes[kfIndex + 1].tick <= currentTick)
             kfIndex++;
 
         var kf = clip.keyframes[kfIndex];
 
-        // only correct exactly on keyframe ticks (keeps motion smooth)
+        // only correct on exact keyframe ticks
         if (kf.tick != currentTick) return;
 
-        Vector2 curPos = transform.position;
-        Vector2 targetPos = kf.pos;
-
-        float err = Vector2.Distance(curPos, targetPos);
-        if (err < positionEpsilon) return;
-
-        if (err >= hardSnapThreshold)
-        {
-            // hard snap if drift is large (collisions may have diverged)
-            transform.position = targetPos;
-            physics.rb.linearVelocity = kf.vel;
-        }
-        else
-        {
-            // soft pull to avoid visible teleport
-            Vector2 newPos = Vector2.Lerp(curPos, targetPos, pullStrength);
-            transform.position = newPos;
-
-            physics.rb.linearVelocity = Vector2.Lerp(physics.rb.linearVelocity, kf.vel, pullStrength);
-        }
+        driftCorrector.ScheduleCorrection(kf.pos, kf.vel, motor);
     }
 
-    private void OnDisable()
+    private void ClearCorrector()
     {
-        if (IsPlaying)
-            RestartPolicy.Unlock();
+        if (driftCorrector != null)
+            driftCorrector.Clear();
     }
+    #endregion
+
+    // ──────────── HELPERS ────────────────────
+
+    #region Helpers
+    private bool CheckGhostDeath()
+    {
+        if (destroyedByDeath) return true;
+        if (player == null || player.stateMachine == null) return false;
+        if (player.stateMachine.currentState != PlayerStates.State.Death) return false;
+
+        destroyedByDeath = true;
+        IsPlaying = false;
+        ClearCorrector();
+        Destroy(gameObject);
+        return true;
+    }
+
+    private void WarnIfSimulationMismatch()
+    {
+        if (clip == null) return;
+
+        if (!Mathf.Approximately(Time.fixedDeltaTime, clip.fixedDeltaTime))
+            Debug.LogWarning($"REPLAY: fixedDeltaTime mismatch. Now={Time.fixedDeltaTime} Clip={clip.fixedDeltaTime}");
+
+        if (Physics2D.velocityIterations != clip.velocityIterations
+            || Physics2D.positionIterations != clip.positionIterations)
+            Debug.LogWarning("REPLAY: Physics2D iterations mismatch. Drift possible.");
+    }
+    #endregion
 }

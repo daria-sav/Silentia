@@ -1,20 +1,16 @@
 using UnityEngine;
 
+/// <summary>
+/// Drives the Walk animator parameter.
+/// </summary>
 public class MoveAbility : BaseAbility
 {
-    [SerializeField] private float speed;
-
-    private string walkAnimParameterName = "Walk";
+    private const string walkAnimParameterName = "Walk";
     private int walkParameterID;
 
-    public void SetSpeed(float newSpeed)
+    protected override void InitializeLinks()
     {
-        speed = newSpeed;
-    }
-
-    protected override void Initialization()
-    {
-        base.Initialization();
+        base.InitializeLinks();
         walkParameterID = Animator.StringToHash(walkAnimParameterName);
     }
 
