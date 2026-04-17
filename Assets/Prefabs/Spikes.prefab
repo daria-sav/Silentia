@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 3617615237194410608}
   - component: {fileID: 2065904290459498510}
   - component: {fileID: 225020212103343198}
+  - component: {fileID: 1879674604252019203}
   m_Layer: 12
   m_Name: Spikes
   m_TagString: Untagged
@@ -108,6 +109,9 @@ MonoBehaviour:
   spikeDamage: 1
   knockBackDuration: 0.2
   knockBackForce: {x: 10, y: 15}
+  deathDelaySeconds: 0.25
+  waitForGroundBeforeDeath: 0
+  maxWaitForGround: 0.6
 --- !u!50 &2065904290459498510
 Rigidbody2D:
   serializedVersion: 5
@@ -200,3 +204,25 @@ EdgeCollider2D:
   m_AdjacentEndPoint: {x: 0, y: 0}
   m_UseAdjacentStartPoint: 0
   m_UseAdjacentEndPoint: 0
+--- !u!95 &1879674604252019203
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1363206814427495469}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 29b3ce219e4c429448efc2284359e944, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
