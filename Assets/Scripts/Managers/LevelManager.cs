@@ -32,7 +32,7 @@ public class LevelManager : MonoBehaviour
         }
 
         Instance = this;
-        canvasGroup = GetComponent<CanvasGroup>();
+        canvasGroup = GetComponentInChildren<CanvasGroup>();
     }
 
     private void Start()

@@ -16,13 +16,13 @@ MonoBehaviour:
   calculatedGravityScale: 7.9284167
   fallGravityMultiplier: 1.5
   maxNormalFallSpeed: 25
-  fastFallGravityMultiplier: 12
+  fastFallGravityMultiplier: 2
   maxFastFallSpeed: 30
   maxRunSpeed: 11
   groundAcceleration: 2.5
   calculatedGroundAccelerationForce: 11.363636
-  groundDeceleration: 6
-  calculatedGroundDecelerationForce: 27.272728
+  groundDeceleration: 8
+  calculatedGroundDecelerationForce: 36.363636
   airAccelerationMultiplier: 0.65
   airDecelerationMultiplier: 0.65
   preserveMomentum: 1
