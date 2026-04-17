@@ -20,6 +20,7 @@ public class TerminalController : MonoBehaviour
     [SerializeField] private GameObject slotUiPanel;
     [SerializeField] private GameObject terminalHintsPanel;
     [SerializeField] private TerminalToast terminalToast;
+    [SerializeField] private GameObject terminalBackground;
 
     private TerminalSession session;
     private bool subscribed;
@@ -176,11 +177,21 @@ public class TerminalController : MonoBehaviour
         if (slotUiPanel == null)
             return;
 
-        bool show = session != null && session.State == TerminalSession.TerminalState.TerminalPaused;
+        bool paused = session != null && session.State == TerminalSession.TerminalState.TerminalPaused;
 
-        slotUiPanel.SetActive(show);
-        if (terminalHintsPanel != null)
-            terminalHintsPanel.SetActive(show);
+        slotUiPanel.SetActive(paused);
+        if (terminalHintsPanel != null) 
+            terminalHintsPanel.SetActive(paused);
+
+        if (terminalBackground != null)
+        {
+            bool showBg = session != null && session.State is
+                TerminalSession.TerminalState.TerminalPaused or
+                TerminalSession.TerminalState.EnteringRecord or
+                TerminalSession.TerminalState.Recording;
+
+            terminalBackground.SetActive(showBg);
+        }
     }
     #endregion
 

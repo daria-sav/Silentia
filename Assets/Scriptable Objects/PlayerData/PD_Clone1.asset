@@ -21,8 +21,8 @@ MonoBehaviour:
   maxRunSpeed: 11
   groundAcceleration: 2.5
   calculatedGroundAccelerationForce: 11.363636
-  groundDeceleration: 5
-  calculatedGroundDecelerationForce: 22.727272
+  groundDeceleration: 6
+  calculatedGroundDecelerationForce: 27.272728
   airAccelerationMultiplier: 0.65
   airDecelerationMultiplier: 0.65
   preserveMomentum: 1
