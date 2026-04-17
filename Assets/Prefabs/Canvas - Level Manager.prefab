@@ -529,7 +529,6 @@ GameObject:
   - component: {fileID: 6560356180212210505}
   - component: {fileID: 1351612031771075395}
   - component: {fileID: 5826244604792258520}
-  - component: {fileID: 8569883339520172824}
   m_Layer: 5
   m_Name: Canvas - Level Manager
   m_TagString: Untagged
@@ -570,7 +569,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b77e0321a6a15ba4fbd4d831179d0db2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelManager
-  fadeDuration: 0.6
+  fadeDuration: 0.4
 --- !u!114 &8958780205006094866
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -650,18 +649,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!225 &8569883339520172824
-CanvasGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2428958558583899541}
-  m_Enabled: 1
-  m_Alpha: 1
-  m_Interactable: 0
-  m_BlocksRaycasts: 0
-  m_IgnoreParentGroups: 0
 --- !u!1 &2632369657750657808
 GameObject:
   m_ObjectHideFlags: 0
@@ -1350,6 +1337,7 @@ GameObject:
   - component: {fileID: 9164269267283345670}
   - component: {fileID: 3564272926818728663}
   - component: {fileID: 4179823120557014156}
+  - component: {fileID: 1126732134956539700}
   m_Layer: 5
   m_Name: FadeImage
   m_TagString: Untagged
@@ -1414,6 +1402,18 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!225 &1126732134956539700
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9055121365882893301}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
 --- !u!1 &9184790291517653531
 GameObject:
   m_ObjectHideFlags: 0

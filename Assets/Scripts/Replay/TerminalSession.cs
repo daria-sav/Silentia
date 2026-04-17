@@ -299,6 +299,12 @@ public class TerminalSession : MonoBehaviour
 
         switcher.SwitchTo(idx);
 
+        var visualStyle = ghost.GetComponent<GhostVisualStyle>();
+        if (visualStyle != null)
+        {
+            visualStyle.ApplyStyle();
+        }
+
         var playback = ghost.GetComponent<ReplayPlayback>() ?? ghost.AddComponent<ReplayPlayback>();
         playback.StartPlayback(clip);
     }
