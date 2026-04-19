@@ -14,10 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CharacterProfile
   id: 1
   bodyPrefab: {fileID: 6873362264134903609, guid: c5e46c6e2677d404ea310ecbdd3b84d4, type: 3}
-  walkSpeed: 10
-  baseGravity: 8
-  jumpForce: 14
-  maxJumps: 2
-  airSpeed: 6
-  gravityDivider: 2
+  slotIcon: {fileID: -968682236, guid: 66628eaaecf35914f8af688e6e8572dd, type: 3}
   permittedStates: 00000000010000000300000005000000060000000b0000000c000000

@@ -200,6 +200,9 @@ public class TerminalController : MonoBehaviour
     #region Trigger Zone
     private void OnTriggerEnter2D(Collider2D other)
     {
+        if (!other.CompareTag("Player"))
+            return;
+
         var player = other.GetComponentInParent<Player>();
         if (player == null) return;
 

@@ -14,6 +14,9 @@ public class CharacterProfile : ScriptableObject
     [Header("Body")]
     public GameObject bodyPrefab; // body prefab to spawn under the persistent player root
 
+    [Header("UI")]
+    public Sprite slotIcon;
+
     [Header("Permitted States")]
     public List<PlayerStates.State> permittedStates;
 }

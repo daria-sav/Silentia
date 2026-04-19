@@ -10,11 +10,8 @@ public class ReplaySlotUI : MonoBehaviour
 {
     [Header("Wiring")]
     [SerializeField] private Button[] slotButtons = new Button[3];
-    [SerializeField] private Image[] slotImages = new Image[3];
-
-    [Header("Colors")]
-    [SerializeField] private Color emptyColor = Color.black;
-    [SerializeField] private Color filledColor = Color.green;
+    [SerializeField] private Image[] slotIcons = new Image[3];
+    [SerializeField] private GameObject[] emptySlotOverlays = new GameObject[3];
 
     [Header("Selected slot visual")]
     [SerializeField] private float selectedScale = 1.4f;
@@ -56,6 +53,7 @@ public class ReplaySlotUI : MonoBehaviour
         }
     }
     #endregion
+
     // ──────────────── HELPERS ────────────────
 
     #region Helpers
@@ -83,18 +81,38 @@ public class ReplaySlotUI : MonoBehaviour
 
     private void RefreshSlotVisual(int slotIndex, TerminalSession session)
     {
-        if (slotImages == null || slotIndex >= slotImages.Length || slotImages[slotIndex] == null)
+        if (slotIcons == null || slotIndex >= slotIcons.Length || slotIcons[slotIndex] == null)
             return;
 
         bool hasClip = session.HasClip(slotIndex);
 
-        slotImages[slotIndex].color = hasClip ? filledColor : emptyColor;
+        Sprite icon = hasClip ? session.GetSlotIcon(slotIndex) : null;
 
+        // icon
+        if (slotIcons != null && slotIndex < slotIcons.Length && slotIcons[slotIndex] != null)
+        {
+            slotIcons[slotIndex].sprite = icon;
+            slotIcons[slotIndex].enabled = hasClip && icon != null;
+            slotIcons[slotIndex].color = Color.white;
+        }
+
+        // dashed empty overlay
+        if (emptySlotOverlays != null &&
+            slotIndex < emptySlotOverlays.Length &&
+            emptySlotOverlays[slotIndex] != null)
+        {
+            emptySlotOverlays[slotIndex].SetActive(!hasClip);
+        }
+
+        // selected slot scale
         float scale = session.SelectedSlot == slotIndex
             ? selectedScale
             : normalScale;
 
-        slotImages[slotIndex].transform.localScale = Vector3.one * scale;
+        if (slotButtons != null && slotIndex < slotButtons.Length && slotButtons[slotIndex] != null)
+        {
+            slotButtons[slotIndex].transform.localScale = Vector3.one * scale;
+        }
     }
     #endregion
 }

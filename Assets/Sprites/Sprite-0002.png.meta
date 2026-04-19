@@ -1,13 +1,16 @@
 fileFormatVersion: 2
-guid: 9b4b7f4faa754df4998ec5d9eeafe476
+guid: 66628eaaecf35914f8af688e6e8572dd
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -5453059448890099310
-    second: jelly_ground_0
+      213: 7145198348311737387
+    second: Sprite-0002_0
   - first:
-      213: -3976211769491403998
-    second: jelly_ground_1
+      213: -3708508325519384304
+    second: Sprite-0002_1
+  - first:
+      213: 3106341853739790030
+    second: Sprite-0002_2
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -129,13 +132,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: jelly_ground_0
+      name: Sprite-0002_0
       rect:
         serializedVersion: 2
-        x: 7
-        y: 7
-        width: 24
-        height: 15
+        x: 37
+        y: 328
+        width: 34
+        height: 34
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -144,20 +147,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: cbb65accce366354da4739afce8f42f4
-      internalID: 489332869
+      spriteID: 4f17732a38bb7d94788e5f268801e07b
+      internalID: -968682236
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: jelly_ground_1
+      name: Sprite-0002_1
       rect:
         serializedVersion: 2
-        x: 46
-        y: 7
-        width: 26
-        height: 15
+        x: 87
+        y: 322
+        width: 34
+        height: 34
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -166,8 +169,30 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 652b2c9843d2ef64ba06147381aab085
-      internalID: -249399379
+      spriteID: f85e1b82161a7e84cb5159691df38336
+      internalID: -1425551073
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sprite-0002_2
+      rect:
+        serializedVersion: 2
+        x: 137
+        y: 324
+        width: 34
+        height: 34
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 66f39da77e8cc97418bad799b763a323
+      internalID: -85488161
       vertices: []
       indices: 
       edges: []
@@ -186,10 +211,11 @@ TextureImporter:
     spriteCustomMetadata:
       entries:
       - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":30.0,"y":62.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      jelly_ground_0: 489332869
-      jelly_ground_1: -249399379
+      Sprite-0002_0: -968682236
+      Sprite-0002_1: -1425551073
+      Sprite-0002_2: -85488161
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

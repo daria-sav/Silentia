@@ -106,6 +106,42 @@ public class TerminalSession : MonoBehaviour
         return slot >= 0 && slot < SlotCount && Clips[slot] != null;
     }
 
+    public Sprite GetSlotIcon(int slot)
+    {
+        if (slot < 0 || slot >= SlotCount)
+            return null;
+
+        if (Clips[slot] == null)
+            return null;
+
+        string profileId = ClipProfileIds[slot];
+        if (string.IsNullOrEmpty(profileId))
+            return null;
+
+        return GetProfileIconById(profileId);
+    }
+
+    private Sprite GetProfileIconById(string profileId)
+    {
+        if (string.IsNullOrEmpty(profileId) || cachedHero == null)
+            return null;
+
+        var switcher = cachedHero.GetComponent<CloneSwitcher>();
+        if (switcher == null || switcher.profiles == null)
+            return null;
+
+        foreach (var profile in switcher.profiles)
+        {
+            if (profile == null)
+                continue;
+
+            if (profile.id == profileId)
+                return profile.slotIcon;
+        }
+
+        return null;
+    }
+
     public void ClearSelectedSlot()
     {
         int selected = Mathf.Clamp(SelectedSlot, 0, SlotCount - 1);
