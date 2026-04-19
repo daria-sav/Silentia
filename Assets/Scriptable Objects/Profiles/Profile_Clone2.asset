@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Profile_Clone2
   m_EditorClassIdentifier: Assembly-CSharp::CharacterProfile
   id: 2
+  displayName: Manipura
   bodyPrefab: {fileID: 6873362264134903609, guid: 356d2822170674c4399ab683b3ec75d1, type: 3}
   slotIcon: {fileID: -85488161, guid: 66628eaaecf35914f8af688e6e8572dd, type: 3}
   permittedStates: 0000000001000000030000000500000006000000070000000b0000000c000000

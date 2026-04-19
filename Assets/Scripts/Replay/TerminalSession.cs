@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -161,6 +162,13 @@ public class TerminalSession : MonoBehaviour
         }
         SelectedSlot = 0;
         OnSlotsChanged?.Invoke();
+    }
+
+    public List<CharacterProfile> GetProfiles()
+    {
+        if (cachedHero == null) return null;
+        var switcher = cachedHero.GetComponent<CloneSwitcher>();
+        return switcher?.profiles;
     }
     #endregion
 
