@@ -82,8 +82,6 @@ public class CameraManager : MonoBehaviour
         if (isPlayerFalling)
             lerpedFromPlayerFalling = true;
 
-        Debug.Log($"[Camera] LerpY start={startDamping} end={endDamping} falling={isPlayerFalling}");
-
         // lerp the pan amount
         float elapsedTime = 0f;
         while (elapsedTime < fallPanTime)

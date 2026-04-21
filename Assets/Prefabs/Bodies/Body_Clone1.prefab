@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 79563403936651038}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.59, y: 0, z: 0}
+  m_LocalPosition: {x: 0.372, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -56,7 +56,7 @@ Transform:
   m_GameObject: {fileID: 283401194666691494}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.488, y: 0, z: 0}
+  m_LocalPosition: {x: -0.425, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -307,7 +307,7 @@ Transform:
   m_GameObject: {fileID: 5883679716574984554}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.1425, y: -1.375, z: 0}
+  m_LocalPosition: {x: -0.026, y: -1.375, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -378,6 +378,8 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
+  defaultInterpolation: 1
+  platformInterpolation: 2
 --- !u!114 &2555202574435278521
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -393,10 +395,6 @@ MonoBehaviour:
   groundCheckPoint: {fileID: 4730564652585980875}
   frontWallCheckPoint: {fileID: 9164099898351803944}
   backWallCheckPoint: {fileID: 386415457979588306}
-  leftGroundPoint: {fileID: 4511843189801117531}
-  rightGroundPoint: {fileID: 2159017551355104614}
-  wallCheckUpper: {fileID: 6471954644230311918}
-  wallCheckLower: {fileID: 1063739254957488580}
   visualRoot: {fileID: 2070480972542562775}
   animator: {fileID: 1845096455744794564}
   flipRoot: {fileID: 146915337502471430}
@@ -434,7 +432,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.05499649, y: -0.010994673}
+  m_Offset: {x: -0.021991193, y: -0.0065143704}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -444,7 +442,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1.082087, y: 2.730421}
+  m_Size: {x: 0.8451787, y: 2.7214603}
   m_EdgeRadius: 0
 --- !u!50 &1454532033954536065
 Rigidbody2D:

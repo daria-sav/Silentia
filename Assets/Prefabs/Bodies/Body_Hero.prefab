@@ -276,7 +276,7 @@ Transform:
   m_GameObject: {fileID: 6133838175009117339}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.045, y: -1.358, z: 0}
+  m_LocalPosition: {x: -0.031, y: -1.358, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -342,7 +342,7 @@ MonoBehaviour:
   groundCheckPoint: {fileID: 4001602087905921197}
   frontWallCheckPoint: {fileID: 8451927216569214049}
   backWallCheckPoint: {fileID: 9015049785167099050}
-  groundCheckSize: {x: 0.8, y: 0.04}
+  groundCheckSize: {x: 0.76, y: 0.04}
   wallCheckSize: {x: 0.2, y: 1}
   groundLayer:
     serializedVersion: 2
@@ -364,10 +364,6 @@ MonoBehaviour:
   groundCheckPoint: {fileID: 4001602087905921197}
   frontWallCheckPoint: {fileID: 8451927216569214049}
   backWallCheckPoint: {fileID: 9015049785167099050}
-  leftGroundPoint: {fileID: 4511843189801117531}
-  rightGroundPoint: {fileID: 2159017551355104614}
-  wallCheckUpper: {fileID: 6471954644230311918}
-  wallCheckLower: {fileID: 1063739254957488580}
   visualRoot: {fileID: 2070480972542562775}
   animator: {fileID: 1845096455744794564}
   flipRoot: {fileID: 146915337502471430}
@@ -405,7 +401,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.06259954, y: -0.13144457}
+  m_Offset: {x: -0.03438896, y: -0.11635995}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -415,7 +411,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.9401467, y: 2.4895213}
+  m_Size: {x: 0.8077947, y: 2.459352}
   m_EdgeRadius: 0
 --- !u!50 &5329085247600925901
 Rigidbody2D:

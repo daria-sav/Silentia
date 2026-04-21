@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CharacterProfile
   id: 3
   displayName: Svadhisthana
-  bodyPrefab: {fileID: 6873362264134903609, guid: a1f93fd1ea441db428cb54e77ffaa299, type: 3}
+  bodyPrefab: {fileID: 6873362264134903609, guid: ce862c7484536614d9cd427de38d21ac, type: 3}
   slotIcon: {fileID: -1425551073, guid: 66628eaaecf35914f8af688e6e8572dd, type: 3}
   permittedStates: 00000000010000000300000005000000060000000b0000000c000000

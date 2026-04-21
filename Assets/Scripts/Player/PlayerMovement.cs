@@ -284,7 +284,10 @@ public class PlayerMovement : MonoBehaviour
     private void UpdateCollisions()
     {
         if (groundCheckPoint == null || frontWallCheckPoint == null || backWallCheckPoint == null)
+        {
+            Debug.LogWarning($"[PlayerMovement] Null check point: ground={groundCheckPoint}, front={frontWallCheckPoint}, back={backWallCheckPoint}");
             return;
+        }
 
         // ground — skip during upward phase of a jump to prevent instant re-grounding from an overlap at launch
         if (!IsDashing && !(IsJumping && RB.linearVelocity.y > 0))
@@ -427,7 +430,7 @@ public class PlayerMovement : MonoBehaviour
             return;
 
         // detect transition from rising to falling
-        if (IsJumping && RB.linearVelocity.y < 0)
+        if (IsJumping && RB.linearVelocity.y < 0f)
         {
             IsJumping = false;
             if (!IsWallJumping) isJumpFalling = true;
@@ -458,16 +461,6 @@ public class PlayerMovement : MonoBehaviour
             isJumpFalling = false;
             ExecuteJump();
         }
-        // try air jump (double jump, triple jump, etc.)
-        else if (CanAirJump() && LastPressedJumpTime > 0)
-        {
-            AirJumpsLeft--;
-            IsJumping = true;
-            IsWallJumping = false;
-            isJumpCut = false;
-            isJumpFalling = false;
-            ExecuteJump();
-        }
         // try wall jump
         else if (CanWallJump() && LastPressedJumpTime > 0)
         {
@@ -481,6 +474,16 @@ public class PlayerMovement : MonoBehaviour
             lastWallJumpDir = (LastOnWallRightTime > 0) ? -1 : 1;
 
             ExecuteWallJump(lastWallJumpDir);
+        }
+        // try air jump (double jump, triple jump, etc.)
+        else if (CanAirJump() && LastPressedJumpTime > 0)
+        {
+            AirJumpsLeft--;
+            IsJumping = true;
+            IsWallJumping = false;
+            isJumpCut = false;
+            isJumpFalling = false;
+            ExecuteJump();
         }
     }
 

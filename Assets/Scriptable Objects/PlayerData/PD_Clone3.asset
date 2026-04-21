@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d3b8a0e0762aa404e95b72bf2151ebcb, type: 3}
-  m_Name: PD_Clone2
+  m_Name: PD_Clone3
   m_EditorClassIdentifier: Assembly-CSharp::PlayerData
   calculatedGravityStrength: -77.77777
   calculatedGravityScale: 7.9284167
@@ -42,7 +42,7 @@ MonoBehaviour:
   wallSlideAcceleration: 8
   coyoteTime: 0.1
   jumpInputBufferTime: 0.1
-  maxDashCount: 1
+  maxDashCount: 0
   dashSpeed: 20
   dashFreezeTime: 0.05
   dashActiveTime: 0.15
