@@ -18,6 +18,8 @@ public class Player : MonoBehaviour
 
     public PlayerMovement motor { get; private set; }
 
+    [SerializeField] private CameraFollowTarget cameraFollowTarget;
+
     // ─────────────── LIFECYCLE ───────────────
 
     #region Lifecycle
@@ -60,11 +62,16 @@ public class Player : MonoBehaviour
     {
         if (motor == null || visual == null) return;
 
+        bool newFacingRight = motor.IsFacingRight;
+        if (newFacingRight != facingRight && cameraFollowTarget != null)
+            cameraFollowTarget.CallTurn();
+
         var s = visual.localScale;
         s.x = motor.IsFacingRight ? Mathf.Abs(s.x) : -Mathf.Abs(s.x);
         visual.localScale = s;
 
-        facingRight = motor.IsFacingRight;
+        facingRight = newFacingRight;
+
     }
     #endregion
 
@@ -94,8 +101,12 @@ public class Player : MonoBehaviour
     public void RefreshMotorFromChildren()
     {
         motor = GetComponentInChildren<PlayerMovement>(true);
+
         if (motor == null)
             Debug.LogError("[Player] PlayerMovement not found in children!");
+
+        if (cameraFollowTarget != null)
+            cameraFollowTarget.SetTarget(this);
 
         foreach (var a in GetComponents<BaseAbility>())
             a.RefreshLinks();

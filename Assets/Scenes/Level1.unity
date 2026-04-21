@@ -12468,7 +12468,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 9.25
+  orthographic size: 8.25
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -12493,7 +12493,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.2762928, y: -1.6199946, z: -10}
+  m_LocalPosition: {x: -2.2751102, y: -1.6199946, z: -10}
   m_LocalScale: {x: 1.2, y: 1.5303125, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -32588,8 +32588,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a014ea3b9c23bb644bebc9ad62e81c24, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraFollowTarget
-  player: {fileID: 5359115114394504803}
   followTarget: {fileID: 1247322375}
+  flipYRotationTime: 0.5
+  player: {fileID: 5359115114394504803}
 --- !u!1 &1390015203
 GameObject:
   m_ObjectHideFlags: 0

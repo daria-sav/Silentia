@@ -61,5 +61,31 @@ public class PlayerBrain : MonoBehaviour
         {
             recorder.StopRecording();
         }
+
+        HandleCameraYDamping(motor);
+    }
+
+    private void HandleCameraYDamping(PlayerMovement motor)
+    {
+        if (CameraManager.instance == null) return;
+
+        float velY = motor.RB.linearVelocity.y;
+
+        // Falling faster than the threshold - enable damping
+        if (velY < CameraManager.instance.fallSpeedYDampingChangeThreshold
+            && !CameraManager.instance.isLerpingYDamping
+            && !CameraManager.instance.lerpedFromPlayerFalling)
+        {
+            CameraManager.instance.LerpYDamping(true);
+        }
+
+        // landed / flying up - reset damping
+        if (velY >= 0f
+            && !CameraManager.instance.isLerpingYDamping
+            && CameraManager.instance.lerpedFromPlayerFalling)
+        {
+            CameraManager.instance.lerpedFromPlayerFalling = false;
+            CameraManager.instance.LerpYDamping(false);
+        }
     }
 }

@@ -1,0 +1,228 @@
+using System.Collections;
+using Unity.Cinemachine;
+using UnityEngine;
+
+public class CameraManager : MonoBehaviour
+{
+    public static CameraManager instance;
+
+    [SerializeField] private CinemachineCamera[] allCameras;
+
+    [Header("Controls for lerping the Y Damping during player jump or fall")]
+    [SerializeField] private float fallPanAmount = 0.25f;
+    [SerializeField] private float fallPanTime = 0.35f;
+    public float fallSpeedYDampingChangeThreshold = -15f;
+
+    public bool isLerpingYDamping { get; private set; }
+    public bool lerpedFromPlayerFalling { get; set; }
+
+    private Coroutine lerpYPanCoroutine;
+    private Coroutine panCameraCoroutine;
+
+    private CinemachineCamera currentCamera;
+    private CinemachinePositionComposer positionComposer;
+
+    private float normYPanAmount;
+
+    private Vector2 startingTrackedObjectOffset;
+
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    private void Start()
+    {
+        for (int i = 0; i < allCameras.Length; i++)
+        {
+            if (allCameras[i] != null)
+            {
+                currentCamera = allCameras[i];
+                positionComposer = currentCamera.GetComponent<CinemachinePositionComposer>();
+
+                if (positionComposer != null)
+                {
+                    normYPanAmount = positionComposer.Damping.y;
+                    break;
+                }
+            }
+        }
+
+        if (positionComposer == null)
+            Debug.LogError("[CameraManager] CinemachinePositionComposer not found!");
+
+        // set the starting position of the tracked object offset
+        startingTrackedObjectOffset = positionComposer.TargetOffset;
+    }
+
+    #region Lerp the Y Damping
+
+    public void LerpYDamping(bool isPlayerFalling)
+    {
+        if (lerpYPanCoroutine != null)
+            StopCoroutine(lerpYPanCoroutine);
+
+        lerpYPanCoroutine = StartCoroutine(LerpYAction(isPlayerFalling));
+    }
+
+    private IEnumerator LerpYAction(bool isPlayerFalling)
+    {
+        isLerpingYDamping = true;
+
+        float startDamping = positionComposer.Damping.y;
+        float endDamping = isPlayerFalling ? fallPanAmount : normYPanAmount;
+
+        if (isPlayerFalling)
+            lerpedFromPlayerFalling = true;
+
+        Debug.Log($"[Camera] LerpY start={startDamping} end={endDamping} falling={isPlayerFalling}");
+
+        // lerp the pan amount
+        float elapsedTime = 0f;
+        while (elapsedTime < fallPanTime)
+        {
+            elapsedTime += Time.deltaTime;
+
+            var damping = positionComposer.Damping;
+            damping.y = Mathf.Lerp(startDamping, endDamping, elapsedTime / fallPanTime);
+            positionComposer.Damping = damping;
+
+
+            yield return null;
+        }
+        var d = positionComposer.Damping;
+        d.y = endDamping;
+        positionComposer.Damping = d;
+
+        isLerpingYDamping = false;
+    }
+
+    #endregion
+
+    #region Pan the camera
+
+    public void PanCameraOnContact(float panDistance, float panTime, PanDirection panDirection, bool panToStartingPos)
+    {
+        if (panCameraCoroutine != null)
+            StopCoroutine(panCameraCoroutine);
+
+        panCameraCoroutine = StartCoroutine(PanCamera(panDistance, panTime, panDirection, panToStartingPos));
+    }
+
+    private IEnumerator PanCamera(float panDistance, float panTime, PanDirection panDirection, bool panToStartingPos)
+    {
+        Vector2 endPos = Vector2.zero;
+        Vector2 startingPos = Vector2.zero;
+
+        // handle pan from trigger
+        if (!panToStartingPos)
+        {
+            switch (panDirection)
+            {
+                case PanDirection.Up:
+                    endPos = Vector2.up;
+                    break;
+                case PanDirection.Down:
+                    endPos = Vector2.down;
+                    break;
+                case PanDirection.Left:
+                    endPos = Vector2.left;
+                    break;
+                case PanDirection.Right:
+                    endPos = Vector2.right;
+                    break;
+                default:
+                    break;
+
+            }
+            endPos *= panDistance;
+
+            startingPos = startingTrackedObjectOffset;
+
+            endPos += startingPos;
+        }
+
+        // handle the direction settings when moving back to the starting position
+        else
+        {
+            startingPos = positionComposer.TargetOffset;
+            endPos = startingTrackedObjectOffset;
+        }
+
+        Vector3 savedDamping = positionComposer.Damping;
+        positionComposer.Damping = new Vector3(savedDamping.x, 0f, savedDamping.z);
+
+        // handle the actual panning of the camera
+        float elapsedTime = 0f;
+        while (elapsedTime < panTime)
+        {
+            elapsedTime += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsedTime / panTime);
+
+            // smoothstep gives ease-in + ease-out
+            t = Mathf.SmoothStep(0f, 1f, t);
+
+            positionComposer.TargetOffset = Vector3.Lerp(startingPos, endPos, t);
+            yield return null;
+        }
+
+        positionComposer.TargetOffset = endPos;
+
+        positionComposer.Damping = savedDamping;
+        panCameraCoroutine = null;
+    }
+    #endregion
+
+    #region Camera Switching
+
+    public void SwitchCamera(CinemachineCamera cameraFromLeft, CinemachineCamera cameraFromRight, Vector2 triggerExitDirection)
+    {
+        // if the current camera is the camera on the left and trigger exit direction was on the right
+        if (currentCamera == cameraFromLeft && triggerExitDirection.x > 0f)
+        {
+            cameraFromRight.enabled = true;
+
+            cameraFromLeft.enabled = false;
+
+            currentCamera = cameraFromRight;
+
+            positionComposer = currentCamera.GetComponent<CinemachinePositionComposer>();
+            UpdateCameraState();
+        }
+
+        // if the current camera is the camera on the right and trigger exit direction was on the left
+        else if (currentCamera == cameraFromRight && triggerExitDirection.x < 0f)
+        {
+            cameraFromLeft.enabled = true;
+
+            cameraFromRight.enabled = false;
+
+            currentCamera = cameraFromLeft;
+
+            positionComposer = currentCamera.GetComponent<CinemachinePositionComposer>();
+            UpdateCameraState();
+        }
+    }
+    #endregion
+
+    #region Helper
+
+    private void UpdateCameraState()
+    {
+        positionComposer = currentCamera.GetComponent<CinemachinePositionComposer>();
+        if (positionComposer != null)
+        {
+            normYPanAmount = positionComposer.Damping.y;
+            startingTrackedObjectOffset = positionComposer.TargetOffset;
+        }
+    }
+
+    #endregion
+}
