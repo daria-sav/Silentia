@@ -210,7 +210,7 @@ public class CameraManager : MonoBehaviour
     }
     #endregion
 
-    #region Helper
+    #region Helpers
 
     private void UpdateCameraState()
     {
@@ -220,6 +220,16 @@ public class CameraManager : MonoBehaviour
             normYPanAmount = positionComposer.Damping.y;
             startingTrackedObjectOffset = positionComposer.TargetOffset;
         }
+    }
+
+    public void SnapToTarget()
+    {
+        if (currentCamera == null || positionComposer == null) return;
+
+        Vector3 saved = positionComposer.Damping;
+        positionComposer.Damping = Vector3.zero;
+        currentCamera.InternalUpdateCameraState(Vector3.up, Time.deltaTime);
+        positionComposer.Damping = saved;
     }
 
     #endregion

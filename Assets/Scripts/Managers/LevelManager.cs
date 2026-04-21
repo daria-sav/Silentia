@@ -88,6 +88,9 @@ public class LevelManager : MonoBehaviour
     {
         isTransitioning = true;
 
+        yield return null;
+        CameraManager.instance?.SnapToTarget();
+
         yield return FadeCanvasTo(0f);
 
         isTransitioning = false;

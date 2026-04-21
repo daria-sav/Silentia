@@ -450,6 +450,8 @@ public class TerminalSession : MonoBehaviour
 
     private void EnterTerminalPaused(Player hero, CloneSwitcher switcher)
     {
+        CameraManager.instance?.SnapToTarget();
+
         // freeze world
         Time.timeScale = 0f;
 
