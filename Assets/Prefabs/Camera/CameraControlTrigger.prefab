@@ -28,7 +28,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.63607, y: -4.51384, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1679, y: 3.3577125, z: 1.1679}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -47,12 +47,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CameraControlTrigger
   customInspectorObjects:
     swapCameras: 0
-    panCameraOnContact: 0
+    panCameraOnContact: 1
     cameraOnLeft: {fileID: 0}
     cameraOnRight: {fileID: 0}
-    panDirection: 0
+    panDirection: 1
     panDistance: 3
-    panTime: 0.35
+    panTime: 0.5
 --- !u!61 &7406751915862058492
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -87,7 +87,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: -0.1685439, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -97,5 +97,5 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.6629122, y: 1}
   m_EdgeRadius: 0

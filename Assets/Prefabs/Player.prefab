@@ -24,6 +24,7 @@ GameObject:
   - component: {fileID: 5380277254304922262}
   - component: {fileID: 7253031294074278652}
   - component: {fileID: 2348857377672144134}
+  - component: {fileID: 5787490262160041844}
   m_Layer: 7
   m_Name: Player
   m_TagString: Untagged
@@ -122,6 +123,7 @@ MonoBehaviour:
   anim: {fileID: 3902770287820551483}
   visual: {fileID: 3677654106536987432}
   facingRight: 1
+  cameraFollowTarget: {fileID: 0}
 --- !u!114 &6877654709472543452
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -139,7 +141,7 @@ MonoBehaviour:
   jumpActionRef: {fileID: 1104379796043896753, guid: 1b41bb87599c1334f9155036f7cfacb1, type: 3}
   dashActionRef: {fileID: -9086795085070252477, guid: 1b41bb87599c1334f9155036f7cfacb1, type: 3}
   interactActionRef: {fileID: 4242293931169304803, guid: 1b41bb87599c1334f9155036f7cfacb1, type: 3}
-  stopRecordActionRef: {fileID: 0}
+  stopRecordActionRef: {fileID: 416120372793563177, guid: 1b41bb87599c1334f9155036f7cfacb1, type: 3}
   mode: 0
 --- !u!114 &397845121689481969
 MonoBehaviour:
@@ -170,8 +172,8 @@ MonoBehaviour:
   profiles:
   - {fileID: 11400000, guid: a77bebd0952ed5b40bc249de38860ec0, type: 2}
   - {fileID: 11400000, guid: 996de7b505d664c4d99d01b51388020e, type: 2}
-  - {fileID: 11400000, guid: 317ef33424953e4448cf227047c63027, type: 2}
   - {fileID: 11400000, guid: c3ddfbe6bf7e1994890e6d9377883188, type: 2}
+  - {fileID: 11400000, guid: 317ef33424953e4448cf227047c63027, type: 2}
   bodyParent: {fileID: 1404600219807740496}
 --- !u!114 &8229787506685479791
 MonoBehaviour:
@@ -284,6 +286,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DeathAbility
   thisAbilityState: 12
   isPermitted: 1
+--- !u!114 &5787490262160041844
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1126334027215873197}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dcb111641d7652542bc2859c2f9287fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ReplayLateKeyframer
 --- !u!1 &7527469357280293808
 GameObject:
   m_ObjectHideFlags: 0
