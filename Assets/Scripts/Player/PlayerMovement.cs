@@ -45,7 +45,7 @@ public class PlayerMovement : MonoBehaviour
     public float LastOnWallRightTime { get; private set; }
     public float LastOnWallLeftTime { get; private set; }
 
-    public float LastPressedJumpTime { get; private set; } // jump input buffer timer
+    public float LastPressedJumpTime { get; set; } // jump input buffer timer
     public float LastPressedDashTime { get; private set; } // dash input buffer timer
 
     public bool IsExternallyLocked { get { return externalLockTimer > 0f; } }

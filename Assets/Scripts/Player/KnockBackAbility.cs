@@ -73,6 +73,9 @@ public class KnockBackAbility : BaseAbility
             yield break;
         }
 
+        player.gatherInput?.DisablePlayerMap();
+        linkedMotor.LastPressedJumpTime = 0f;
+
         // dead: optional delay, optional wait for ground, then die
         yield return WaitBeforeDeath(deathDelaySeconds, waitForGroundBeforeDeath, maxWaitForGround);
 
