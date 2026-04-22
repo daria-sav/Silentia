@@ -16,6 +16,7 @@ public class CloneSwitcher : MonoBehaviour
     public Transform bodyParent;
 
     public CharacterProfile CurrentProfile { get; private set; }
+    public int CurrentProfileIndex { get; private set; } = 0;
 
     private BodySetup bodySetup;
     private Player player;
@@ -50,6 +51,7 @@ public class CloneSwitcher : MonoBehaviour
     public void SwitchTo(int index)
     {
         if (profiles == null || index < 0 || index >= profiles.Count) return;
+        CurrentProfileIndex = index;
 
         CharacterProfile profile = profiles[index];
         if (profile == null || profile.bodyPrefab == null) return;

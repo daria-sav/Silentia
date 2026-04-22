@@ -25,6 +25,11 @@ public class DeathAbility : BaseAbility
 
         if (linkedAnimator != null)
             linkedAnimator.SetBool(deathParameterID, true);
+
+        if (GetComponent<CloneSwitcher>()?.CurrentProfileIndex == 0)
+        {
+            SpawnMode.spawnFromCheckPoint = true;
+        }
     }
 
     public override void ExitAbility()

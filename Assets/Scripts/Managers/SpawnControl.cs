@@ -1,4 +1,6 @@
+using System.IO;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Applies saved spawn information to the player when the scene starts.
@@ -14,7 +16,10 @@ public class SpawnControl : MonoBehaviour
 
     [Header("Scene Spawn Points")]
     [SerializeField] private SpawnIdentifier[] spawnPoints;
+    [SerializeField] private SpawnIdentifier[] spawnCheckPoints;
     private SpawnData spawnData = new SpawnData();
+    private CheckpointData checkpointData = new CheckpointData();
+    private bool canLoadFromCheckpoint = false;
 
     // ─────────────── LIFECYCLE ───────────────
 
@@ -32,6 +37,37 @@ public class SpawnControl : MonoBehaviour
         if (SaveLoadManager.Instance == null)
         {
             Debug.LogWarning($"{nameof(SpawnControl)}: {nameof(SaveLoadManager)} instance was not found. Spawn data could not be loaded.");
+            return;
+        }
+
+        string loadPath = Path.Combine(Application.persistentDataPath, SaveLoadManager.Instance.folderName, SaveLoadManager.Instance.fileCheckpoint);
+
+        if (File.Exists(loadPath))
+        {
+            SaveLoadManager.Instance.Load(checkpointData, SaveLoadManager.Instance.folderName, SaveLoadManager.Instance.fileCheckpoint);
+
+            Debug.Log($"{nameof(SpawnControl)}: Checkpoint data loaded. Scene to load: {checkpointData.sceneToLoad}, ActiveScene: {SceneManager.GetActiveScene().name}, Checkpoint key: {checkpointData.checkPointKey}");
+            if (checkpointData.sceneToLoad == SceneManager.GetActiveScene().name)
+            {
+                canLoadFromCheckpoint = true;
+            }
+        }
+        if (SpawnMode.spawnFromCheckPoint == true && canLoadFromCheckpoint)
+        {
+            foreach (SpawnIdentifier spawnID in spawnCheckPoints)
+            {
+                if (spawnID.spawnKey == checkpointData.checkPointKey)
+                {
+                    player.transform.position = spawnID.transform.position;
+                    break;
+                }
+            }
+            if(checkpointData.facingRight == false)
+            {
+                player.ForceFlip();
+            }
+
+            SpawnMode.spawnFromCheckPoint = false;
             return;
         }
 

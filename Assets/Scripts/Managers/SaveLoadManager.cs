@@ -18,6 +18,9 @@ public class SaveLoadManager : MonoBehaviour
     public string folderName = "SaveFiles";
     public string fileName = "SpawnPoint.json";
 
+    [Header("Checkpoint Save Path")]
+    public string fileCheckpoint = "Checkpoint.json";
+
     // ─────────────── LIFECYCLE ───────────────
 
     #region Unity Lifecycle
@@ -108,6 +111,30 @@ public class SaveLoadManager : MonoBehaviour
         };
 
         Save(data, folderName, fileName);
+    }
+
+    public void SaveCheckpointData(string sceneToLoad, string checkPointKey, bool facingRight)
+    {
+        if (string.IsNullOrWhiteSpace(sceneToLoad))
+        {
+            Debug.LogWarning($"{nameof(SaveLoadManager)}: Scene name is empty. Using Level1 as fallback.");
+            sceneToLoad = "Level1";
+        }
+
+        if (string.IsNullOrWhiteSpace(checkPointKey))
+        {
+            Debug.LogWarning($"{nameof(SaveLoadManager)}: Checkpoint key is empty. Using Check1 as fallback.");
+            checkPointKey = "Check1";
+        }
+
+        CheckpointData data = new CheckpointData
+        {
+            sceneToLoad = sceneToLoad,
+            checkPointKey = checkPointKey,
+            facingRight = facingRight
+        };
+
+        Save(data, folderName, fileCheckpoint);
     }
 
     /// <summary>
