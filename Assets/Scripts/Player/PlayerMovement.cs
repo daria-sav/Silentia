@@ -290,9 +290,11 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // ground — skip during upward phase of a jump to prevent instant re-grounding from an overlap at launch
+        bool groundNow = false;
         if (!IsDashing && !(IsJumping && RB.linearVelocity.y > 0))
         {
-            if (Physics2D.OverlapBox(groundCheckPoint.position, groundCheckSize, 0, groundLayer))
+            groundNow = Physics2D.OverlapBox(groundCheckPoint.position, groundCheckSize, 0, groundLayer);
+            if (groundNow) 
                 LastOnGroundTime = data.coyoteTime;
         }
 
@@ -304,11 +306,17 @@ public class PlayerMovement : MonoBehaviour
         bool frontIsRight = frontWallCheckPoint.position.x >= backWallCheckPoint.position.x;
         bool rightHit = frontIsRight ? aHit : bHit;
         bool leftHit = frontIsRight ? bHit : aHit;
+        bool wallNow = rightHit || leftHit;
 
         if (rightHit && !IsWallJumping) LastOnWallRightTime = data.coyoteTime;
         if (leftHit && !IsWallJumping) LastOnWallLeftTime = data.coyoteTime;
 
         LastOnWallTime = Mathf.Max(LastOnWallLeftTime, LastOnWallRightTime);
+
+        if (wallNow && !groundNow && !IsWallJumping)
+        {
+            LastOnGroundTime = 0f;
+        }
     }
     #endregion
 
@@ -441,7 +449,10 @@ public class PlayerMovement : MonoBehaviour
         {
             wallJumpTimeLeft -= dt;
             if (wallJumpTimeLeft <= 0f)
+            {
                 IsWallJumping = false;
+                if (RB.linearVelocity.y > 0f) isJumpFalling = true; // + эта строка
+            }
         }
 
         // reset jump flags and air jumps when safely grounded
@@ -450,6 +461,17 @@ public class PlayerMovement : MonoBehaviour
             isJumpCut = false;
             isJumpFalling = false;
             AirJumpsLeft = data.maxAirJumps;
+        }
+
+        if (LastPressedJumpTime > 0f)
+        {
+            Debug.Log($"[WJ-MOTOR] Jump check tick. " +
+                      $"LastPressedJump={LastPressedJumpTime:F3}, " +
+                      $"LastOnWall={LastOnWallTime:F3} (L={LastOnWallLeftTime:F3} R={LastOnWallRightTime:F3}), " +
+                      $"Ground={LastOnGroundTime:F3}, " +
+                      $"IsWJ={IsWallJumping}, IsJ={IsJumping}, IsSliding={IsSliding}, " +
+                      $"vel=({RB.linearVelocity.x:F2},{RB.linearVelocity.y:F2}), " +
+                      $"CanJump={CanJump()}, CanWallJump={CanWallJump()}, CanAirJump={CanAirJump()}");
         }
 
         // try ground jump (coyote time)
@@ -503,6 +525,10 @@ public class PlayerMovement : MonoBehaviour
 
     private void ExecuteWallJump(int dir)
     {
+        Debug.Log($"[WJ-FIRE] START dir={dir}, " +
+              $"velBefore=({RB.linearVelocity.x:F2},{RB.linearVelocity.y:F2}), " +
+              $"wallJumpForce=({data.wallJumpForce.x},{data.wallJumpForce.y})");
+
         LastPressedJumpTime = 0;
         LastOnGroundTime = 0;
         LastOnWallRightTime = 0;
@@ -511,13 +537,17 @@ public class PlayerMovement : MonoBehaviour
         Vector2 force = new Vector2(data.wallJumpForce.x * dir, data.wallJumpForce.y);
 
         // compensate existing velocity so the impulse is consistent
-        if (Mathf.Sign(RB.linearVelocity.x) != Mathf.Sign(force.x))
-            force.x -= RB.linearVelocity.x;
+        //if (Mathf.Sign(RB.linearVelocity.x) != Mathf.Sign(force.x))
+        //    force.x -= RB.linearVelocity.x;
+        force.x -= RB.linearVelocity.x;
 
         if (RB.linearVelocity.y < 0)
             force.y -= RB.linearVelocity.y;
 
         RB.AddForce(force, ForceMode2D.Impulse);
+
+        Debug.Log($"[WJ-FIRE] END appliedForce=({force.x:F2},{force.y:F2}), " +
+              $"velAfter=({RB.linearVelocity.x:F2},{RB.linearVelocity.y:F2})");
     }
 
     #endregion
@@ -527,20 +557,30 @@ public class PlayerMovement : MonoBehaviour
     #region Slide
     private void UpdateSlide()
     {
-        if (IsDashing) { IsSliding = false; return; }
+        if (IsDashing) 
+        { 
+            IsSliding = false; 
+            return; 
+        }
 
         bool pushingIntoLeftWall = LastOnWallLeftTime > 0 && moveInput.x < 0;
         bool pushingIntoRightWall = LastOnWallRightTime > 0 && moveInput.x > 0;
 
+        // for testing
+        bool wasSliding = IsSliding;
         IsSliding = CanSlide() && (pushingIntoLeftWall || pushingIntoRightWall);
+
+        if (!wasSliding && IsSliding)
+        {
+            Debug.Log($"[WJ-SLIDE] Slide STARTED. " +
+                      $"velY={RB.linearVelocity.y:F2}, " +
+                      $"pushL={pushingIntoLeftWall}, pushR={pushingIntoRightWall}, " +
+                      $"CanSlide={CanSlide()}");
+        }
     }
 
     private void ApplySlideForce()
     {
-        // kill any upward velocity immediately
-        if (RB.linearVelocity.y > 0)
-            RB.AddForce(-RB.linearVelocity.y * Vector2.up, ForceMode2D.Impulse);
-
         float speedDif = data.wallSlideSpeed - RB.linearVelocity.y;
         float force = speedDif * data.wallSlideAcceleration;
 
@@ -678,7 +718,7 @@ public class PlayerMovement : MonoBehaviour
 
     public bool CanSlide()
     {
-        return LastOnWallTime > 0 && !IsJumping && !IsWallJumping && !IsDashing && LastOnGroundTime <= 0;
+        return LastOnWallTime > 0 && !IsJumping && !IsWallJumping && !IsDashing && LastOnGroundTime <= 0 && RB.linearVelocity.y <= 0.01f;
     }
 
     #endregion
