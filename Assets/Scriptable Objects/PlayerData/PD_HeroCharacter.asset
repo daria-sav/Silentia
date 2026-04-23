@@ -35,7 +35,7 @@ MonoBehaviour:
   apexHangVelocityThreshold: 1
   apexHangAccelerationMultiplier: 1.1
   apexHangMaxSpeedMultiplier: 1.3
-  wallJumpForce: {x: 15, y: 25}
+  wallJumpForce: {x: 12, y: 25}
   wallJumpMovementLerp: 0.5
   wallJumpMovementLockTime: 0.15
   wallSlideSpeed: -2

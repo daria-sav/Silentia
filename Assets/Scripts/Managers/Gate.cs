@@ -82,6 +82,7 @@ public class Gate : MonoBehaviour
                 player.motor.RB.linearVelocity = Vector2.zero;
 
             LevelManager.Instance.LoadLevel(levelToLoad);
+            SpawnMode.spawnFromCheckPoint = false;
         }
     }
     #endregion

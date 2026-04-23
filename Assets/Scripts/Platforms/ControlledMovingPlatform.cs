@@ -23,6 +23,8 @@ public class ControlledMovingPlatform : MonoBehaviour, IButtonTarget
     private readonly HashSet<Player> riders = new HashSet<Player>();
     private readonly Dictionary<Player, Transform> previousParents = new Dictionary<Player, Transform>();
 
+    private const float PixelsPerUnit = 16f;
+
     // ─────────────── LIFECYCLE ───────────────
 
     #region Unity Lifecycle
@@ -37,7 +39,7 @@ public class ControlledMovingPlatform : MonoBehaviour, IButtonTarget
 
         if (startIndex < 0 || startIndex >= points.Length)
         {
-            Debug.LogWarning($"{nameof(ControlledMovingPlatform)}: Start index is out of range. Using 0.");
+            Debug.LogWarning($"{nameof(ControlledMovingPlatform)}: Start index out of range. Using 0.");
             startIndex = 0;
         }
 
@@ -48,44 +50,54 @@ public class ControlledMovingPlatform : MonoBehaviour, IButtonTarget
             return;
         }
 
+        foreach (Transform point in points)
+            if (point != null)
+                point.position = (Vector3)SnapToPixel(point.position);
+
         targetIndex = startIndex;
-        transform.position = points[targetIndex].position;
+        transform.position = SnapToPixel(points[targetIndex].position);
         isInitialized = true;
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         if (!isInitialized || !isMoving)
             return;
 
         Transform targetPoint = points[targetIndex];
-
         if (targetPoint == null)
             return;
 
-        transform.position = Vector2.MoveTowards(transform.position, points[targetIndex].position, moveSpeed * Time.deltaTime);
+        Vector2 rawPos = Vector2.MoveTowards(
+            transform.position, targetPoint.position, moveSpeed * Time.fixedDeltaTime);
 
-        if (Vector2.Distance(transform.position, points[targetIndex].position) < 0.05f)
+        if (Vector2.Distance(rawPos, targetPoint.position) < 0.05f)
         {
-            targetIndex++;
+            transform.position = targetPoint.position;
 
+            targetIndex++;
             if (targetIndex >= points.Length)
                 targetIndex = 0;
         }
+        else
+        {
+            transform.position = SnapToPixel(rawPos);
+        }
+
+        foreach (Player rider in riders)
+        {
+            if (rider?.motor?.RB == null) continue;
+            rider.motor.RB.position = (Vector2)rider.motor.transform.position;
+        }
     }
+
     private void OnDisable()
     {
         foreach (Player rider in riders)
         {
-            if (rider == null)
-                continue;
-
-            Transform previousParent = null;
-            previousParents.TryGetValue(rider, out previousParent);
-            rider.transform.SetParent(previousParent);
-
-            if (rider.motor != null)
-                rider.motor.SetDefaultInterpolation();
+            if (rider == null) continue;
+            previousParents.TryGetValue(rider, out Transform prev);
+            rider.transform.SetParent(prev);
         }
 
         riders.Clear();
@@ -96,15 +108,8 @@ public class ControlledMovingPlatform : MonoBehaviour, IButtonTarget
     // ────────────────── API ──────────────────
 
     #region Public API
-    public void SetMoving(bool moving)
-    {
-        isMoving = moving;
-    }
-
-    public void SetPressed(bool pressed)
-    {
-        SetMoving(pressed);
-    }
+    public void SetMoving(bool moving) => isMoving = moving;
+    public void SetPressed(bool pressed) => SetMoving(pressed);
     #endregion
 
     // ───────────── COLLISION LOGIC ─────────────
@@ -113,9 +118,7 @@ public class ControlledMovingPlatform : MonoBehaviour, IButtonTarget
     private void OnCollisionEnter2D(Collision2D collision)
     {
         Player rider = collision.transform.GetComponentInParent<Player>();
-
-        if (rider == null) 
-            return;
+        if (rider == null) return;
 
         foreach (ContactPoint2D contact in collision.contacts)
         {
@@ -124,16 +127,10 @@ public class ControlledMovingPlatform : MonoBehaviour, IButtonTarget
                 if (!riders.Contains(rider))
                 {
                     riders.Add(rider);
-
                     if (!previousParents.ContainsKey(rider))
                         previousParents[rider] = rider.transform.parent;
-
                     rider.transform.SetParent(transform);
-
-                    if (rider.motor != null)
-                        rider.motor.SetPlatformInterpolation();
                 }
-
                 break;
             }
         }
@@ -142,20 +139,20 @@ public class ControlledMovingPlatform : MonoBehaviour, IButtonTarget
     private void OnCollisionExit2D(Collision2D collision)
     {
         Player rider = collision.transform.GetComponentInParent<Player>();
-
-        if (rider == null || !riders.Contains(rider))
-            return;
+        if (rider == null || !riders.Contains(rider)) return;
 
         riders.Remove(rider);
-
-        Transform previousParent = null;
-        previousParents.TryGetValue(rider, out previousParent);
-        rider.transform.SetParent(previousParent);
-
-        if (rider.motor != null)
-            rider.motor.SetDefaultInterpolation();
-
+        previousParents.TryGetValue(rider, out Transform prev);
+        rider.transform.SetParent(prev);
         previousParents.Remove(rider);
     }
     #endregion
+
+    private Vector2 SnapToPixel(Vector2 pos)
+    {
+        return new Vector2(
+            Mathf.Round(pos.x * PixelsPerUnit) / PixelsPerUnit,
+            Mathf.Round(pos.y * PixelsPerUnit) / PixelsPerUnit
+        );
+    }
 }

@@ -29,7 +29,7 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Interpolation (for moving platforms)")]
     [SerializeField] private RigidbodyInterpolation2D defaultInterpolation = RigidbodyInterpolation2D.Interpolate;
-    [SerializeField] private RigidbodyInterpolation2D platformInterpolation = RigidbodyInterpolation2D.Extrapolate;
+    [SerializeField] private RigidbodyInterpolation2D platformInterpolation = RigidbodyInterpolation2D.None;
 
     public bool IsFacingRight { get; private set; } = true;
     public bool IsJumping { get; private set; }

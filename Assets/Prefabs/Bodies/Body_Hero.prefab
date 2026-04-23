@@ -348,7 +348,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   defaultInterpolation: 1
-  platformInterpolation: 2
+  platformInterpolation: 0
 --- !u!114 &2555202574435278521
 MonoBehaviour:
   m_ObjectHideFlags: 0
