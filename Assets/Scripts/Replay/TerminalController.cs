@@ -22,6 +22,18 @@ public class TerminalController : MonoBehaviour
     [SerializeField] private TerminalToast terminalToast;
     [SerializeField] private GameObject terminalBackground;
 
+    [Header("Tutorial Restrictions")]
+    [SerializeField] private int maxProfilesAllowed = -1; // -1 = no limit
+
+    [Header("Tutorial Hints")]
+    [SerializeField] private PillarTutorialHints tutorialHints;
+
+    [Header("Character Intro")]
+    [SerializeField] private CharacterIntroSequence introSequence;
+    [SerializeField] private CharacterIntroUI characterIntroUI;
+
+    private static bool _introShown;
+
     private TerminalSession session;
     private bool subscribed;
 
@@ -81,6 +93,9 @@ public class TerminalController : MonoBehaviour
     #region Input Handling
     private void HandlePausedInput()
     {
+        if (characterIntroUI != null && characterIntroUI.IsPlaying)
+            return;
+
         if (terminalInput == null || session == null)
             return;
 
@@ -101,6 +116,13 @@ public class TerminalController : MonoBehaviour
         int profileIndex = terminalInput.ProfileDown();
         if (profileIndex != -1)
         {
+            // tutorial guard
+            if (maxProfilesAllowed > 0 && profileIndex > maxProfilesAllowed)
+            {
+                terminalToast?.Show("Not available yet.");
+                return;
+            }
+
             if (session.CanStartRecordingWithProfile(profileIndex, out string msg))
             {
                 session.RequestRestartAndStartRecording(profileIndex);
@@ -163,9 +185,18 @@ public class TerminalController : MonoBehaviour
         session = null;
     }
 
-    private void HandleTerminalStateChanged(TerminalSession.TerminalState _)
+    private void HandleTerminalStateChanged(TerminalSession.TerminalState state)
     {
         UpdateSlotUiVisibility();
+
+        if (state == TerminalSession.TerminalState.TerminalPaused
+        && !_introShown
+        && introSequence != null
+        && characterIntroUI != null)
+        {
+            _introShown = true;
+            characterIntroUI.Play(introSequence, onComplete: null);
+        }
     }
     #endregion
 
@@ -208,6 +239,8 @@ public class TerminalController : MonoBehaviour
 
         playerInZone = true;
 
+        tutorialHints?.OnPlayerEntered();
+
         gatherInput = player.gatherInput != null ? player.gatherInput : player.GetComponent<GatherInput>();
         gatherInput?.ClearInteractBuffered();
 
@@ -222,6 +255,7 @@ public class TerminalController : MonoBehaviour
         if (player == null) return;
 
         playerInZone = false;
+        tutorialHints?.OnPlayerExited();
         gatherInput = null;
         UpdateSlotUiVisibility();
     }

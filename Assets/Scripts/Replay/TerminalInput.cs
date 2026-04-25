@@ -23,6 +23,7 @@ public class TerminalInput : MonoBehaviour
     [SerializeField] private string profile4ActionName = "Profile4";
     [SerializeField] private string profile5ActionName = "Profile5";
     [SerializeField] private string profile6ActionName = "Profile6";
+    [SerializeField] private string confirmActionName = "Confirm";
 
     private InputActionMap terminalMap;
     private InputAction aExit, aPlay, aDelete;
@@ -119,6 +120,13 @@ public class TerminalInput : MonoBehaviour
         if (aP6.WasPressedThisFrame()) return 6;
 
         return -1;
+    }
+
+    public bool ConfirmDown()
+    {
+        if (!initialized) return false;
+        var confirm = terminalMap.FindAction(confirmActionName, false);
+        return confirm != null && confirm.WasPressedThisFrame();
     }
     #endregion
 }

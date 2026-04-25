@@ -17,6 +17,9 @@ public class ReplaySlotUI : MonoBehaviour
     [SerializeField] private float selectedScale = 1.4f;
     [SerializeField] private float normalScale = 1.0f;
 
+    [Header("Tutorial Restrictions")]
+    [SerializeField] private int visibleSlotCount = -1; // -1 = show all
+
     // ─────────────── LIFECYCLE ───────────────
 
     #region Lifecycle
@@ -29,6 +32,7 @@ public class ReplaySlotUI : MonoBehaviour
             TerminalSession.Instance.OnSlotsChanged += Refresh;
 
         Refresh();
+        ApplySlotVisibility();
     }
 
     private void OnDestroy()
@@ -112,6 +116,17 @@ public class ReplaySlotUI : MonoBehaviour
         if (slotButtons != null && slotIndex < slotButtons.Length && slotButtons[slotIndex] != null)
         {
             slotButtons[slotIndex].transform.localScale = Vector3.one * scale;
+        }
+    }
+
+    private void ApplySlotVisibility()
+    {
+        if (visibleSlotCount <= 0) return;
+
+        for (int i = 0; i < slotButtons.Length; i++)
+        {
+            bool visible = i < visibleSlotCount;
+            if (slotButtons[i] != null) slotButtons[i].gameObject.SetActive(visible);
         }
     }
     #endregion

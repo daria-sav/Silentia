@@ -17,6 +17,9 @@ public class CharacterListUI : MonoBehaviour
 
     private readonly List<GameObject> spawnedEntries = new();
 
+    [Header("Tutorial Restrictions")]
+    [SerializeField] private int maxProfilesShown = -1; // -1 = no limit
+
     // ─────────────── LIFECYCLE ───────────────
 
     #region Lifecycle
@@ -63,7 +66,11 @@ public class CharacterListUI : MonoBehaviour
         if (profiles == null || entryPrefab == null || entriesRoot == null)
             return;
 
-        for (int i = 1; i < profiles.Count; i++)
+        int limit = maxProfilesShown > 0
+            ? Mathf.Min(maxProfilesShown + 1, profiles.Count)
+            : profiles.Count;
+
+        for (int i = 1; i < limit; i++)
         {
             var profile = profiles[i];
             if (profile == null)
@@ -90,6 +97,47 @@ public class CharacterListUI : MonoBehaviour
             if (nameLabel != null)
                 nameLabel.text = profile.displayName;
         }
+    }
+    #endregion
+
+    // ─────────────── HIGHLIGHT ───────────────
+
+    #region Highlight
+    private GameObject _highlightedEntry;
+    private Color _originalFrameColor;
+
+    public void HighlightProfile(CharacterProfile profile)
+    {
+        ClearHighlight();
+        if (profile == null) return;
+
+        foreach (var entry in spawnedEntries)
+        {
+            var nameLabel = entry.transform.Find("Frame/NameLabel")?.GetComponent<TMP_Text>();
+            if (nameLabel == null || nameLabel.text != profile.displayName) continue;
+
+            _highlightedEntry = entry;
+
+            var frame = entry.transform.Find("Frame")?.GetComponent<Image>();
+            if (frame != null)
+            {
+                _originalFrameColor = frame.color;
+                frame.color = new Color(1f, 0.85f, 0.25f, 1f); 
+            }
+
+            break;
+        }
+    }
+
+    public void ClearHighlight()
+    {
+        if (_highlightedEntry == null) return;
+
+        var frame = _highlightedEntry.transform.Find("Frame")?.GetComponent<Image>();
+        if (frame != null)
+            frame.color = _originalFrameColor;
+
+        _highlightedEntry = null;
     }
     #endregion
 }
