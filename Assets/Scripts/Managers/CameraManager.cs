@@ -60,6 +60,27 @@ public class CameraManager : MonoBehaviour
 
         // set the starting position of the tracked object offset
         startingTrackedObjectOffset = positionComposer.TargetOffset;
+
+        StartCoroutine(RebuildAllConfinerCachesDelayed());
+    }
+
+    private IEnumerator RebuildAllConfinerCachesDelayed()
+    {
+        yield return new WaitForFixedUpdate();
+        yield return null; 
+
+        if (allCameras == null) yield break;
+
+        foreach (var cam in allCameras)
+        {
+            if (cam == null) continue;
+
+            var confiner = cam.GetComponent<CinemachineConfiner2D>();
+            if (confiner == null) continue;
+
+            confiner.InvalidateBoundingShapeCache();
+            confiner.BakeBoundingShape(cam, 1f);
+        }
     }
 
     #region Lerp the Y Damping

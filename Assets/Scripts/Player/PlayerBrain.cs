@@ -37,15 +37,8 @@ public class PlayerBrain : MonoBehaviour
         // discrete: jump
         if (input.jumpDownTick && jump != null)
         {
-            Debug.Log($"[WJ-BRAIN] jumpDownTick=true, calling jump.TryToJump(). " +
-              $"LastPressedJump(before)={motor.LastPressedJumpTime:F3}, " +
-              $"LastOnWall={motor.LastOnWallTime:F3}, " +
-              $"Ground={motor.LastOnGroundTime:F3}, " +
-              $"IsWJ={motor.IsWallJumping}, IsJ={motor.IsJumping}, IsDash={motor.IsDashing}");
-
             jump.TryToJump();
 
-            Debug.Log($"[WJ-BRAIN] After TryToJump: LastPressedJump(after)={motor.LastPressedJumpTime:F3}");
             input.ClearJumpDownTick(); 
         }
 
