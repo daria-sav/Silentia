@@ -203,9 +203,13 @@ public class CameraManager : MonoBehaviour
 
     public void SwitchCamera(CinemachineCamera cameraFromLeft, CinemachineCamera cameraFromRight, Vector2 triggerExitDirection)
     {
+        Debug.Log($"[Switch] current={currentCamera?.name} L={cameraFromLeft?.name} " +
+              $"R={cameraFromRight?.name} exitDir={triggerExitDirection}");
+
         // if the current camera is the camera on the left and trigger exit direction was on the right
         if (currentCamera == cameraFromLeft && triggerExitDirection.x > 0f)
         {
+            Debug.Log("[Switch] L->R");
             cameraFromRight.enabled = true;
 
             cameraFromLeft.enabled = false;
@@ -219,6 +223,7 @@ public class CameraManager : MonoBehaviour
         // if the current camera is the camera on the right and trigger exit direction was on the left
         else if (currentCamera == cameraFromRight && triggerExitDirection.x < 0f)
         {
+            Debug.Log("[Switch] R->L");
             cameraFromLeft.enabled = true;
 
             cameraFromRight.enabled = false;
@@ -227,6 +232,10 @@ public class CameraManager : MonoBehaviour
 
             positionComposer = currentCamera.GetComponent<CinemachinePositionComposer>();
             UpdateCameraState();
+        }
+        else
+        {
+            Debug.LogWarning("[Switch] NO BRANCH — current/direction mismatch");
         }
     }
     #endregion
