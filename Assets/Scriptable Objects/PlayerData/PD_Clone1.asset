@@ -42,7 +42,7 @@ MonoBehaviour:
   wallSlideAcceleration: 8
   coyoteTime: 0.1
   jumpInputBufferTime: 0.1
-  maxDashCount: 1
+  maxDashCount: 0
   dashSpeed: 20
   dashFreezeTime: 0.05
   dashActiveTime: 0.15
