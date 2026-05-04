@@ -99,22 +99,22 @@ public class ReplayPlayback : MonoBehaviour
     #region Start and Finish
     private void ApplyStartSnapshot(ReplayClip clip)
     {
-        if (clip == null) return;
-
-        // position
-        transform.position = clip.startPosition;
+        if (clip == null) return; 
 
         // velocity
         var motor = player != null ? player.motor : null;
         if (motor != null)
         {
+            motor.RB.position = clip.startPosition;
             motor.RB.linearVelocity = clip.startVelocity;
-            motor.ResetMotorState();
-            motor.RestoreJumpState(
-                clip.startIsJumping,
-                clip.startLastOnGroundTime,
-                clip.startAirJumpsLeft
-            );
+            motor.RB.angularVelocity = 0f;
+        }
+        transform.position = clip.startPosition;
+        Physics2D.SyncTransforms();
+
+        if (motor != null)
+        {
+            motor.RestoreFullSnapshot(clip.startMotorSnapshot);
             motor.SetGravityScale(motor.data != null ? motor.data.calculatedGravityScale : 1f);
         }
 

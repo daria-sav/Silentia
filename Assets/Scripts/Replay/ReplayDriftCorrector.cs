@@ -1,74 +1,82 @@
+using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// Applies drift correction AFTER PlayerMovement has processed
-/// the current tick's input. This ensures the correction targets
-/// the exact post-motor state that was recorded by ReplayLateKeyframer,
-/// without the motor adding extra movement on top.
-///
-/// Execution order: ReplayPlayback (-400) → PlayerBrain (-250)
-/// → PlayerMovement (0) → ReplayDriftCorrector (100)
+/// Pulls the ghost to the recorded trajectory on the keyframes.
+/// Comparison and application of corrections - after the current tick's physical step
+/// (via WaitForFixedUpdate). This semantically matches the moment
+/// when ReplayLateKeyframer saved the keyframe in the recording.
 /// </summary>
 [DefaultExecutionOrder(100)]
 public class ReplayDriftCorrector : MonoBehaviour
 {
     [Header("Drift correction")]
-    [SerializeField] private float positionEpsilon = 0.15f; // ignore drift below this distance
-    [SerializeField] private float hardSnapThreshold = 0.75f; // teleport to keyframe if drift exceeds this distance
-    [SerializeField] private float pullStrength = 0.5f; // soft pull strength per tick
+    [Tooltip("If err is less, don't adjust it.")]
+    [SerializeField] private float positionEpsilon = 0.005f;
 
-    private bool hasPending;
+    [Tooltip("If err is greater, apply a hard snap")]
+    [SerializeField] private float hardSnapThreshold = 5f;
+
+    [Tooltip("Soft pull coefficient for each keyframe")]
+    [Range(0f, 1f)]
+    [SerializeField] private float pullStrength = 0.25f;
+
+    [Tooltip("Also synchronize velocity")]
+    [SerializeField] private bool correctVelocity = false;
+
+    private PlayerMovement motor;
     private Vector2 targetPos;
     private Vector2 targetVel;
-    private PlayerMovement motor;
+    private bool hasPending;
 
-    // ────────────────── API ──────────────────
-
-    #region Public API
-    /// schedules a correction to be applied after the motor runs
     public void ScheduleCorrection(Vector2 keyframePos, Vector2 keyframeVel, PlayerMovement motorRef)
     {
         motor = motorRef;
         targetPos = keyframePos;
         targetVel = keyframeVel;
-        hasPending = true;
+
+        if (!hasPending)
+        {
+            hasPending = true;
+            StartCoroutine(CorrectAfterPhysics());
+        }
     }
 
-    // Cancels any pending correction. Called when playback finishes or the ghost is destroyed
     public void Clear()
     {
+        StopAllCoroutines();
         hasPending = false;
         motor = null;
     }
-    #endregion
 
-    // ──────────── FIXED-STEP CORRECTION ──────
-
-    #region Fixed-step Correction
-    private void FixedUpdate()
+    private IEnumerator CorrectAfterPhysics()
     {
-        if (!hasPending) return;
-        hasPending = false;
+        yield return new WaitForFixedUpdate();
 
-        if (motor == null) return;
+        if (!hasPending || motor == null || motor.RB == null)
+        {
+            hasPending = false;
+            yield break;
+        }
 
-        Vector2 curPos = transform.position;
+        Vector2 curPos = motor.RB.position;
         float err = Vector2.Distance(curPos, targetPos);
 
-        if (err < positionEpsilon) return;
+        if (err < positionEpsilon)
+        {
+            hasPending = false;
+            yield break;
+        }
 
-        if (err >= hardSnapThreshold)
-        {
-            // large drift: hard snap (collisions may have diverged)
-            transform.position = targetPos;
-            motor.RB.linearVelocity = targetVel;
-        }
-        else
-        {
-            // small drift: smooth pull to avoid visible teleport
-            transform.position = Vector2.Lerp(curPos, targetPos, pullStrength);
+        Vector2 newPos = err >= hardSnapThreshold
+            ? targetPos
+            : Vector2.Lerp(curPos, targetPos, pullStrength);
+
+        motor.RB.position = newPos;
+
+        if (correctVelocity)
             motor.RB.linearVelocity = Vector2.Lerp(motor.RB.linearVelocity, targetVel, pullStrength);
-        }
+
+        hasPending = false;
     }
-    #endregion
 }

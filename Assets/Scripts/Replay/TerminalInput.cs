@@ -31,6 +31,9 @@ public class TerminalInput : MonoBehaviour
 
     private bool initialized;
 
+    private int enableFrame = -1;
+    private const int InputGuardFrames = 3;
+
     // ─────────────── LIFECYCLE ───────────────
 
     #region Lifecycle
@@ -45,14 +48,13 @@ public class TerminalInput : MonoBehaviour
 
         if (playerInput == null)
         {
-            Debug.LogError("TerminalInput: PlayerInput not found (expected on Player).");
+            Debug.LogError("TerminalInput: PlayerInput not found.");
             enabled = false;
             return;
         }
 
         InitializeOnce();
-        if (terminalMap != null) 
-            terminalMap.Disable();
+        if (terminalMap != null) terminalMap.Disable();
     }
     #endregion
 
@@ -61,18 +63,12 @@ public class TerminalInput : MonoBehaviour
     #region Initialization
     private void InitializeOnce()
     {
-        if (initialized) 
-            return;
+        if (initialized) return;
 
         var asset = playerInput.actions;
-        if (asset == null)
-        {
-            Debug.LogError("TerminalInput: PlayerInput.actions is null.");
-            return;
-        }
+        if (asset == null) { Debug.LogError("TerminalInput: PlayerInput.actions is null."); return; }
 
         terminalMap = asset.FindActionMap(terminalMapName, true);
-
 
         aExit = terminalMap.FindAction(exitActionName, true);
         aPlay = terminalMap.FindAction(playActionName, true);
@@ -94,23 +90,37 @@ public class TerminalInput : MonoBehaviour
     #region Public API
     public void SetTerminalPaused(bool paused)
     {
-        if (!initialized) 
-            return;
+        if (!initialized) return;
 
-        if (paused) 
+        if (paused)
+        {
+            if (terminalMap.enabled) return;
+            foreach (var a in terminalMap.actions)
+                a.Reset();
+
             terminalMap.Enable();
-        else 
+            enableFrame = Time.frameCount;
+        }
+        else
+        {
+            if (!terminalMap.enabled) return;
+
+            foreach (var a in terminalMap.actions)
+                a.Reset();
             terminalMap.Disable();
+        }
     }
 
-    public bool ExitDown() => initialized && aExit.WasPressedThisFrame();
-    public bool PlayDown() => initialized && aPlay.WasPressedThisFrame();
-    public bool DeleteDown() => initialized && aDelete != null && aDelete.WasPressedThisFrame();
+    private bool InputGuardActive => Time.frameCount - enableFrame < InputGuardFrames;
+
+    public bool ExitDown() => initialized && !InputGuardActive && aExit.WasPressedThisFrame();
+    public bool PlayDown() => initialized && !InputGuardActive && aPlay.WasPressedThisFrame();
+    public bool DeleteDown() => initialized && !InputGuardActive && aDelete != null && aDelete.WasPressedThisFrame();
 
     public int ProfileDown()
     {
-        if (!initialized) 
-            return -1;
+        if (!initialized) return -1;
+        if (InputGuardActive) return -1;
 
         if (aP1.WasPressedThisFrame()) return 1;
         if (aP2.WasPressedThisFrame()) return 2;
@@ -125,6 +135,7 @@ public class TerminalInput : MonoBehaviour
     public bool ConfirmDown()
     {
         if (!initialized) return false;
+        if (InputGuardActive) return false;
         var confirm = terminalMap.FindAction(confirmActionName, false);
         return confirm != null && confirm.WasPressedThisFrame();
     }

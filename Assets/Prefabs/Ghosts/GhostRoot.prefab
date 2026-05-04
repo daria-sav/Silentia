@@ -23,6 +23,7 @@ GameObject:
   - component: {fileID: 7253031294074278652}
   - component: {fileID: 2348857377672144134}
   - component: {fileID: 3683911692557887859}
+  - component: {fileID: -7890890947006341680}
   - component: {fileID: -85548145593842489}
   - component: {fileID: 6660961755398933551}
   m_Layer: 10
@@ -77,6 +78,7 @@ MonoBehaviour:
   anim: {fileID: 3902770287820551483}
   visual: {fileID: 3677654106536987432}
   facingRight: 1
+  cameraFollowTarget: {fileID: 0}
 --- !u!114 &6877654709472543452
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -123,7 +125,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CloneSwitcher
   profiles:
-  - {fileID: 11400000, guid: a77bebd0952ed5b40bc249de38860ec0, type: 2}
   - {fileID: 11400000, guid: 996de7b505d664c4d99d01b51388020e, type: 2}
   - {fileID: 11400000, guid: 317ef33424953e4448cf227047c63027, type: 2}
   - {fileID: 11400000, guid: c3ddfbe6bf7e1994890e6d9377883188, type: 2}
@@ -254,6 +255,19 @@ MonoBehaviour:
   positionEpsilon: 0.15
   hardSnapThreshold: 0.75
   pullStrength: 0.5
+  correctVelocity: 0
+--- !u!114 &-7890890947006341680
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1126334027215873197}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dcb111641d7652542bc2859c2f9287fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ReplayLateKeyframer
 --- !u!114 &-85548145593842489
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -574,6 +588,7 @@ MonoBehaviour:
     m_Bits: 64
   defaultInterpolation: 1
   platformInterpolation: 2
+  dashPhase: 0
 --- !u!50 &7154572540048506552
 Rigidbody2D:
   serializedVersion: 5

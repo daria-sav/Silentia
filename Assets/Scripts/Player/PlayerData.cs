@@ -143,8 +143,16 @@ public class PlayerData : ScriptableObject
     [Range(0.01f, 0.5f)] public float dashInputBufferTime;
 
     private const float FIXED_UPDATES_PER_SECOND = 50f;
-
     private void OnValidate()
+    {
+        Recalculate();
+    }
+
+    private void OnEnable()
+    {
+        Recalculate();
+    }
+    private void Recalculate()
     {
         #region Sanitize user-facing values
         desiredJumpHeight = Mathf.Max(0.01f, desiredJumpHeight);

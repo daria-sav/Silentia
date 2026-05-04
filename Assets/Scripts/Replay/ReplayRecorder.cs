@@ -68,14 +68,20 @@ public class ReplayRecorder : MonoBehaviour
         var motor = player != null ? player.motor : null;
 
         // jump
-        CurrentClip.startIsJumping = motor.IsJumping;
-        CurrentClip.startLastOnGroundTime = motor.LastOnGroundTime;
-        CurrentClip.startAirJumpsLeft = motor.AirJumpsLeft;
+        if (motor != null)
+            CurrentClip.startMotorSnapshot = motor.CaptureFullSnapshot();
 
-        CurrentClip.startPosition = transform.position;
-        CurrentClip.startVelocity = (motor != null) ? motor.RB.linearVelocity : Vector2.zero;
+        // legacy-поля 
+        CurrentClip.startIsJumping = motor != null && motor.IsJumping;
+        CurrentClip.startLastOnGroundTime = motor != null ? motor.LastOnGroundTime : 0f;
+        CurrentClip.startAirJumpsLeft = motor != null ? motor.AirJumpsLeft : 0;
+
+        CurrentClip.startPosition = motor != null ? motor.RB.position : (Vector2)transform.position;
+        CurrentClip.startVelocity = motor != null ? motor.RB.linearVelocity : Vector2.zero;
         CurrentClip.startFacingRight = (player != null) ? player.facingRight : true;
-        CurrentClip.startState = (player != null && player.stateMachine != null) ? player.stateMachine.currentState : PlayerStates.State.Idle;
+        CurrentClip.startState = (player != null && player.stateMachine != null)
+            ? player.stateMachine.currentState
+            : PlayerStates.State.Idle;
 
         tick = 0;
         maxTicks = Mathf.RoundToInt(maxSeconds / Time.fixedDeltaTime);

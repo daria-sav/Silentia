@@ -18,6 +18,47 @@ public class ReplayClip
     public bool startFacingRight;
     public PlayerStates.State startState;
 
+    // === FULL MOTOR SNAPSHOT ===
+    [Serializable]
+    public struct MotorSnapshot
+    {
+        // jump / ground / wall flags
+        public bool isJumping;
+        public bool isWallJumping;
+        public bool isSliding;
+        public bool isDashing;
+        public bool isJumpCut;
+        public bool isJumpFalling;
+
+        // counters
+        public int dashesLeft;
+        public int airJumpsLeft;
+        public int lastWallJumpDir;
+
+        // timers
+        public float lastOnGroundTime;
+        public float lastOnWallTime;
+        public float lastOnWallRightTime;
+        public float lastOnWallLeftTime;
+        public float lastPressedJumpTime;
+        public float lastPressedDashTime;
+        public float wallJumpTimeLeft;
+
+        // dash refill
+        public bool dashRefillActive;
+        public float dashRefillTimer;
+
+        // dash phase
+        public int dashPhase;        // 0=None,1=Freeze,2=Active,3=Recovery
+        public float dashPhaseTimer;
+        public Vector2 dashDir;
+
+        // facing
+        public bool isFacingRight;
+    }
+
+    public MotorSnapshot startMotorSnapshot;
+
     public readonly List<InputFrame> frames = new List<InputFrame>();
     public int FrameCount => frames.Count;
 

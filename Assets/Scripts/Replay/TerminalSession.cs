@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -367,6 +368,17 @@ public class TerminalSession : MonoBehaviour
         lastSceneName = scene.name;
         restartInProgress = false;
 
+        UnityEngine.InputSystem.InputSystem.ResetHaptics();
+        foreach (var device in UnityEngine.InputSystem.InputSystem.devices)
+        {
+            if (device is UnityEngine.InputSystem.Keyboard
+                || device is UnityEngine.InputSystem.Gamepad
+                || device is UnityEngine.InputSystem.Mouse)
+            {
+                UnityEngine.InputSystem.InputSystem.ResetDevice(device);
+            }
+        }
+
         ResolveGhostSpawnPoint();
 
         cachedHero = FindFirstObjectByType<Player>();
@@ -549,9 +561,10 @@ public class TerminalSession : MonoBehaviour
         }
     }
 
-    private System.Collections.IEnumerator BeginRecordingNextFrame(ReplayRecorder recorder)
+
+    private IEnumerator BeginRecordingNextFrame(ReplayRecorder recorder)
     {
-        yield return null; 
+        yield return new WaitForFixedUpdate();
 
         recorder.StartRecording();
         SetState(TerminalState.Recording);

@@ -59,8 +59,8 @@ public class PlayerMovement : MonoBehaviour
     private int lastWallJumpDir;
 
     // dash (fixed-step state machine)
-    private enum DashPhase { None, Freeze, Active, Recovery }
-    private DashPhase dashPhase = DashPhase.None;
+    public enum DashPhase { None, Freeze, Active, Recovery }
+    public DashPhase dashPhase = DashPhase.None;
 
     private Vector2 dashDir;
     private float dashPhaseTimer;
@@ -181,6 +181,77 @@ public class PlayerMovement : MonoBehaviour
         IsJumping = isJumping;
         LastOnGroundTime = lastOnGroundTime;
         AirJumpsLeft = airJumpsLeft;
+    }
+
+    public ReplayClip.MotorSnapshot CaptureFullSnapshot()
+    {
+        return new ReplayClip.MotorSnapshot
+        {
+            isJumping = IsJumping,
+            isWallJumping = IsWallJumping,
+            isSliding = IsSliding,
+            isDashing = IsDashing,
+            isJumpCut = isJumpCut,
+            isJumpFalling = isJumpFalling,
+
+            dashesLeft = DashesLeft,
+            airJumpsLeft = AirJumpsLeft,
+            lastWallJumpDir = lastWallJumpDir,
+
+            lastOnGroundTime = LastOnGroundTime,
+            lastOnWallTime = LastOnWallTime,
+            lastOnWallRightTime = LastOnWallRightTime,
+            lastOnWallLeftTime = LastOnWallLeftTime,
+            lastPressedJumpTime = LastPressedJumpTime,
+            lastPressedDashTime = LastPressedDashTime,
+            wallJumpTimeLeft = wallJumpTimeLeft,
+
+            dashRefillActive = dashRefillActive,
+            dashRefillTimer = dashRefillTimer,
+
+            dashPhase = (int)dashPhase,
+            dashPhaseTimer = dashPhaseTimer,
+            dashDir = dashDir,
+
+            isFacingRight = IsFacingRight,
+        };
+    }
+
+    public void RestoreFullSnapshot(ReplayClip.MotorSnapshot s)
+    {
+        IsJumping = s.isJumping;
+        IsWallJumping = s.isWallJumping;
+        IsSliding = s.isSliding;
+        IsDashing = s.isDashing;
+        isJumpCut = s.isJumpCut;
+        isJumpFalling = s.isJumpFalling;
+
+        DashesLeft = s.dashesLeft;
+        AirJumpsLeft = s.airJumpsLeft;
+        lastWallJumpDir = s.lastWallJumpDir;
+
+        LastOnGroundTime = s.lastOnGroundTime;
+        LastOnWallTime = s.lastOnWallTime;
+        LastOnWallRightTime = s.lastOnWallRightTime;
+        LastOnWallLeftTime = s.lastOnWallLeftTime;
+        LastPressedJumpTime = s.lastPressedJumpTime;
+        LastPressedDashTime = s.lastPressedDashTime;
+        wallJumpTimeLeft = s.wallJumpTimeLeft;
+
+        dashRefillActive = s.dashRefillActive;
+        dashRefillTimer = s.dashRefillTimer;
+
+        dashPhase = (DashPhase)s.dashPhase;
+        dashPhaseTimer = s.dashPhaseTimer;
+        dashDir = s.dashDir;
+
+        IsFacingRight = s.isFacingRight;
+
+        externalLockTimer = 0f;
+        externalFrozen = false;
+
+        if (data != null)
+            SetGravityScale(data.calculatedGravityScale);
     }
     #endregion
 
