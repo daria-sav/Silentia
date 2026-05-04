@@ -29,11 +29,11 @@ public class CharacterIntroUI : MonoBehaviour
     [SerializeField] private TerminalInput terminalInput;
 
     // ── runtime ───────────────────────────────────────────────────
-    private CharacterIntroSequence _sequence;
-    private int _currentEntry;
-    private bool _waitingForInput;
-    private bool _typingDone;
-    private Coroutine _typeRoutine;
+    private CharacterIntroSequence sequence;
+    private int currentEntry;
+    private bool waitingForInput;
+    private bool typingDone;
+    private Coroutine typeRoutine;
 
     public bool IsPlaying { get; private set; }
 
@@ -47,8 +47,8 @@ public class CharacterIntroUI : MonoBehaviour
             return;
         }
 
-        _sequence = sequence;
-        _currentEntry = 0;
+        this.sequence = sequence;
+        currentEntry = 0;
         _onComplete = onComplete;
         IsPlaying = true;
 
@@ -59,26 +59,26 @@ public class CharacterIntroUI : MonoBehaviour
         }
 
         gameObject.SetActive(true);
-        StartCoroutine(FadePanel(0f, 1f, () => ShowEntry(_currentEntry)));
+        StartCoroutine(FadePanel(0f, 1f, () => ShowEntry(currentEntry)));
     }
 
     // ── UPDATE ────────────────────────────────────────
 
     private void Update()
     {
-        if (!_waitingForInput) return;
+        if (!waitingForInput) return;
         if (terminalInput == null || !terminalInput.ConfirmDown()) return;
 
-        if (!_typingDone)
+        if (!typingDone)
         {
             SkipTyping();
             return;
         }
 
-        _currentEntry++;
-        if (_currentEntry < _sequence.entries.Length)
+        currentEntry++;
+        if (currentEntry < sequence.entries.Length)
         {
-            ShowEntry(_currentEntry);
+            ShowEntry(currentEntry);
         }
         else
         {
@@ -98,7 +98,7 @@ public class CharacterIntroUI : MonoBehaviour
 
     private void ShowEntry(int index)
     {
-        var entry = _sequence.entries[index];
+        var entry = sequence.entries[index];
 
         characterListUI?.HighlightProfile(entry.profile);
 
@@ -106,12 +106,12 @@ public class CharacterIntroUI : MonoBehaviour
         if (continueHint != null)
             continueHint.text = "[ Space / Enter / Click ]";
 
-        if (_typeRoutine != null) StopCoroutine(_typeRoutine);
+        if (typeRoutine != null) StopCoroutine(typeRoutine);
 
-        _typingDone = false;
-        _waitingForInput = false;
+        typingDone = false;
+        waitingForInput = true;
 
-        _typeRoutine = StartCoroutine(TypeText(entry.introText));
+        typeRoutine = StartCoroutine(TypeText(entry.introText));
     }
 
     private IEnumerator TypeText(string text)
@@ -122,8 +122,8 @@ public class CharacterIntroUI : MonoBehaviour
         if (textTypeSpeed <= 0f)
         {
             dialogText.text = text;
-            _typingDone = true;
-            _waitingForInput = true;
+            typingDone = true;
+            waitingForInput = true;
             yield break;
         }
 
@@ -133,21 +133,21 @@ public class CharacterIntroUI : MonoBehaviour
             yield return new WaitForSecondsRealtime(textTypeSpeed);
         }
 
-        _typingDone = true;
-        _waitingForInput = true;
+        typingDone = true;
+        waitingForInput = true;
     }
 
     private void SkipTyping()
     {
-        if (_typeRoutine != null) StopCoroutine(_typeRoutine);
-        var entry = _sequence.entries[_currentEntry];
+        if (typeRoutine != null) StopCoroutine(typeRoutine);
+        var entry = sequence.entries[currentEntry];
         if (dialogText != null) dialogText.text = entry.introText;
-        _typingDone = true;
+        typingDone = true;
     }
 
     private IEnumerator FadePanel(float from, float to, System.Action onDone)
     {
-        _waitingForInput = false;
+        waitingForInput = false;
         if (panelGroup == null) { onDone?.Invoke(); yield break; }
 
         float elapsed = 0f;
@@ -160,7 +160,5 @@ public class CharacterIntroUI : MonoBehaviour
         }
         panelGroup.alpha = to;
         onDone?.Invoke();
-
-        if (to > 0f) _waitingForInput = true;
     }
 }

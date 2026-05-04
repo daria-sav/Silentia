@@ -16,6 +16,11 @@ public class Gate : MonoBehaviour
     [Header("Spawn Data For Target Level")]
     [SerializeField] private SpawnData spawnDataForOtherLevel;
 
+    [Header("Main Hero Restriction")]
+    [SerializeField] private LayerMask playerLayer;
+    [SerializeField] private string mainHeroTag = "Player";
+    [SerializeField] private string blockedMessage = "Only the main hero can pass through here.";
+
     private Collider2D gateCollider;
     private bool isTriggered;
 
@@ -25,6 +30,9 @@ public class Gate : MonoBehaviour
     private void Awake()
     {
         gateCollider = GetComponent<Collider2D>();
+
+        if (playerLayer.value == 0)
+            playerLayer = LayerMask.GetMask("Player");
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -32,8 +40,22 @@ public class Gate : MonoBehaviour
         if (isTriggered)
             return;
 
+        if (!IsInLayerMask(collision.gameObject, playerLayer))
+            return;
+
         BodyMarkers markers = collision.GetComponentInParent<BodyMarkers>();
         Player player = collision.GetComponentInParent<Player>();
+
+        bool isMainHero =
+            collision.CompareTag(mainHeroTag) ||
+            (markers != null && markers.CompareTag(mainHeroTag)) ||
+            (player != null && player.CompareTag(mainHeroTag));
+
+        if (!isMainHero)
+        {
+            GateHintUI.Instance?.Show(blockedMessage);
+            return;
+        }
 
         if (markers == null)
         {
@@ -65,25 +87,29 @@ public class Gate : MonoBehaviour
             return;
         }
 
-        if (markers.CompareTag("Player"))
-        {
-            isTriggered = true;
-            gateCollider.enabled = false;
+        isTriggered = true;
+        gateCollider.enabled = false;
 
-            SaveLoadManager.Instance.SaveSpawnData(
-                levelToLoad,
-                spawnDataForOtherLevel.spawnPintKey,
-                spawnDataForOtherLevel.facingRight);
+        SaveLoadManager.Instance.SaveSpawnData(
+            levelToLoad,
+            spawnDataForOtherLevel.spawnPintKey,
+            spawnDataForOtherLevel.facingRight);
 
-            if (player.gatherInput != null)
-                player.gatherInput.DisablePlayerMap();
+        if (player.gatherInput != null)
+            player.gatherInput.DisablePlayerMap();
 
-            if (player.motor != null)
-                player.motor.RB.linearVelocity = Vector2.zero;
+        if (player.motor != null)
+            player.motor.RB.linearVelocity = Vector2.zero;
 
-            LevelManager.Instance.LoadLevel(levelToLoad);
-            SpawnMode.spawnFromCheckPoint = false;
-        }
+        SpawnMode.spawnFromCheckPoint = false;
+        TerminalController.ResetIntroShown();
+
+        LevelManager.Instance.LoadLevel(levelToLoad);
     }
     #endregion
+
+    private static bool IsInLayerMask(GameObject objectToCheck, LayerMask layerMask)
+    {
+        return (layerMask.value & (1 << objectToCheck.layer)) != 0;
+    }
 }

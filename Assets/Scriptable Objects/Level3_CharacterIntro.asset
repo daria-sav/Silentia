@@ -17,3 +17,11 @@ MonoBehaviour:
     introText: "Meet Muladhara \u2014 guardian of the root chakra. Bound to earth,
       strength and inner foundation \n...not that ancient Indian chakra theory means
       much to anyone. In plain terms \u2014 he's the first."
+  - profile: {fileID: 11400000, guid: 996de7b505d664c4d99d01b51388020e, type: 2}
+    introText: 'Press 1... I can feel Muladhara within me.
+
+      Through his form,
+      I may reach what I cannot reach alone.
+
+      After taking his path, return
+      here and press C to bring him into reality as an echo beside me.'

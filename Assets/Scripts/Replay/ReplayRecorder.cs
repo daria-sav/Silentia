@@ -62,11 +62,16 @@ public class ReplayRecorder : MonoBehaviour
         // simulation contract
         CurrentClip.fixedDeltaTime = Time.fixedDeltaTime;
         CurrentClip.velocityIterations = Physics2D.velocityIterations;
-        CurrentClip.positionIterations = Physics2D.positionIterations;
+        CurrentClip.positionIterations = Physics2D.positionIterations;        
 
         // start snapshot
         var motor = player != null ? player.motor : null;
-        
+
+        // jump
+        CurrentClip.startIsJumping = motor.IsJumping;
+        CurrentClip.startLastOnGroundTime = motor.LastOnGroundTime;
+        CurrentClip.startAirJumpsLeft = motor.AirJumpsLeft;
+
         CurrentClip.startPosition = transform.position;
         CurrentClip.startVelocity = (motor != null) ? motor.RB.linearVelocity : Vector2.zero;
         CurrentClip.startFacingRight = (player != null) ? player.facingRight : true;

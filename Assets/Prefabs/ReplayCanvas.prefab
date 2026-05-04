@@ -348,7 +348,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.57254905}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.19607843}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1111,6 +1111,7 @@ MonoBehaviour:
   - {fileID: 1667376851098370828}
   selectedScale: 1.25
   normalScale: 1
+  visibleSlotCount: -1
 --- !u!222 &5433450969300792632
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1568,6 +1569,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CharacterListUI
   entriesRoot: {fileID: 8846428899306624391}
   entryPrefab: {fileID: 5794470466175880508, guid: 3b8adce87e9e93b4ca04b03f42ad7812, type: 3}
+  maxProfilesShown: -1
 --- !u!1 &4913495069666665284
 GameObject:
   m_ObjectHideFlags: 0
@@ -1768,7 +1770,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.57254905}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.19607843}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1998,7 +2000,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.57254905}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.19607843}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -2124,8 +2126,12 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "[C] Play all recordings\r\n[Esc] Exit terminal\r\n[1\u20133] Select profile\n[Delete]
-    Clear selected slot"
+  m_text: '[C] Spawn all recorded echoes
+
+    [Esc] Leave  terminal
+
+    [Delete]
+    Clear selected slot'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8c58f0d4eedb0ac42a5461644ea04f6a, type: 2}
   m_sharedMaterial: {fileID: -7762218953661335611, guid: 8c58f0d4eedb0ac42a5461644ea04f6a, type: 2}
@@ -2152,15 +2158,15 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 18
-  m_fontSizeBase: 18
+  m_fontSize: 28
+  m_fontSizeBase: 28
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
   m_HorizontalAlignment: 1
-  m_VerticalAlignment: 256
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -2190,7 +2196,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: -33.066833, w: 0}
+  m_margin: {x: 0, y: 9.12439, z: 0.85772705, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0

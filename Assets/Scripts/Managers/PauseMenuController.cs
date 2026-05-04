@@ -1,5 +1,8 @@
+using System.Collections;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.UI;
 
 /// <summary>
 /// Handles pause menu: open/close, restart, main menu, quit.
@@ -9,9 +12,11 @@ public class PauseMenuController : MonoBehaviour
 {
     [Header("UI")]
     [SerializeField] private GameObject pauseMenuPanel;
+    [SerializeField] private GameObject firstSelectedButton;
 
     [Header("Input")]
     [SerializeField] private InputActionReference menuActionRef;
+    [SerializeField] private GatherInput gatherInput;
 
     [Header("Settings")]
     [SerializeField] private string mainMenuScene = "MainMenu";
@@ -35,6 +40,15 @@ public class PauseMenuController : MonoBehaviour
     {
         if (menuActionRef != null)
             menuActionRef.action.started -= OnMenuPressed;
+    }
+
+    private void Update()
+    {
+        if (!isPaused) return;
+        if (EventSystem.current == null) return;
+
+        if (EventSystem.current.currentSelectedGameObject == null && firstSelectedButton != null)
+            EventSystem.current.SetSelectedGameObject(firstSelectedButton);
     }
     #endregion
 
@@ -108,10 +122,60 @@ public class PauseMenuController : MonoBehaviour
         isPaused = paused;
         Time.timeScale = paused ? 0f : 1f;
 
+        if (paused)
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+
+            var inputModule = EventSystem.current?
+                .GetComponent<InputSystemUIInputModule>();
+            if (inputModule != null)
+            {
+                inputModule.enabled = false;
+                inputModule.enabled = true;
+            }
+        }
+        else
+        {
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+        }
+
+        if (gatherInput != null)
+        {
+            if (paused)
+                gatherInput.DisablePlayerMap();
+            else
+                gatherInput.EnablePlayerMap();
+        }
+
+        if (paused)
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+        else
+        {
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+        }
 
         if (pauseMenuPanel != null)
-        {
             pauseMenuPanel.SetActive(paused);
+
+        if (paused && firstSelectedButton != null)
+            StartCoroutine(SelectFirstButton());
+    }
+
+    private IEnumerator SelectFirstButton()
+    {
+        yield return null;
+        yield return null;
+
+        if (EventSystem.current != null)
+        {
+            EventSystem.current.SetSelectedGameObject(null); 
+            EventSystem.current.SetSelectedGameObject(firstSelectedButton);
         }
     }
     #endregion

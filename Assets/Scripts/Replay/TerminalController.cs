@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 /// <summary>
 /// Scene-local terminal object. Detects player proximity,
@@ -99,6 +100,25 @@ public class TerminalController : MonoBehaviour
         if (terminalInput == null || session == null)
             return;
 
+        if (Keyboard.current != null)
+        {
+            if (Keyboard.current.leftArrowKey.wasPressedThisFrame ||
+                Keyboard.current.aKey.wasPressedThisFrame)
+            {
+                int next = Mathf.Max(0, session.SelectedSlot - 1);
+                session.SelectSlot(next);
+                return;
+            }
+
+            if (Keyboard.current.rightArrowKey.wasPressedThisFrame ||
+                Keyboard.current.dKey.wasPressedThisFrame)
+            {
+                int next = Mathf.Min(TerminalSession.SlotCount - 1, session.SelectedSlot + 1);
+                session.SelectSlot(next);
+                return;
+            }
+        }
+
         if (terminalInput.ExitDown())
         {
             session.ExitTerminalPaused();
@@ -119,7 +139,6 @@ public class TerminalController : MonoBehaviour
             // tutorial guard
             if (maxProfilesAllowed > 0 && profileIndex > maxProfilesAllowed)
             {
-                terminalToast?.Show("Not available yet.");
                 return;
             }
 
@@ -223,6 +242,11 @@ public class TerminalController : MonoBehaviour
 
             terminalBackground.SetActive(showBg);
         }
+    }
+
+    public static void ResetIntroShown()
+    {
+        _introShown = false;
     }
     #endregion
 

@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3b8a0e0762aa404e95b72bf2151ebcb, type: 3}
   m_Name: PD_Clone3
   m_EditorClassIdentifier: Assembly-CSharp::PlayerData
-  calculatedGravityStrength: -77.77777
-  calculatedGravityScale: 7.9284167
-  fallGravityMultiplier: 1.5
+  calculatedGravityStrength: -57.14286
+  calculatedGravityScale: 5.82496
+  fallGravityMultiplier: 1.4
   maxNormalFallSpeed: 25
   fastFallGravityMultiplier: 2
   maxFastFallSpeed: 30
@@ -23,13 +23,13 @@ MonoBehaviour:
   calculatedGroundAccelerationForce: 11.363636
   groundDeceleration: 8
   calculatedGroundDecelerationForce: 36.363636
-  airAccelerationMultiplier: 0.65
+  airAccelerationMultiplier: 0.8
   airDecelerationMultiplier: 0.65
   preserveMomentum: 1
   desiredJumpHeight: 3.5
-  timeToJumpApex: 0.3
+  timeToJumpApex: 0.35
   maxAirJumps: 0
-  calculatedJumpForce: 23.333332
+  calculatedJumpForce: 20
   jumpReleaseGravityMultiplier: 2
   apexHangGravityMultiplier: 0.5
   apexHangVelocityThreshold: 1

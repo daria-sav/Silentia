@@ -21,6 +21,11 @@ public class ReplayClip
     public readonly List<InputFrame> frames = new List<InputFrame>();
     public int FrameCount => frames.Count;
 
+    // === JUMP ===
+    public bool startIsJumping;
+    public float startLastOnGroundTime;
+    public int startAirJumpsLeft;
+
     // === KEYFRAMES (drift correction) ===
     [Serializable]
     public struct ReplayKeyframe

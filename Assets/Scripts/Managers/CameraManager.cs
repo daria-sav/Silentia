@@ -201,34 +201,41 @@ public class CameraManager : MonoBehaviour
 
     #region Camera Switching
 
-    public void SwitchCamera(CinemachineCamera cameraFromLeft, CinemachineCamera cameraFromRight, Vector2 triggerExitDirection)
+    public void SwitchCamera(CinemachineCamera cameraOnNegativeSide, CinemachineCamera cameraOnPositiveSide, Vector2 triggerExitDirection, CameraSwapAxis swapAxis)
     {
-        Debug.Log($"[Switch] current={currentCamera?.name} L={cameraFromLeft?.name} " +
-              $"R={cameraFromRight?.name} exitDir={triggerExitDirection}");
+        float directionValue = swapAxis == CameraSwapAxis.Horizontal
+            ? triggerExitDirection.x
+            : triggerExitDirection.y;
+
+        if (Mathf.Abs(directionValue) < 0.1f)
+        {
+            Debug.LogWarning("[Switch] Exit direction is too small for selected axis.");
+            return;
+        }
 
         // if the current camera is the camera on the left and trigger exit direction was on the right
-        if (currentCamera == cameraFromLeft && triggerExitDirection.x > 0f)
+        if (currentCamera == cameraOnNegativeSide && directionValue > 0f)
         {
-            Debug.Log("[Switch] L->R");
-            cameraFromRight.enabled = true;
+            Debug.Log("[Switch] Negative -> Positive");
+            cameraOnPositiveSide.enabled = true;
 
-            cameraFromLeft.enabled = false;
+            cameraOnNegativeSide.enabled = false;
 
-            currentCamera = cameraFromRight;
+            currentCamera = cameraOnPositiveSide;
 
             positionComposer = currentCamera.GetComponent<CinemachinePositionComposer>();
             UpdateCameraState();
         }
 
         // if the current camera is the camera on the right and trigger exit direction was on the left
-        else if (currentCamera == cameraFromRight && triggerExitDirection.x < 0f)
+        else if (currentCamera == cameraOnPositiveSide && directionValue < 0f)
         {
-            Debug.Log("[Switch] R->L");
-            cameraFromLeft.enabled = true;
+            Debug.Log("[Switch] Positive -> Negative");
+            cameraOnNegativeSide.enabled = true;
 
-            cameraFromRight.enabled = false;
+            cameraOnPositiveSide.enabled = false;
 
-            currentCamera = cameraFromLeft;
+            currentCamera = cameraOnNegativeSide;
 
             positionComposer = currentCamera.GetComponent<CinemachinePositionComposer>();
             UpdateCameraState();

@@ -30,10 +30,16 @@ public class CameraControlTrigger : MonoBehaviour
         if (collision.gameObject.layer == LayerMask.NameToLayer("Player"))
         {
             Vector2 exitDirection = (collision.transform.position - col.bounds.center).normalized;
-            if (customInspectorObjects.swapCameras && customInspectorObjects.cameraOnLeft != null && customInspectorObjects.cameraOnRight != null)
+            if (customInspectorObjects.swapCameras &&
+                customInspectorObjects.cameraOnLeft != null &&
+                customInspectorObjects.cameraOnRight != null)
             {
-                // swap the cameras
-                CameraManager.instance.SwitchCamera(customInspectorObjects.cameraOnLeft, customInspectorObjects.cameraOnRight, exitDirection);
+                CameraManager.instance.SwitchCamera(
+                    customInspectorObjects.cameraOnLeft,
+                    customInspectorObjects.cameraOnRight,
+                    exitDirection,
+                    customInspectorObjects.swapAxis
+                );
             }
             if (customInspectorObjects.panCameraOnContact)
             {
@@ -47,6 +53,7 @@ public class CameraControlTrigger : MonoBehaviour
 [System.Serializable]
 public class CustomInspectorObjects
 {
+    [HideInInspector] public CameraSwapAxis swapAxis = CameraSwapAxis.Horizontal;
     public bool swapCameras = false;
     public bool panCameraOnContact = false;
 
@@ -66,6 +73,13 @@ public enum PanDirection
     Left,
     Right
 }
+
+public enum CameraSwapAxis
+{
+    Horizontal,
+    Vertical
+}
+
 #if UNITY_EDITOR 
 [CustomEditor(typeof(CameraControlTrigger))]
 public class MyScriotEditor : Editor
@@ -82,6 +96,7 @@ public class MyScriotEditor : Editor
 
         if (cameraControlTrigger.customInspectorObjects.swapCameras)
         {
+            cameraControlTrigger.customInspectorObjects.swapAxis = (CameraSwapAxis)EditorGUILayout.EnumPopup("Swap Axis", cameraControlTrigger.customInspectorObjects.swapAxis);
             cameraControlTrigger.customInspectorObjects.cameraOnLeft = EditorGUILayout.ObjectField("Camera on Left", cameraControlTrigger.customInspectorObjects.cameraOnLeft,
                 typeof(CinemachineCamera), true) as CinemachineCamera;
             cameraControlTrigger.customInspectorObjects.cameraOnRight = EditorGUILayout.ObjectField("Camera on Right", cameraControlTrigger.customInspectorObjects.cameraOnRight,
@@ -103,5 +118,5 @@ public class MyScriotEditor : Editor
             EditorUtility.SetDirty(cameraControlTrigger);
         }
     }
-#endif
 }
+#endif

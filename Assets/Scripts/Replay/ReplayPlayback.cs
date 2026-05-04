@@ -110,6 +110,11 @@ public class ReplayPlayback : MonoBehaviour
         {
             motor.RB.linearVelocity = clip.startVelocity;
             motor.ResetMotorState();
+            motor.RestoreJumpState(
+                clip.startIsJumping,
+                clip.startLastOnGroundTime,
+                clip.startAirJumpsLeft
+            );
             motor.SetGravityScale(motor.data != null ? motor.data.calculatedGravityScale : 1f);
         }
 

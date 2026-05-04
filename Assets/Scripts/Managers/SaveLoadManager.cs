@@ -93,8 +93,8 @@ public class SaveLoadManager : MonoBehaviour
     {
         if (string.IsNullOrWhiteSpace(sceneName))
         {
-            Debug.LogWarning($"{nameof(SaveLoadManager)}: Scene name is empty. Using Level1 as fallback.");
-            sceneName = "Level1";
+            Debug.LogWarning($"{nameof(SaveLoadManager)}: Scene name is empty. Using Tutorial1 as fallback.");
+            sceneName = "Tutorial1";
         }
 
         if (string.IsNullOrWhiteSpace(spawnPintKey))
@@ -117,8 +117,8 @@ public class SaveLoadManager : MonoBehaviour
     {
         if (string.IsNullOrWhiteSpace(sceneToLoad))
         {
-            Debug.LogWarning($"{nameof(SaveLoadManager)}: Scene name is empty. Using Level1 as fallback.");
-            sceneToLoad = "Level1";
+            Debug.LogWarning($"{nameof(SaveLoadManager)}: Scene name is empty. Using Tutorial1 as fallback.");
+            sceneToLoad = "Tutorial1";
         }
 
         if (string.IsNullOrWhiteSpace(checkPointKey))

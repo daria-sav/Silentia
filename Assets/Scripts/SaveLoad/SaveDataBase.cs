@@ -19,7 +19,7 @@ public class SpawnData
     /// </summary>
     public SpawnData()
     {
-        sceneName = "Level1";
+        sceneName = "Tutorial1";
         spawnPintKey = "Start";
         facingRight = true;
     }
@@ -33,7 +33,7 @@ public class CheckpointData
 
     public CheckpointData()
     {
-        sceneToLoad = "Level1";
+        sceneToLoad = "Tutorial1";
         checkPointKey = "Check1";
         facingRight = true;
     }

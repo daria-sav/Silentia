@@ -175,6 +175,13 @@ public class PlayerMovement : MonoBehaviour
             SetGravityScale(data.calculatedGravityScale);
         }
     }
+
+    public void RestoreJumpState(bool isJumping, float lastOnGroundTime, int airJumpsLeft)
+    {
+        IsJumping = isJumping;
+        LastOnGroundTime = lastOnGroundTime;
+        AirJumpsLeft = airJumpsLeft;
+    }
     #endregion
 
     // ─────────── EXTERNAL CONTROL ────────────

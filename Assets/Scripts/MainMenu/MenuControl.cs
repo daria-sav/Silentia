@@ -1,6 +1,8 @@
+using System.Collections;
 using System.IO;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem.UI;
 
 /// <summary>
 /// Controls the main menu actions for starting a new game,
@@ -13,12 +15,21 @@ using UnityEngine.EventSystems;
 public class MenuControl : MonoBehaviour
 {
     [SerializeField] private GameObject continueButton;
+    [SerializeField] private GameObject newGameButton;
 
     // ─────────────── LIFECYCLE ───────────────
 
     #region Unity Lifecycle
     private void Start()
     {
+        var inputModule = EventSystem.current?
+            .GetComponent<InputSystemUIInputModule>();
+        if (inputModule != null)
+        {
+            inputModule.enabled = false;
+            inputModule.enabled = true;
+        }
+
         if (continueButton == null)
         {
             Debug.LogWarning($"{nameof(MenuControl)}: Continue button is not assigned.");
@@ -36,8 +47,25 @@ public class MenuControl : MonoBehaviour
 
         continueButton.SetActive(hasSave);
 
-        if (hasSave && EventSystem.current != null)
-            EventSystem.current.firstSelectedGameObject = continueButton;
+        GameObject firstButton = hasSave ? continueButton : newGameButton;
+        if (firstButton != null)
+            StartCoroutine(SelectFirstButton(firstButton));
+    }
+    #endregion
+
+    // ─────────────── HELPERS ─────────────────
+
+    #region Helpers
+    private IEnumerator SelectFirstButton(GameObject button)
+    {
+        yield return null;
+        yield return null;
+
+        if (EventSystem.current != null)
+        {
+            EventSystem.current.SetSelectedGameObject(null);
+            EventSystem.current.SetSelectedGameObject(button);
+        }
     }
     #endregion
 
@@ -59,9 +87,10 @@ public class MenuControl : MonoBehaviour
         }
 
         SaveLoadManager.Instance.DeleteFolder(SaveLoadManager.Instance.folderName);
-        SaveLoadManager.Instance.SaveSpawnData("Level1", "Start", true);
+        SaveLoadManager.Instance.SaveSpawnData("Tutorial1", "Start", true);
+        MovementHintUI.ResetHint();
 
-        LevelManager.Instance.LoadLevel("Level1");
+        LevelManager.Instance.LoadLevel("Intro");
     }
 
     public void ContinueGame()
@@ -83,13 +112,13 @@ public class MenuControl : MonoBehaviour
             SpawnData spawnData = new SpawnData();
             SaveLoadManager.Instance.LoadDefault(spawnData);
 
-            string sceneToLoad = string.IsNullOrEmpty(spawnData.sceneName) ? "Level1" : spawnData.sceneName;
+            string sceneToLoad = string.IsNullOrEmpty(spawnData.sceneName) ? "Tutorial1" : spawnData.sceneName;
             LevelManager.Instance.LoadLevel(sceneToLoad);
         }
         else
         {
-            SaveLoadManager.Instance.SaveSpawnData("Level1", "Start", true);
-            LevelManager.Instance.LoadLevel("Level1");
+            SaveLoadManager.Instance.SaveSpawnData("Tutorial1", "Start", true);
+            LevelManager.Instance.LoadLevel("Tutorial1");
         }
     }
 

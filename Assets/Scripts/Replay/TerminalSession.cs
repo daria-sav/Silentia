@@ -434,6 +434,9 @@ public class TerminalSession : MonoBehaviour
         Time.timeScale = 1f;
         SetState(newState);
 
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+
         if (cachedHero != null && cachedHero.gatherInput != null)
             cachedHero.gatherInput.EnablePlayerMap();
     }
@@ -454,6 +457,9 @@ public class TerminalSession : MonoBehaviour
 
         // freeze world
         Time.timeScale = 0f;
+
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
 
         hero.gatherInput?.DisablePlayerMap();
 
