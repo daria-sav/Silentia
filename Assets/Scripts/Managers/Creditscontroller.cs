@@ -1,6 +1,4 @@
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 /// <summary>
@@ -32,7 +30,6 @@ public class CreditsController : MonoBehaviour
 
     private float phaseTimer;
     private float scrollFinishY;   // Y position when container is fully scrolled
-    private bool skipped;
 
     // ───────────────────────────── LIFECYCLE ───────────────────────────────
 
@@ -66,15 +63,6 @@ public class CreditsController : MonoBehaviour
             case Phase.FadingToThankYou: UpdateFadeToThankYou(); break;
             case Phase.ThankYou: UpdateThankYou(); break;
             case Phase.FadingOut: UpdateFadeOut(); break;
-        }
-
-        // Any key / click = skip straight to thank-you
-        if (!skipped && phase == Phase.Scrolling)
-        {
-            if (Keyboard.current != null && Keyboard.current.anyKey.wasPressedThisFrame)
-                Skip();
-            else if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
-                Skip();
         }
     }
 
@@ -150,8 +138,6 @@ public class CreditsController : MonoBehaviour
 
     private void Skip()
     {
-        skipped = true;
-
         if (creditsContainer != null)
             creditsContainer.anchoredPosition =
                 new Vector2(creditsContainer.anchoredPosition.x, scrollFinishY);
@@ -159,12 +145,41 @@ public class CreditsController : MonoBehaviour
         EnterPhase(Phase.FadingToThankYou);
     }
 
+    private void ShowThankYouImmediately()
+    {
+        if (creditsCanvasGroup != null)
+            creditsCanvasGroup.alpha = 0f;
+
+        if (thankYouCanvasGroup != null)
+        {
+            thankYouCanvasGroup.alpha = 1f;
+            thankYouCanvasGroup.interactable = true;
+            thankYouCanvasGroup.blocksRaycasts = true;
+        }
+
+        EnterPhase(Phase.ThankYou);
+    }
+
     // ───────────────────────────── PUBLIC ──────────────────────────────────
 
     public void OnSkipButton()
     {
-        if (phase == Phase.Scrolling || phase == Phase.EndPause)
-            Skip();
+        switch (phase)
+        {
+            case Phase.Scrolling:
+            case Phase.EndPause:
+                Skip();
+                break;
+
+            case Phase.FadingToThankYou:
+                ShowThankYouImmediately();
+                break;
+
+            case Phase.ThankYou:
+            case Phase.FadingOut:
+                GoToMainMenu();
+                break;
+        }
     }
 
     private void GoToMainMenu()

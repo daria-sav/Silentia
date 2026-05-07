@@ -26,13 +26,14 @@ public class ReplaySlotUI : MonoBehaviour
     private void Start()
     {
         WireButtonCallbacks();
+        ApplySlotLimitToSession();
 
         // subscribe to session updates
         if (TerminalSession.Instance != null)
             TerminalSession.Instance.OnSlotsChanged += Refresh;
 
-        Refresh();
         ApplySlotVisibility();
+        Refresh();
     }
 
     private void OnDestroy()
@@ -50,6 +51,8 @@ public class ReplaySlotUI : MonoBehaviour
         var session = TerminalSession.Instance;
         if (session == null) 
             return;
+
+        ApplySlotVisibility();
 
         for (int i = 0; i < slotButtons.Length; i++)
         {
@@ -77,6 +80,9 @@ public class ReplaySlotUI : MonoBehaviour
     {
         var session = TerminalSession.Instance;
         if (session == null)
+            return;
+
+        if (!session.IsSlotAvailable(slotIndex))
             return;
 
         session.SelectSlot(slotIndex);
@@ -121,13 +127,37 @@ public class ReplaySlotUI : MonoBehaviour
 
     private void ApplySlotVisibility()
     {
-        if (visibleSlotCount <= 0) return;
+        int activeSlotCount = TerminalSession.SlotCount;
+
+        var session = TerminalSession.Instance;
+        if (session != null)
+        {
+            activeSlotCount = session.ActiveSlotCount;
+        }
+        else if (visibleSlotCount > 0)
+        {
+            activeSlotCount = Mathf.Clamp(visibleSlotCount, 1, TerminalSession.SlotCount);
+        }
 
         for (int i = 0; i < slotButtons.Length; i++)
         {
-            bool visible = i < visibleSlotCount;
-            if (slotButtons[i] != null) slotButtons[i].gameObject.SetActive(visible);
+            bool visible = i < activeSlotCount;
+
+            if (slotButtons[i] != null)
+            {
+                slotButtons[i].gameObject.SetActive(visible);
+                slotButtons[i].interactable = visible;
+            }
         }
+    }
+
+    private void ApplySlotLimitToSession()
+    {
+        var session = TerminalSession.Instance;
+        if (session == null)
+            return;
+
+        session.SetActiveSlotCount(visibleSlotCount);
     }
     #endregion
 }

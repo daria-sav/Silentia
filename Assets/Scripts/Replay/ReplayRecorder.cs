@@ -53,6 +53,7 @@ public class ReplayRecorder : MonoBehaviour
     {
         if (cloneSwitcher == null || cloneSwitcher.CurrentProfile == null)
         {
+            Debug.Log($"[RR] StartRecording using CurrentProfile id={cloneSwitcher.CurrentProfile.id}, name={cloneSwitcher.CurrentProfile.name}, currentBody={(cloneSwitcher.CurrentProfileIndex)}");
             Debug.LogError("ReplayRecorder: CurrentProfile is null. Cannot start recording.");
             return;
         }

@@ -19,6 +19,8 @@ public class CameraControlTrigger : MonoBehaviour
             Debug.Log("Player entered camera control trigger!");
             if (customInspectorObjects.panCameraOnContact)
             {
+                if (CameraManager.instance == null)
+                    return;
                 // pan the camera
                 CameraManager.instance.PanCameraOnContact(customInspectorObjects.panDistance, customInspectorObjects.panTime, customInspectorObjects.panDirection, false);
             }
@@ -27,25 +29,34 @@ public class CameraControlTrigger : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.gameObject.layer == LayerMask.NameToLayer("Player"))
+        if (collision.gameObject.layer != LayerMask.NameToLayer("Player"))
+            return;
+
+        if (CameraManager.instance == null)
+            return;
+
+        Vector2 exitDirection = (collision.bounds.center - col.bounds.center).normalized;
+
+        if (customInspectorObjects.swapCameras &&
+            customInspectorObjects.cameraOnLeft != null &&
+            customInspectorObjects.cameraOnRight != null)
         {
-            Vector2 exitDirection = (collision.transform.position - col.bounds.center).normalized;
-            if (customInspectorObjects.swapCameras &&
-                customInspectorObjects.cameraOnLeft != null &&
-                customInspectorObjects.cameraOnRight != null)
-            {
-                CameraManager.instance.SwitchCamera(
-                    customInspectorObjects.cameraOnLeft,
-                    customInspectorObjects.cameraOnRight,
-                    exitDirection,
-                    customInspectorObjects.swapAxis
-                );
-            }
-            if (customInspectorObjects.panCameraOnContact)
-            {
-                // pan the camera
-                CameraManager.instance.PanCameraOnContact(customInspectorObjects.panDistance, customInspectorObjects.panTime, customInspectorObjects.panDirection, true);
-            }
+            CameraManager.instance.SwitchCamera(
+                customInspectorObjects.cameraOnLeft,
+                customInspectorObjects.cameraOnRight,
+                exitDirection,
+                customInspectorObjects.swapAxis
+            );
+        }
+
+        if (customInspectorObjects.panCameraOnContact)
+        {
+            CameraManager.instance.PanCameraOnContact(
+                customInspectorObjects.panDistance,
+                customInspectorObjects.panTime,
+                customInspectorObjects.panDirection,
+                true
+            );
         }
     }
 }

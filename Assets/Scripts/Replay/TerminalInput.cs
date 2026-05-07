@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections.Generic;
 
 /// <summary>
 /// Reads terminal-only input from the Terminal action map.
@@ -26,13 +27,15 @@ public class TerminalInput : MonoBehaviour
     [SerializeField] private string confirmActionName = "Confirm";
 
     private InputActionMap terminalMap;
-    private InputAction aExit, aPlay, aDelete;
-    private InputAction aP1, aP2, aP3, aP4, aP5, aP6;
+    private InputAction aExit, aPlay, aDelete, aConfirm;
+    private InputAction[] profileActions;
 
     private bool initialized;
 
-    private int enableFrame = -1;
+    private int enableFrame = -1000;
     private const int InputGuardFrames = 3;
+
+    private readonly HashSet<InputAction> blockedUntilRelease = new HashSet<InputAction>();
 
     // ─────────────── LIFECYCLE ───────────────
 
@@ -73,13 +76,17 @@ public class TerminalInput : MonoBehaviour
         aExit = terminalMap.FindAction(exitActionName, true);
         aPlay = terminalMap.FindAction(playActionName, true);
         aDelete = terminalMap.FindAction(deleteActionName, true);
+        aConfirm = terminalMap.FindAction(confirmActionName, false);
 
-        aP1 = terminalMap.FindAction(profile1ActionName, true);
-        aP2 = terminalMap.FindAction(profile2ActionName, true);
-        aP3 = terminalMap.FindAction(profile3ActionName, true);
-        aP4 = terminalMap.FindAction(profile4ActionName, true);
-        aP5 = terminalMap.FindAction(profile5ActionName, true);
-        aP6 = terminalMap.FindAction(profile6ActionName, true);
+        profileActions = new InputAction[]
+        {
+            terminalMap.FindAction(profile1ActionName, true),
+            terminalMap.FindAction(profile2ActionName, true),
+            terminalMap.FindAction(profile3ActionName, true),
+            terminalMap.FindAction(profile4ActionName, true),
+            terminalMap.FindAction(profile5ActionName, true),
+            terminalMap.FindAction(profile6ActionName, true),
+        };
 
         initialized = true;
     }
@@ -95,11 +102,16 @@ public class TerminalInput : MonoBehaviour
         if (paused)
         {
             if (terminalMap.enabled) return;
+
             foreach (var a in terminalMap.actions)
                 a.Reset();
 
             terminalMap.Enable();
             enableFrame = Time.frameCount;
+
+            blockedUntilRelease.Clear();
+            foreach (var a in terminalMap.actions)
+                blockedUntilRelease.Add(a);
         }
         else
         {
@@ -108,36 +120,57 @@ public class TerminalInput : MonoBehaviour
             foreach (var a in terminalMap.actions)
                 a.Reset();
             terminalMap.Disable();
+            blockedUntilRelease.Clear();
         }
     }
 
     private bool InputGuardActive => Time.frameCount - enableFrame < InputGuardFrames;
 
-    public bool ExitDown() => initialized && !InputGuardActive && aExit.WasPressedThisFrame();
-    public bool PlayDown() => initialized && !InputGuardActive && aPlay.WasPressedThisFrame();
-    public bool DeleteDown() => initialized && !InputGuardActive && aDelete != null && aDelete.WasPressedThisFrame();
+    private bool IsActionAllowed(InputAction action)
+    {
+        if (action == null) return false;
+        if (InputGuardActive) return false;
+
+        if (blockedUntilRelease.Contains(action))
+        {
+            if (!action.IsPressed())
+                blockedUntilRelease.Remove(action);
+            return false;
+        }
+        return true;
+    }
+
+    public bool ExitDown()
+        => initialized && IsActionAllowed(aExit) && aExit.WasPressedThisFrame();
+
+    public bool PlayDown()
+        => initialized && IsActionAllowed(aPlay) && aPlay.WasPressedThisFrame();
+
+    public bool DeleteDown()
+        => initialized && aDelete != null && IsActionAllowed(aDelete) && aDelete.WasPressedThisFrame();
 
     public int ProfileDown()
     {
         if (!initialized) return -1;
         if (InputGuardActive) return -1;
 
-        if (aP1.WasPressedThisFrame()) return 1;
-        if (aP2.WasPressedThisFrame()) return 2;
-        if (aP3.WasPressedThisFrame()) return 3;
-        if (aP4.WasPressedThisFrame()) return 4;
-        if (aP5.WasPressedThisFrame()) return 5;
-        if (aP6.WasPressedThisFrame()) return 6;
-
+        for (int i = 0; i < profileActions.Length; i++)
+        {
+            if (!IsActionAllowed(profileActions[i])) continue;
+            if (profileActions[i].WasPressedThisFrame())
+            {
+                var s = TerminalSession.Instance;
+                Debug.Log($"[TI] ProfileDown={i + 1} frame={Time.frameCount} " +
+                          $"enableFrame={enableFrame} ready={s?.IsTerminalInputReady} " +
+                          $"state={s?.State} unscaledT={Time.unscaledTime:F3} " +
+                          $"readyAt={(s != null ? "yes" : "no")}");
+                return i + 1;
+            }
+        }
         return -1;
     }
 
     public bool ConfirmDown()
-    {
-        if (!initialized) return false;
-        if (InputGuardActive) return false;
-        var confirm = terminalMap.FindAction(confirmActionName, false);
-        return confirm != null && confirm.WasPressedThisFrame();
-    }
+        => initialized && IsActionAllowed(aConfirm) && aConfirm.WasPressedThisFrame();
     #endregion
 }

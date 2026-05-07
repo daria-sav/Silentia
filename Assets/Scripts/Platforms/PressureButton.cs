@@ -19,6 +19,12 @@ public class PressureButton : MonoBehaviour
     [SerializeField] private Sprite upSprite;
     [SerializeField] private Sprite downSprite;
 
+    [Header("Tutorial Hint")]
+    [SerializeField] private GameObject tutorialHint;
+    [SerializeField] private bool hideHintAfterFirstPress = true;
+
+    private bool tutorialHintHidden;
+
     [Header("Targets")]
     [Tooltip("Anything with a component that implements IButtonTarget")]
     [SerializeField] private List<MonoBehaviour> targetBehaviours = new();
@@ -104,6 +110,9 @@ public class PressureButton : MonoBehaviour
     {
         SetVisual(pressed);
 
+        if (pressed)
+            HideTutorialHint();
+
         for (int i = 0; i < targets.Count; i++)
             targets[i].SetPressed(pressed);
     }
@@ -118,6 +127,20 @@ public class PressureButton : MonoBehaviour
 
         else if (!pressed && upSprite != null) 
             spriteRenderer.sprite = upSprite;
+    }
+
+    private void HideTutorialHint()
+    {
+        if (!hideHintAfterFirstPress)
+            return;
+
+        if (tutorialHintHidden)
+            return;
+
+        tutorialHintHidden = true;
+
+        if (tutorialHint != null)
+            tutorialHint.SetActive(false);
     }
     #endregion
 }

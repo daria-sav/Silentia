@@ -50,11 +50,26 @@ public class CloneSwitcher : MonoBehaviour
     #region Public API
     public void SwitchTo(int index)
     {
-        if (profiles == null || index < 0 || index >= profiles.Count) return;
+        Debug.Log($"[CS] SwitchTo(index={index}) profilesCount={(profiles != null ? profiles.Count : -1)}");
+        if (profiles == null || index < 0 || index >= profiles.Count)
+        {
+            Debug.LogWarning($"[CS] SwitchTo aborted: invalid index. profiles={(profiles == null ? "null" : profiles.Count.ToString())}");
+            return;
+        }
         CurrentProfileIndex = index;
 
         CharacterProfile profile = profiles[index];
-        if (profile == null || profile.bodyPrefab == null) return;
+        if (profile == null)
+        {
+            Debug.LogError($"[CS] SwitchTo: profiles[{index}] is NULL! Body NOT swapped, but CurrentProfileIndex set to {index}");
+            return;
+        }
+
+        if (profile.bodyPrefab == null)
+        {
+            Debug.LogError($"[CS] SwitchTo: profiles[{index}].bodyPrefab is NULL (id={profile.id})! Body NOT swapped");
+            return;
+        }
 
         // save state that must survive the body swap ????????
         Vector2 savedVelocity = (player.motor != null) ? player.motor.RB.linearVelocity : Vector2.zero;
@@ -89,6 +104,8 @@ public class CloneSwitcher : MonoBehaviour
 
         // restore saved state
         RestoreState(savedVelocity, savedFacingRight);
+
+        Debug.Log($"[CS] SwitchTo: SUCCESS body swapped to id={profile.id}, currentBody={currentBody.name}");
     }
     #endregion
 

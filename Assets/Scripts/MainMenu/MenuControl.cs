@@ -22,6 +22,11 @@ public class MenuControl : MonoBehaviour
     #region Unity Lifecycle
     private void Start()
     {
+        Time.timeScale = 1f;
+
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+
         var inputModule = EventSystem.current?
             .GetComponent<InputSystemUIInputModule>();
         if (inputModule != null)

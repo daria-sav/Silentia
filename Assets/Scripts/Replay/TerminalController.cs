@@ -97,6 +97,9 @@ public class TerminalController : MonoBehaviour
         if (characterIntroUI != null && characterIntroUI.IsPlaying)
             return;
 
+        if (session != null && !session.IsTerminalInputReady)
+            return;
+
         if (terminalInput == null || session == null)
             return;
 
@@ -113,7 +116,9 @@ public class TerminalController : MonoBehaviour
             if (Keyboard.current.rightArrowKey.wasPressedThisFrame ||
                 Keyboard.current.dKey.wasPressedThisFrame)
             {
-                int next = Mathf.Min(TerminalSession.SlotCount - 1, session.SelectedSlot + 1);
+                int lastAvailableSlot = session.ActiveSlotCount - 1;
+                int next = Mathf.Min(lastAvailableSlot, session.SelectedSlot + 1);
+
                 session.SelectSlot(next);
                 return;
             }

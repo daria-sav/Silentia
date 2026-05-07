@@ -22,6 +22,7 @@ public class TerminalSession : MonoBehaviour
     public ReplayClip[] Clips { get; private set; } = new ReplayClip[SlotCount];
     public string[] ClipProfileIds { get; private set; } = new string[SlotCount];
     public int SelectedSlot { get; private set; }
+    public int ActiveSlotCount { get; private set; } = SlotCount;
 
     public event Action OnSlotsChanged;
 
@@ -52,6 +53,8 @@ public class TerminalSession : MonoBehaviour
 
     private PendingAction pendingAction = PendingAction.None;
     private int pendingProfileIndex = -1;
+    private int pendingRecordingSlot = -1;
+    private int currentRecordingSlot = -1;
 
     // spawn persist
     private string terminalSpawnKey;
@@ -62,7 +65,22 @@ public class TerminalSession : MonoBehaviour
     private ReplayRecorder boundRecorder;
     private string lastSceneName;
     private Player cachedHero;
+    private Coroutine activeInitRoutine;
 
+    private float terminalReadyAt = -1f;
+    public bool IsTerminalInputReady
+    {
+        get
+        {
+            if (State != TerminalState.TerminalPaused)
+                return false;
+            if (Time.unscaledTime < terminalReadyAt)
+                return false;
+            if (LevelManager.Instance != null && LevelManager.Instance.IsTransitioning)
+                return false;
+            return true;
+        }
+    }
     // ───────────── LIFECYCLE ───────────────
 
     #region Lifecycle
@@ -99,18 +117,26 @@ public class TerminalSession : MonoBehaviour
     {
         if (boundRecorder != null && boundRecorder.IsRecording) return;
 
-        SelectedSlot = Mathf.Clamp(slot, 0, SlotCount - 1);
+        int lastAvailableSlot = ActiveSlotCount - 1;
+        SelectedSlot = Mathf.Clamp(slot, 0, lastAvailableSlot);
+
         OnSlotsChanged?.Invoke();
+    }
+
+    public int GetReservedSlotForProfile(int profileIndex)
+    {
+        // TerminalInput.ProfileDown() returns 1 for the first selectable character
+        return profileIndex - 1;
     }
 
     public bool HasClip(int slot)
     {
-        return slot >= 0 && slot < SlotCount && Clips[slot] != null;
+        return IsSlotAvailable(slot) && Clips[slot] != null;
     }
 
     public Sprite GetSlotIcon(int slot)
     {
-        if (slot < 0 || slot >= SlotCount)
+        if (!IsSlotAvailable(slot))
             return null;
 
         if (Clips[slot] == null)
@@ -146,7 +172,7 @@ public class TerminalSession : MonoBehaviour
 
     public void ClearSelectedSlot()
     {
-        int selected = Mathf.Clamp(SelectedSlot, 0, SlotCount - 1);
+        int selected = Mathf.Clamp(SelectedSlot, 0, ActiveSlotCount - 1);
 
         Clips[selected] = null;
         ClipProfileIds[selected] = null;
@@ -162,6 +188,8 @@ public class TerminalSession : MonoBehaviour
             ClipProfileIds[i] = null;
         }
         SelectedSlot = 0;
+        pendingRecordingSlot = -1;
+        currentRecordingSlot = -1;
         OnSlotsChanged?.Invoke();
     }
 
@@ -170,6 +198,30 @@ public class TerminalSession : MonoBehaviour
         if (cachedHero == null) return null;
         var switcher = cachedHero.GetComponent<CloneSwitcher>();
         return switcher?.profiles;
+    }
+
+    public void SetActiveSlotCount(int slotCount)
+    {
+        ActiveSlotCount = slotCount <= 0
+            ? SlotCount
+            : Mathf.Clamp(slotCount, 1, SlotCount);
+
+        if (SelectedSlot >= ActiveSlotCount)
+            SelectedSlot = ActiveSlotCount - 1;
+
+        // Hidden slots should not keep old recordings.
+        for (int i = ActiveSlotCount; i < SlotCount; i++)
+        {
+            Clips[i] = null;
+            ClipProfileIds[i] = null;
+        }
+
+        OnSlotsChanged?.Invoke();
+    }
+
+    public bool IsSlotAvailable(int slot)
+    {
+        return slot >= 0 && slot < ActiveSlotCount;
     }
     #endregion
 
@@ -189,6 +241,7 @@ public class TerminalSession : MonoBehaviour
 
         SetState(TerminalState.EnteringTerminal);
         SaveSpawnForNextLoad();
+        FreezeHeroForTransition();
         RestartLevel();
     }
 
@@ -198,9 +251,11 @@ public class TerminalSession : MonoBehaviour
             return;
 
         pendingProfileIndex = profileIndex;
-
         SetState(TerminalState.EnteringRecord);
         SaveSpawnForNextLoad();
+
+        FreezeHeroForTransition();
+
         RestartLevel();
     }
 
@@ -209,15 +264,32 @@ public class TerminalSession : MonoBehaviour
         if (clip == null)
             return;
 
+        int targetSlot = currentRecordingSlot >= 0
+            ? currentRecordingSlot
+            : SelectedSlot;
+
+        if (!IsSlotAvailable(targetSlot))
+        {
+            Debug.LogWarning($"TerminalSession: Tried to save recording into unavailable slot {targetSlot + 1}.");
+            currentRecordingSlot = -1;
+            return;
+        }
+
         if (!BeginRestart(PendingAction.EnterTerminal))
             return;
 
-        Clips[SelectedSlot] = clip;
-        ClipProfileIds[SelectedSlot] = clip.profileId;
+        SelectedSlot = targetSlot;
+
+        Clips[targetSlot] = clip;
+        ClipProfileIds[targetSlot] = clip.profileId;
+
+        currentRecordingSlot = -1;
+
         OnSlotsChanged?.Invoke();
 
         SetState(TerminalState.EnteringTerminal);
         SaveSpawnForNextLoad();
+        FreezeHeroForTransition();
         RestartLevel();
     }
 
@@ -256,7 +328,7 @@ public class TerminalSession : MonoBehaviour
         usedSlot = -1;
         if (string.IsNullOrEmpty(profileId)) return false;
 
-        for (int i = 0; i < SlotCount; i++)
+        for (int i = 0; i < ActiveSlotCount; i++)
         {
             if (i == ignoreSlot) continue;
             if (!string.IsNullOrEmpty(ClipProfileIds[i]) && ClipProfileIds[i] == profileId)
@@ -278,13 +350,21 @@ public class TerminalSession : MonoBehaviour
             return false;
         }
 
+        int targetSlot = GetReservedSlotForProfile(profileIndex);
+
+        if (!IsSlotAvailable(targetSlot))
+        {
+            message = "This character has no available recording slot on this level.";
+            return false;
+        }
+
         if (!TryGetProfileId(profileIndex, out var profileId))
         {
             message = "Profile not found.";
             return false;
         }
 
-        if (IsProfileAlreadyUsed(profileId, ignoreSlot: SelectedSlot, out int usedSlot))
+        if (IsProfileAlreadyUsed(profileId, ignoreSlot: targetSlot, out int usedSlot))
         {
             message = $"This clone is already used in Slot {usedSlot + 1}.";
             return false;
@@ -307,7 +387,7 @@ public class TerminalSession : MonoBehaviour
     {
         if (ghostRootPrefab == null) return;
 
-        for (int i = 0; i < SlotCount; i++)
+        for (int i = 0; i < ActiveSlotCount; i++)
         {
             if (i == ignoreSlot) continue;
 
@@ -360,10 +440,19 @@ public class TerminalSession : MonoBehaviour
     #region Scene Loading
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        if (activeInitRoutine != null)
+        {
+            Debug.LogWarning("[TS] Stopping stale init coroutine from previous scene load.");
+            StopCoroutine(activeInitRoutine);
+            activeInitRoutine = null;
+        }
+
         if (!string.IsNullOrEmpty(lastSceneName) && lastSceneName != scene.name)
         {
             ClearAllSlots();
         }
+
+        Debug.Log($"[TS] OnSceneLoaded scene={scene.name} pendingAction={pendingAction} pendingProfileIndex={pendingProfileIndex} state={State}");
 
         lastSceneName = scene.name;
         restartInProgress = false;
@@ -385,9 +474,48 @@ public class TerminalSession : MonoBehaviour
 
         if (cachedHero == null)
         {
-            Debug.LogError("TerminalSession: Player not found after scene reload.");
+            Debug.LogWarning("TerminalSession: Player not found yet, deferring init...");
+            activeInitRoutine = StartCoroutine(InitializeAfterPlayerSpawns());
             return;
         }
+
+        InitializeWithHero();
+    }
+
+    private IEnumerator InitializeAfterPlayerSpawns()
+    {
+        const int maxFrames = 120;
+        int waited = 0;
+
+        while (cachedHero == null && waited < maxFrames)
+        {
+            yield return null;
+            cachedHero = FindFirstObjectByType<Player>();
+            waited++;
+        }
+
+        if (cachedHero == null)
+        {
+            Debug.LogError(
+                "TerminalSession: Player did not appear after retry. " +
+                "Resetting pending action to avoid stale state.");
+
+            pendingAction = PendingAction.None;
+            pendingProfileIndex = -1;
+            SetState(TerminalState.Normal);
+            Time.timeScale = 1f;
+            activeInitRoutine = null;   
+            yield break;
+        }
+
+        Debug.Log($"TerminalSession: Player found after {waited} frame(s) wait.");
+        InitializeWithHero();
+        activeInitRoutine = null;
+    }
+
+    private void InitializeWithHero()
+    {
+        Debug.Log($"[TS] InitializeWithHero pendingAction={pendingAction} pendingProfileIndex={pendingProfileIndex}");
 
         var switcher = cachedHero.GetComponent<CloneSwitcher>();
         var recorder = cachedHero.GetComponent<ReplayRecorder>();
@@ -395,12 +523,13 @@ public class TerminalSession : MonoBehaviour
         if (switcher == null || recorder == null)
         {
             Debug.LogError("TerminalSession: Missing CloneSwitcher or ReplayRecorder on Player.");
+            pendingAction = PendingAction.None;
+            pendingProfileIndex = -1;
             return;
         }
 
         BindRecorder(recorder);
 
-        // execute pending action from before the restart
         if (pendingAction == PendingAction.EnterTerminal)
         {
             pendingAction = PendingAction.None;
@@ -460,7 +589,11 @@ public class TerminalSession : MonoBehaviour
             bodySetup.DisableAutoApplyOnStart();
 
         if (profileIndex >= 0)
+        {
+            Debug.Log($"[TS] PrepareHeroForRecording: SwitchTo({profileIndex}). Before: CurrentProfileIndex={switcher.CurrentProfileIndex}, CurrentProfile={(switcher.CurrentProfile != null ? switcher.CurrentProfile.id : "null")}");
             switcher.SwitchTo(profileIndex);
+            Debug.Log($"[TS] PrepareHeroForRecording: SwitchTo({profileIndex}) DONE. After: CurrentProfileIndex={switcher.CurrentProfileIndex}, CurrentProfile={(switcher.CurrentProfile != null ? switcher.CurrentProfile.id : "null")}");
+        }
     }
 
     private void EnterTerminalPaused(Player hero, CloneSwitcher switcher)
@@ -507,6 +640,12 @@ public class TerminalSession : MonoBehaviour
         if (restartInProgress)
             return false;
 
+        if (LevelManager.Instance != null && LevelManager.Instance.IsTransitioning)
+        {
+            Debug.LogWarning($"[TS] BeginRestart DENIED: LevelManager is transitioning. action={action}");
+            return false;
+        }
+
         restartInProgress = true;
         pendingAction = action;
         return true;
@@ -514,6 +653,8 @@ public class TerminalSession : MonoBehaviour
 
     private void RestartLevel()
     {
+        Debug.Log($"[TS-RESTART] RestartLevel called. state={State} pendingAction={pendingAction} pendingProfileIndex={pendingProfileIndex}\n{System.Environment.StackTrace}");
+
         Time.timeScale = 1f;
 
         if (LevelManager.Instance != null)
@@ -542,6 +683,12 @@ public class TerminalSession : MonoBehaviour
     {
         if (State == newState) return;
         State = newState;
+
+        if (newState == TerminalState.TerminalPaused)
+            terminalReadyAt = Time.unscaledTime + 0.3f;
+        else
+            terminalReadyAt = -1f;
+
         OnStateChanged?.Invoke(State);
     }
 
@@ -568,7 +715,29 @@ public class TerminalSession : MonoBehaviour
 
         recorder.StartRecording();
         SetState(TerminalState.Recording);
-        PlayAllExistingClipsExcept(SelectedSlot);
+
+        int slotToReplace = currentRecordingSlot >= 0
+            ? currentRecordingSlot
+            : SelectedSlot;
+
+        PlayAllExistingClipsExcept(slotToReplace);
+    }
+
+    private void FreezeHeroForTransition()
+    {
+        if (cachedHero == null)
+            return;
+
+        cachedHero.gatherInput?.DisablePlayerMap();
+
+        if (cachedHero.motor != null)
+        {
+            cachedHero.motor.RB.linearVelocity = Vector2.zero;
+            cachedHero.motor.ExternalFreeze(true);
+        }
+
+        if (cachedHero.stateMachine != null)
+            cachedHero.stateMachine.ForceChange(PlayerStates.State.Idle);
     }
     #endregion
 }

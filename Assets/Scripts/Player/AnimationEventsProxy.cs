@@ -12,6 +12,8 @@ public class AnimationEventsProxy : MonoBehaviour
 
     public void ResetGame()
     {
+        Debug.Log($"[ANIM] ResetGame called. recorder.IsRecording={(player?.GetComponent<ReplayRecorder>()?.IsRecording)} TS.State={(TerminalSession.Instance?.State)}");
+
         if (player == null)
         {
             Debug.LogError("AnimationEventsProxy: Player not found");
@@ -21,6 +23,14 @@ public class AnimationEventsProxy : MonoBehaviour
         // ghosts never restart the level
         if (player.gameObject.name.Contains("GhostRoot"))
             return;
+
+        var ts = TerminalSession.Instance;
+        if (ts != null && (ts.State == TerminalSession.TerminalState.EnteringRecord
+                        || ts.State == TerminalSession.TerminalState.EnteringTerminal))
+        {
+            Debug.Log($"[ANIM] ResetGame IGNORED: TS already transitioning (state={ts.State})");
+            return;
+        }
 
         // if this is the real hero -> stop record 
         var recorder = player.GetComponent<ReplayRecorder>();

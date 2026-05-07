@@ -1183,6 +1183,22 @@ PrefabInstance:
       propertyPath: m_Name
       value: Canvas - Level Manager
       objectReference: {fileID: 0}
+    - target: {fileID: 2428958558583899541, guid: 6e39b0f6cefaedd47bf9e0c8a98e2618, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3189010890994734593, guid: 6e39b0f6cefaedd47bf9e0c8a98e2618, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5699277939728925036, guid: 6e39b0f6cefaedd47bf9e0c8a98e2618, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6557022276955908078, guid: 6e39b0f6cefaedd47bf9e0c8a98e2618, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7068854117912751622, guid: 6e39b0f6cefaedd47bf9e0c8a98e2618, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -1261,6 +1277,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7068854117912751622, guid: 6e39b0f6cefaedd47bf9e0c8a98e2618, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7211735770432116490, guid: 6e39b0f6cefaedd47bf9e0c8a98e2618, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8406098365550863254, guid: 6e39b0f6cefaedd47bf9e0c8a98e2618, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9141345213051376245, guid: 6e39b0f6cefaedd47bf9e0c8a98e2618, type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -1347,7 +1375,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MenuControl
   continueButton: {fileID: 1303838284}
-  newGameButton: {fileID: 0}
+  newGameButton: {fileID: 136191256}
 --- !u!1 &1625173526
 GameObject:
   m_ObjectHideFlags: 0

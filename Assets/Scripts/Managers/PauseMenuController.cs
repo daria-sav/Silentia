@@ -71,6 +71,7 @@ public class PauseMenuController : MonoBehaviour
 
     public void RestartLevel()
     {
+        Debug.Log("[PAUSE] PauseMenuController.RestartLevel called");
         SetPaused(false);
 
         if (SaveLoadManager.Instance != null)
@@ -147,17 +148,6 @@ public class PauseMenuController : MonoBehaviour
                 gatherInput.DisablePlayerMap();
             else
                 gatherInput.EnablePlayerMap();
-        }
-
-        if (paused)
-        {
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
-        }
-        else
-        {
-            Cursor.visible = false;
-            Cursor.lockState = CursorLockMode.Locked;
         }
 
         if (pauseMenuPanel != null)

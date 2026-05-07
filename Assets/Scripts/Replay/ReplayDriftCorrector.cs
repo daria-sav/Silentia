@@ -24,6 +24,10 @@ public class ReplayDriftCorrector : MonoBehaviour
     [Tooltip("Also synchronize velocity")]
     [SerializeField] private bool correctVelocity = false;
 
+    [Tooltip("If the velocity difference between the current and recorded values ​​is greater than this, " +
+             "give control to physics, without making any adjustments")]
+    [SerializeField] private float velocityDivergenceThreshold = 3f;
+
     private PlayerMovement motor;
     private Vector2 targetPos;
     private Vector2 targetVel;
@@ -60,9 +64,18 @@ public class ReplayDriftCorrector : MonoBehaviour
         }
 
         Vector2 curPos = motor.RB.position;
+        Vector2 curVel = motor.RB.linearVelocity;
         float err = Vector2.Distance(curPos, targetPos);
 
         if (err < positionEpsilon)
+        {
+            hasPending = false;
+            yield break;
+        }
+
+        // give control to physics
+        float velDiff = Vector2.Distance(curVel, targetVel);
+        if (velDiff > velocityDivergenceThreshold)
         {
             hasPending = false;
             yield break;

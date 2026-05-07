@@ -307,7 +307,7 @@ MonoBehaviour:
       m_Calls: []
   m_text: "Thank you for playing\n\nThis game was made with care,\nlate nights, and
     a lot of love.\n\nWe hope it brought you\na little joy.\n\n\n* * *\n\n\n\xA9
-    2025 Daria Savt\u0161enko\nUniversity of Tartu"
+    2026 Daria Savt\u0161enko\nUniversity of Tartu"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

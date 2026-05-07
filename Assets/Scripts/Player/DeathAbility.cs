@@ -17,6 +17,7 @@ public class DeathAbility : BaseAbility
 
     public override void EnterAbility()
     {
+        Debug.Log($"[DEATH] EnterAbility on {gameObject.name}. CurrentProfileIndex={GetComponent<CloneSwitcher>()?.CurrentProfileIndex}");
         if (player != null && player.gatherInput != null)
             player.gatherInput.DisablePlayerMap();
 
@@ -48,8 +49,18 @@ public class DeathAbility : BaseAbility
 
     public void ResetGame()
     {
+        Debug.Log($"[DEATH] DeathAbility.ResetGame called. CurrentProfileIndex={GetComponent<CloneSwitcher>()?.CurrentProfileIndex} TS.State={(TerminalSession.Instance?.State)}");
+
         if (player != null && player.gameObject.name.Contains("GhostRoot"))
             return;
+
+        var ts = TerminalSession.Instance;
+        if (ts != null && (ts.State == TerminalSession.TerminalState.EnteringRecord
+                        || ts.State == TerminalSession.TerminalState.EnteringTerminal))
+        {
+            Debug.Log($"[DEATH] DeathAbility.ResetGame IGNORED: TS already transitioning (state={ts.State})");
+            return;
+        }
 
         if (TerminalSession.Instance != null &&
             TerminalSession.Instance.State == TerminalSession.TerminalState.Recording)

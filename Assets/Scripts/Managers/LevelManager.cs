@@ -19,6 +19,7 @@ public class LevelManager : MonoBehaviour
     private CanvasGroup canvasGroup;
     private Coroutine transitionRoutine;
     private bool isTransitioning;
+    public bool IsTransitioning => isTransitioning;
 
     // ─────────────── LIFECYCLE ───────────────
 
@@ -33,6 +34,12 @@ public class LevelManager : MonoBehaviour
 
         Instance = this;
         canvasGroup = GetComponentInChildren<CanvasGroup>();
+
+        if (canvasGroup != null)
+        {
+            canvasGroup.interactable = false;
+            canvasGroup.blocksRaycasts = false;
+        }
     }
 
     private void Start()
@@ -88,10 +95,22 @@ public class LevelManager : MonoBehaviour
     {
         isTransitioning = true;
 
+        if (canvasGroup != null)
+        {
+            canvasGroup.interactable = false;
+            canvasGroup.blocksRaycasts = true;
+        }
+
         yield return null;
         CameraManager.instance?.SnapToTarget();
 
         yield return FadeCanvasTo(0f);
+
+        if (canvasGroup != null)
+        {
+            canvasGroup.interactable = false;
+            canvasGroup.blocksRaycasts = false;
+        }
 
         isTransitioning = false;
         transitionRoutine = null;
@@ -104,6 +123,12 @@ public class LevelManager : MonoBehaviour
     {
         isTransitioning = true;
 
+        if (canvasGroup != null)
+        {
+            canvasGroup.interactable = false;
+            canvasGroup.blocksRaycasts = true;
+        }
+
         yield return FadeCanvasTo(1f);
         SceneManager.LoadScene(sceneName);
     }
@@ -114,6 +139,12 @@ public class LevelManager : MonoBehaviour
     private IEnumerator FadeOutAndLoad(int buildIndex)
     {
         isTransitioning = true;
+
+        if (canvasGroup != null)
+        {
+            canvasGroup.interactable = false;
+            canvasGroup.blocksRaycasts = true;
+        }
 
         yield return FadeCanvasTo(1f);
         SceneManager.LoadScene(buildIndex);

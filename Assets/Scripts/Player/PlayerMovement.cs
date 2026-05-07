@@ -541,17 +541,6 @@ public class PlayerMovement : MonoBehaviour
             AirJumpsLeft = data.maxAirJumps;
         }
 
-        if (LastPressedJumpTime > 0f)
-        {
-            Debug.Log($"[WJ-MOTOR] Jump check tick. " +
-                      $"LastPressedJump={LastPressedJumpTime:F3}, " +
-                      $"LastOnWall={LastOnWallTime:F3} (L={LastOnWallLeftTime:F3} R={LastOnWallRightTime:F3}), " +
-                      $"Ground={LastOnGroundTime:F3}, " +
-                      $"IsWJ={IsWallJumping}, IsJ={IsJumping}, IsSliding={IsSliding}, " +
-                      $"vel=({RB.linearVelocity.x:F2},{RB.linearVelocity.y:F2}), " +
-                      $"CanJump={CanJump()}, CanWallJump={CanWallJump()}, CanAirJump={CanAirJump()}");
-        }
-
         // try ground jump (coyote time)
         if (CanJump() && LastPressedJumpTime > 0)
         {
@@ -647,14 +636,6 @@ public class PlayerMovement : MonoBehaviour
         // for testing
         bool wasSliding = IsSliding;
         IsSliding = CanSlide() && (pushingIntoLeftWall || pushingIntoRightWall);
-
-        if (!wasSliding && IsSliding)
-        {
-            Debug.Log($"[WJ-SLIDE] Slide STARTED. " +
-                      $"velY={RB.linearVelocity.y:F2}, " +
-                      $"pushL={pushingIntoLeftWall}, pushR={pushingIntoRightWall}, " +
-                      $"CanSlide={CanSlide()}");
-        }
     }
 
     private void ApplySlideForce()

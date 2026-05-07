@@ -2128,7 +2128,7 @@ MonoBehaviour:
       m_Calls: []
   m_text: '[C] Spawn all recorded echoes
 
-    [Esc] Leave  terminal
+    [Esc] Leave terminal
 
     [Delete]
     Clear selected slot'
