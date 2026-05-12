@@ -14,12 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CharacterIntroSequence
   entries:
   - profile: {fileID: 11400000, guid: 317ef33424953e4448cf227047c63027, type: 2}
-    introText: "This is Manipura.\nA fire lives within her. She does not hide from
-      obstacles or wait for the path to become easier \u2014 she moves forward and
-      lights the way herself. Her strength is willpower, courage and determination."
+    introText: 'This is Manipura.
+
+      Fire lives within her. She moves fast, dashes
+      forward and turns hesitation into action.'
   - profile: {fileID: 11400000, guid: 317ef33424953e4448cf227047c63027, type: 2}
     introText: 'Some paths are not crossed step by step.
 
-
-      Press X, and Manipura
+      Press X and Manipura
       will become a spark.'

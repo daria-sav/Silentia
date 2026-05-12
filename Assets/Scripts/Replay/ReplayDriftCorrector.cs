@@ -2,31 +2,29 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// Pulls the ghost to the recorded trajectory on the keyframes.
-/// Comparison and application of corrections - after the current tick's physical step
-/// (via WaitForFixedUpdate). This semantically matches the moment
-/// when ReplayLateKeyframer saved the keyframe in the recording.
+/// Nudges the ghost back onto the recorded trajectory only when the live
+/// simulation is still on that same trajectory 
+///
+/// Runs after the current tick's physics step (via WaitForFixedUpdate),
+/// matching the post-physics moment at which ReplayLateKeyframer captured
+/// the recording.
 /// </summary>
 [DefaultExecutionOrder(100)]
 public class ReplayDriftCorrector : MonoBehaviour
 {
     [Header("Drift correction")]
-    [Tooltip("If err is less, don't adjust it.")]
+    [Tooltip("Position error smaller than this is ignored.")]
     [SerializeField] private float positionEpsilon = 0.005f;
 
-    [Tooltip("If err is greater, apply a hard snap")]
-    [SerializeField] private float hardSnapThreshold = 5f;
+    [Tooltip("Position error larger than this is treated as real divergence and the correction is skipped")]
+    [SerializeField] private float positionDivergenceThreshold = 0.5f;
 
-    [Tooltip("Soft pull coefficient for each keyframe")]
+    [Tooltip("Per-axis velocity tolerance.")]
+    [SerializeField] private float velocityDivergenceThreshold = 0.75f;
+
+    [Tooltip("Soft pull amount.")]
     [Range(0f, 1f)]
     [SerializeField] private float pullStrength = 0.25f;
-
-    [Tooltip("Also synchronize velocity")]
-    [SerializeField] private bool correctVelocity = false;
-
-    [Tooltip("If the velocity difference between the current and recorded values ​​is greater than this, " +
-             "give control to physics, without making any adjustments")]
-    [SerializeField] private float velocityDivergenceThreshold = 3f;
 
     private PlayerMovement motor;
     private Vector2 targetPos;
@@ -39,6 +37,7 @@ public class ReplayDriftCorrector : MonoBehaviour
         targetPos = keyframePos;
         targetVel = keyframeVel;
 
+        // if a coroutine is already in flight, it will pick up the latest target on resume
         if (!hasPending)
         {
             hasPending = true;
@@ -57,39 +56,30 @@ public class ReplayDriftCorrector : MonoBehaviour
     {
         yield return new WaitForFixedUpdate();
 
-        if (!hasPending || motor == null || motor.RB == null)
-        {
-            hasPending = false;
-            yield break;
-        }
+        hasPending = false;
+
+        if (motor == null || motor.RB == null) yield break;
 
         Vector2 curPos = motor.RB.position;
         Vector2 curVel = motor.RB.linearVelocity;
-        float err = Vector2.Distance(curPos, targetPos);
 
-        if (err < positionEpsilon)
-        {
-            hasPending = false;
+        Vector2 posError = targetPos - curPos;
+        Vector2 velError = targetVel - curVel;
+
+        // negligible drift 
+        float posErrorMag = posError.magnitude;
+        if (posErrorMag < positionEpsilon) yield break;
+
+        // position diverged too far
+        if (posErrorMag > positionDivergenceThreshold) yield break;
+
+        // velocity diverged on either axis
+        if (Mathf.Abs(velError.x) > velocityDivergenceThreshold ||
+            Mathf.Abs(velError.y) > velocityDivergenceThreshold)
             yield break;
-        }
 
-        // give control to physics
-        float velDiff = Vector2.Distance(curVel, targetVel);
-        if (velDiff > velocityDivergenceThreshold)
-        {
-            hasPending = false;
-            yield break;
-        }
-
-        Vector2 newPos = err >= hardSnapThreshold
-            ? targetPos
-            : Vector2.Lerp(curPos, targetPos, pullStrength);
-
-        motor.RB.position = newPos;
-
-        if (correctVelocity)
-            motor.RB.linearVelocity = Vector2.Lerp(motor.RB.linearVelocity, targetVel, pullStrength);
-
-        hasPending = false;
+        // same trajectory + small drift
+        motor.RB.position = curPos + posError * pullStrength;
+        motor.RB.linearVelocity = curVel + velError * pullStrength;
     }
 }

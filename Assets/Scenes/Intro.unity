@@ -511,6 +511,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Canvas - Level Manager
       objectReference: {fileID: 0}
+    - target: {fileID: 3100118927620623378, guid: 6e39b0f6cefaedd47bf9e0c8a98e2618, type: 3}
+      propertyPath: m_Alpha
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7068854117912751622, guid: 6e39b0f6cefaedd47bf9e0c8a98e2618, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -591,6 +595,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7346579605902472142, guid: 6e39b0f6cefaedd47bf9e0c8a98e2618, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 7596496748908292692, guid: 0859e778e9b4445478b028bb99de4e17, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

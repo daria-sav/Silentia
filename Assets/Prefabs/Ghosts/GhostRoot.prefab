@@ -252,10 +252,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d14459e755a4fe04a9aa454e37a27717, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ReplayDriftCorrector
-  positionEpsilon: 0.15
-  hardSnapThreshold: 0.75
+  positionEpsilon: 0.05
+  hardSnapThreshold: 90
   pullStrength: 0.5
   correctVelocity: 0
+  velocityDivergenceThreshold: 1
 --- !u!114 &-7890890947006341680
 MonoBehaviour:
   m_ObjectHideFlags: 0

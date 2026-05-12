@@ -243,11 +243,11 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 7339220457444843841}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 30, y: -38}
-  m_SizeDelta: {x: 326.9554, y: 182.0527}
-  m_Pivot: {x: 0, y: 1}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 23, y: 8}
+  m_SizeDelta: {x: 57.9733, y: -28.5404}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8160078602094504147
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -269,14 +269,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.74509805}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 555714665, guid: 04790c04829ef654dbd09cd13198c810, type: 3}
+  m_Sprite: {fileID: 7596496748908292692, guid: 0859e778e9b4445478b028bb99de4e17, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -2095,8 +2095,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 100.5, y: -70}
-  m_SizeDelta: {x: 151.0117, y: 64.2113}
+  m_AnchoredPosition: {x: 34.477783, y: -23.970081}
+  m_SizeDelta: {x: 402.5954, y: 165.3252}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &825241465105061858
 CanvasRenderer:
@@ -2140,8 +2140,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4281479740
-  m_fontColor: {r: 0.23529413, g: 0.19607845, b: 0.19607845, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -2158,8 +2158,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 28
-  m_fontSizeBase: 28
+  m_fontSize: 32
+  m_fontSizeBase: 32
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
