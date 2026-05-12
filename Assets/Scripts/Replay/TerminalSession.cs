@@ -53,7 +53,6 @@ public class TerminalSession : MonoBehaviour
 
     private PendingAction pendingAction = PendingAction.None;
     private int pendingProfileIndex = -1;
-    private int pendingRecordingSlot = -1;
     private int currentRecordingSlot = -1;
 
     // spawn persist
@@ -188,7 +187,6 @@ public class TerminalSession : MonoBehaviour
             ClipProfileIds[i] = null;
         }
         SelectedSlot = 0;
-        pendingRecordingSlot = -1;
         currentRecordingSlot = -1;
         OnSlotsChanged?.Invoke();
     }
@@ -247,10 +245,23 @@ public class TerminalSession : MonoBehaviour
 
     public void RequestRestartAndStartRecording(int profileIndex)
     {
+        int reservedSlot = GetReservedSlotForProfile(profileIndex);
+
+        if (!IsSlotAvailable(reservedSlot))
+        {
+            Debug.LogWarning(
+                $"TerminalSession: profile {profileIndex} has no reserved slot " +
+                $"(reservedSlot={reservedSlot}, ActiveSlotCount={ActiveSlotCount}). " +
+                "Recording aborted.");
+            return;
+        }
+
         if (!BeginRestart(PendingAction.StartRecording))
             return;
 
         pendingProfileIndex = profileIndex;
+        currentRecordingSlot = reservedSlot;   
+
         SetState(TerminalState.EnteringRecord);
         SaveSpawnForNextLoad();
 

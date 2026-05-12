@@ -12,41 +12,41 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3b8a0e0762aa404e95b72bf2151ebcb, type: 3}
   m_Name: PD_Clone2
   m_EditorClassIdentifier: Assembly-CSharp::PlayerData
-  calculatedGravityStrength: -77.77777
-  calculatedGravityScale: 7.9284167
-  fallGravityMultiplier: 1.5
-  maxNormalFallSpeed: 25
-  fastFallGravityMultiplier: 2
-  maxFastFallSpeed: 30
-  maxRunSpeed: 11
-  groundAcceleration: 2.5
-  calculatedGroundAccelerationForce: 11.363636
-  groundDeceleration: 8
-  calculatedGroundDecelerationForce: 36.363636
-  airAccelerationMultiplier: 0.65
-  airDecelerationMultiplier: 0.65
+  calculatedGravityStrength: -108.8
+  calculatedGravityScale: 11.090724
+  fallGravityMultiplier: 1.85
+  maxNormalFallSpeed: 29
+  fastFallGravityMultiplier: 2.6
+  maxFastFallSpeed: 36
+  maxRunSpeed: 12.5
+  groundAcceleration: 3.4
+  calculatedGroundAccelerationForce: 13.6
+  groundDeceleration: 10
+  calculatedGroundDecelerationForce: 40
+  airAccelerationMultiplier: 0.7
+  airDecelerationMultiplier: 0.75
   preserveMomentum: 1
-  desiredJumpHeight: 3.5
-  timeToJumpApex: 0.3
+  desiredJumpHeight: 3.4
+  timeToJumpApex: 0.25
   maxAirJumps: 0
-  calculatedJumpForce: 23.333332
-  jumpReleaseGravityMultiplier: 2
-  apexHangGravityMultiplier: 0.5
-  apexHangVelocityThreshold: 1
-  apexHangAccelerationMultiplier: 1.1
-  apexHangMaxSpeedMultiplier: 1.3
-  wallJumpForce: {x: 15, y: 25}
-  wallJumpMovementLerp: 0.5
-  wallJumpMovementLockTime: 0.15
-  wallSlideSpeed: -2
-  wallSlideAcceleration: 8
-  coyoteTime: 0.1
-  jumpInputBufferTime: 0.1
+  calculatedJumpForce: 27.2
+  jumpReleaseGravityMultiplier: 2.8
+  apexHangGravityMultiplier: 0.85
+  apexHangVelocityThreshold: 0.55
+  apexHangAccelerationMultiplier: 1.15
+  apexHangMaxSpeedMultiplier: 1.15
+  wallJumpForce: {x: 12.5, y: 24}
+  wallJumpMovementLerp: 0.65
+  wallJumpMovementLockTime: 0.1
+  wallSlideSpeed: -2.8
+  wallSlideAcceleration: 11
+  coyoteTime: 0.08
+  jumpInputBufferTime: 0.08
   maxDashCount: 1
-  dashSpeed: 20
+  dashSpeed: 24
   dashFreezeTime: 0.05
-  dashActiveTime: 0.15
-  dashRecoveryTime: 0.15
-  dashRecoverySpeed: {x: 10, y: 5}
-  dashRefillTime: 0.1
-  dashInputBufferTime: 0.1
+  dashActiveTime: 0.12
+  dashRecoveryTime: 0.12
+  dashRecoverySpeed: {x: 13, y: 4}
+  dashRefillTime: 0.08
+  dashInputBufferTime: 0.08

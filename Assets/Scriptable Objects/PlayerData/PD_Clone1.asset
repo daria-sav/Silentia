@@ -12,34 +12,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3b8a0e0762aa404e95b72bf2151ebcb, type: 3}
   m_Name: PD_Clone1
   m_EditorClassIdentifier: Assembly-CSharp::PlayerData
-  calculatedGravityStrength: -77.77777
-  calculatedGravityScale: 7.9284167
-  fallGravityMultiplier: 1.5
-  maxNormalFallSpeed: 25
-  fastFallGravityMultiplier: 2
-  maxFastFallSpeed: 30
-  maxRunSpeed: 11
-  groundAcceleration: 2.5
-  calculatedGroundAccelerationForce: 11.363636
-  groundDeceleration: 8
-  calculatedGroundDecelerationForce: 36.363636
-  airAccelerationMultiplier: 0.65
-  airDecelerationMultiplier: 0.65
+  calculatedGravityStrength: -83.23425
+  calculatedGravityScale: 8.4846325
+  fallGravityMultiplier: 1.7
+  maxNormalFallSpeed: 28
+  fastFallGravityMultiplier: 2.3
+  maxFastFallSpeed: 33
+  maxRunSpeed: 10
+  groundAcceleration: 2
+  calculatedGroundAccelerationForce: 10
+  groundDeceleration: 9
+  calculatedGroundDecelerationForce: 45
+  airAccelerationMultiplier: 0.4
+  airDecelerationMultiplier: 0.4
   preserveMomentum: 1
   desiredJumpHeight: 3.5
-  timeToJumpApex: 0.3
+  timeToJumpApex: 0.29
   maxAirJumps: 1
-  calculatedJumpForce: 23.333332
-  jumpReleaseGravityMultiplier: 2
-  apexHangGravityMultiplier: 0.5
-  apexHangVelocityThreshold: 1
-  apexHangAccelerationMultiplier: 1.1
-  apexHangMaxSpeedMultiplier: 1.3
-  wallJumpForce: {x: 15, y: 25}
-  wallJumpMovementLerp: 0.5
-  wallJumpMovementLockTime: 0.15
-  wallSlideSpeed: -2
-  wallSlideAcceleration: 8
+  calculatedJumpForce: 24.137932
+  jumpReleaseGravityMultiplier: 2.4
+  apexHangGravityMultiplier: 0.75
+  apexHangVelocityThreshold: 0.7
+  apexHangAccelerationMultiplier: 0.9
+  apexHangMaxSpeedMultiplier: 1.05
+  wallJumpForce: {x: 13, y: 25}
+  wallJumpMovementLerp: 0.35
+  wallJumpMovementLockTime: 0.22
+  wallSlideSpeed: -2.6
+  wallSlideAcceleration: 9.5
   coyoteTime: 0.1
   jumpInputBufferTime: 0.1
   maxDashCount: 0
