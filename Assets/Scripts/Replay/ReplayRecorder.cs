@@ -72,7 +72,7 @@ public class ReplayRecorder : MonoBehaviour
         if (motor != null)
             CurrentClip.startMotorSnapshot = motor.CaptureFullSnapshot();
 
-        // legacy-поля 
+        // legacy
         CurrentClip.startIsJumping = motor != null && motor.IsJumping;
         CurrentClip.startLastOnGroundTime = motor != null ? motor.LastOnGroundTime : 0f;
         CurrentClip.startAirJumpsLeft = motor != null ? motor.AirJumpsLeft : 0;

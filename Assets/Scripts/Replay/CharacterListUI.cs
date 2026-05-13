@@ -4,10 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Shows the list of available character profiles during TerminalPaused.
-/// Each row: key number + icon + display name.
-/// profiles[0] is the default body and is skipped.
-/// Profile1 action → profiles[1], Profile2 → profiles[2], etc.
+/// Displays selectable character profiles in the terminal UI.
 /// </summary>
 public class CharacterListUI : MonoBehaviour
 {

@@ -2,16 +2,32 @@ using Unity.Cinemachine;
 using UnityEditor;
 using UnityEngine;
 
+/// <summary>
+/// Controls camera behavior when the player enters or exits a trigger area.
+///
+/// The trigger can either switch between two Cinemachine cameras or temporarily
+/// pan the current camera in a selected direction. Inspector fields are shown
+/// dynamically through a custom editor to keep the component clean and easier
+/// to configure.
+/// </summary>
 public class CameraControlTrigger : MonoBehaviour
 {
     public CustomInspectorObjects customInspectorObjects;
 
     private Collider2D col;
 
+    // ─────────────── LIFECYCLE ───────────────
+
+    #region Unity Lifecycle
     private void Start()
     {
         col = GetComponent<Collider2D>();
     }
+    #endregion
+
+    // ─────────────── TRIGGERS ────────────────
+
+    #region Trigger Events
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.layer == LayerMask.NameToLayer("Player"))
@@ -21,7 +37,7 @@ public class CameraControlTrigger : MonoBehaviour
             {
                 if (CameraManager.instance == null)
                     return;
-                // pan the camera
+                // pans the camera when the player enters the trigger
                 CameraManager.instance.PanCameraOnContact(customInspectorObjects.panDistance, customInspectorObjects.panTime, customInspectorObjects.panDirection, false);
             }
         }
@@ -41,6 +57,7 @@ public class CameraControlTrigger : MonoBehaviour
             customInspectorObjects.cameraOnLeft != null &&
             customInspectorObjects.cameraOnRight != null)
         {
+            // switches between cameras based on the direction in which the player exits the trigger
             CameraManager.instance.SwitchCamera(
                 customInspectorObjects.cameraOnLeft,
                 customInspectorObjects.cameraOnRight,
@@ -51,6 +68,7 @@ public class CameraControlTrigger : MonoBehaviour
 
         if (customInspectorObjects.panCameraOnContact)
         {
+            // restores the camera pan when the player leaves the trigger
             CameraManager.instance.PanCameraOnContact(
                 customInspectorObjects.panDistance,
                 customInspectorObjects.panTime,
@@ -59,8 +77,15 @@ public class CameraControlTrigger : MonoBehaviour
             );
         }
     }
+    #endregion
 }
 
+/// <summary>
+/// Stores configurable camera trigger settings displayed in the Inspector.
+///
+/// These values define whether the trigger swaps virtual cameras,
+/// pans the active camera, or combines both behaviors.
+/// </summary>
 [System.Serializable]
 public class CustomInspectorObjects
 {
@@ -77,6 +102,9 @@ public class CustomInspectorObjects
 
 }
 
+/// <summary>
+/// Defines the direction in which the camera can be panned.
+/// </summary>
 public enum PanDirection
 {
     Up,
@@ -85,6 +113,9 @@ public enum PanDirection
     Right
 }
 
+/// <summary>
+/// Defines the axis used to determine camera switching direction.
+/// </summary>
 public enum CameraSwapAxis
 {
     Horizontal,
@@ -92,15 +123,30 @@ public enum CameraSwapAxis
 }
 
 #if UNITY_EDITOR 
+
+/// <summary>
+/// Custom editor for <see cref="CameraControlTrigger"/>.
+///
+/// Shows only the camera settings that are relevant to the currently enabled
+/// trigger behavior, making the Inspector easier to read and configure.
+/// </summary>
 [CustomEditor(typeof(CameraControlTrigger))]
 public class MyScriotEditor : Editor
 {
     CameraControlTrigger cameraControlTrigger;
+
+    // ─────────────── LIFECYCLE ───────────────
+
+    #region Unity Lifecycle
     private void OnEnable()
     {
         cameraControlTrigger = (CameraControlTrigger)target;
     }
+    #endregion
 
+    // ─────────────── INSPECTOR ───────────────
+
+    #region Inspector GUI
     public override void OnInspectorGUI()
     {
         DrawDefaultInspector();
@@ -129,5 +175,6 @@ public class MyScriotEditor : Editor
             EditorUtility.SetDirty(cameraControlTrigger);
         }
     }
+    #endregion
 }
 #endif

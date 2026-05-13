@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bad91fe2efcaad14fa7f49d227756a26, type: 3}
+  m_Name: Level5_CharacterIntro 2
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterIntroSequence
+  entries:
+  - profile: {fileID: 11400000, guid: 317ef33424953e4448cf227047c63027, type: 2}
+    introText: 'This is Manipura.
+
+      Fire lives within her. She moves fast, dashes
+      forward and turns hesitation into action.'
+  - profile: {fileID: 11400000, guid: 317ef33424953e4448cf227047c63027, type: 2}
+    introText: 'Some paths are not crossed step by step.
+
+      Press X and Manipura
+      will become a spark.'

@@ -36,11 +36,6 @@ public class TerminalToast : MonoBehaviour
     // ────────────────── API ──────────────────
 
     #region Public API
-    /// <summary>
-    /// Shows a temporary message and restarts the hide timer if a previous
-    /// toast is already active
-    /// </summary>
-    /// <param name="message">Text to display in the toast.</param>
     public void Show(string message)
     {
         if (messageText == null) 
@@ -59,10 +54,6 @@ public class TerminalToast : MonoBehaviour
     // ─────────────── COROUTINES ──────────────
 
     #region Coroutines
-    /// <summary>
-    /// Hides the toast after a short unscaled delay so pause state does not
-    /// affect visibility timing
-    /// </summary>
     private IEnumerator HideLater()
     {
         yield return new WaitForSecondsRealtime(showSeconds);

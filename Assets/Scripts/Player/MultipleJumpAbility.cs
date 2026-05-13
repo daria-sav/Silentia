@@ -1,8 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Bridges jump input to the movement motor
-/// and drives jump-related animator parameters.
+/// Handles jump input and jump animation parameters.
 /// </summary>
 public class MultipleJumpAbility : BaseAbility
 {
@@ -12,13 +11,20 @@ public class MultipleJumpAbility : BaseAbility
     private int jumpParameterID;
     private int ySpeedParameterID;
 
+    // ───────────── LIFECYCLE ───────────────
+
+    #region Lifecycle
     protected override void InitializeLinks()
     {
         base.InitializeLinks();
         jumpParameterID = Animator.StringToHash(jumpAnimParameterName);
         ySpeedParameterID = Animator.StringToHash(ySpeedAnimParameterName);
     }
+    #endregion
 
+    // ───────────────── API ─────────────────
+
+    #region Public API
     public bool TryToJump()
     {
         if (!isPermitted || linkedMotor == null)
@@ -35,7 +41,11 @@ public class MultipleJumpAbility : BaseAbility
 
         linkedMotor.ReleaseJump();
     }
+    #endregion
 
+    // ────────────── ANIMATOR ───────────────
+
+    #region Animator
     public override void UpdateAnimator()
     {
         linkedAnimator.SetBool(jumpParameterID, linkedStateMachine.currentState == PlayerStates.State.Jump || linkedStateMachine.currentState == PlayerStates.State.WallJump);
@@ -43,4 +53,5 @@ public class MultipleJumpAbility : BaseAbility
         if (linkedMotor != null)
             linkedAnimator.SetFloat(ySpeedParameterID, linkedMotor.RB.linearVelocity.y);
     }
+    #endregion
 }

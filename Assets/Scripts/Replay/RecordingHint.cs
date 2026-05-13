@@ -2,6 +2,9 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 
+/// <summary>
+/// Shows the stop-recording hint during terminal recording.
+/// </summary>
 public class RecordingHint : MonoBehaviour
 {
     [SerializeField] private TMP_Text hintText;
@@ -12,6 +15,9 @@ public class RecordingHint : MonoBehaviour
     private Coroutine _fade;
     private bool _visible;
 
+    // ───────────── LIFECYCLE ─────────────
+
+    #region Lifecycle
     private void Awake()
     {
         _group = GetComponent<CanvasGroup>() ?? gameObject.AddComponent<CanvasGroup>();
@@ -31,7 +37,11 @@ public class RecordingHint : MonoBehaviour
         if (_fade != null) StopCoroutine(_fade);
         _fade = StartCoroutine(FadeTo(_visible ? 1f : 0f));
     }
+    #endregion
 
+    // ───────────── FADE ─────────────
+
+    #region Fade
     private IEnumerator FadeTo(float target)
     {
         float start = _group.alpha, elapsed = 0f;
@@ -44,4 +54,5 @@ public class RecordingHint : MonoBehaviour
         _group.alpha = target;
         _group.blocksRaycasts = target > 0f;
     }
+    #endregion
 }

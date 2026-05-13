@@ -39,7 +39,6 @@ public class CameraFollowTarget : MonoBehaviour
 
     private void LateUpdate()
     {
-        // guard: player or motor missing (e.g. destroyed during body-swap)
         if (player == null || player.motor == null) return;
 
         transform.position = player.motor.transform.position;

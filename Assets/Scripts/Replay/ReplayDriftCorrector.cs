@@ -2,12 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// Nudges the ghost back onto the recorded trajectory only when the live
-/// simulation is still on that same trajectory 
-///
-/// Runs after the current tick's physics step (via WaitForFixedUpdate),
-/// matching the post-physics moment at which ReplayLateKeyframer captured
-/// the recording.
+/// Corrects small replay drift without forcing large divergences back on track.
 /// </summary>
 [DefaultExecutionOrder(100)]
 public class ReplayDriftCorrector : MonoBehaviour
@@ -31,6 +26,9 @@ public class ReplayDriftCorrector : MonoBehaviour
     private Vector2 targetVel;
     private bool hasPending;
 
+    // ───────────── PUBLIC API ─────────────
+
+    #region Public API
     public void ScheduleCorrection(Vector2 keyframePos, Vector2 keyframeVel, PlayerMovement motorRef)
     {
         motor = motorRef;
@@ -51,7 +49,11 @@ public class ReplayDriftCorrector : MonoBehaviour
         hasPending = false;
         motor = null;
     }
+    #endregion
 
+    // ───────────── CORRECTION ─────────────
+
+    #region Correction
     private IEnumerator CorrectAfterPhysics()
     {
         yield return new WaitForFixedUpdate();
@@ -82,4 +84,5 @@ public class ReplayDriftCorrector : MonoBehaviour
         motor.RB.position = curPos + posError * pullStrength;
         motor.RB.linearVelocity = curVel + velError * pullStrength;
     }
+    #endregion
 }

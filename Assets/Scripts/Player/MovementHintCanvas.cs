@@ -2,9 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// Shows a movement hint above the player once per lifetime.
-/// Hides permanently the first time the player moves horizontally.
-/// Uses PlayerPrefs so it never shows again after the first session.
+/// Shows the movement hint until the player moves for the first time.
 /// </summary>
 public class MovementHintUI : MonoBehaviour
 {
@@ -16,6 +14,9 @@ public class MovementHintUI : MonoBehaviour
     private CanvasGroup group;
     private bool isDone;
 
+    // ───────────── LIFECYCLE ───────────────
+
+    #region Lifecycle
     private void Awake()
     {
         group = GetComponent<CanvasGroup>() ?? gameObject.AddComponent<CanvasGroup>();
@@ -48,7 +49,11 @@ public class MovementHintUI : MonoBehaviour
 
         StartCoroutine(FadeOut());
     }
+    #endregion
 
+    // ───────────── FADE ───────────────
+
+    #region Fade
     private IEnumerator FadeOut()
     {
         float elapsed = 0f;
@@ -64,9 +69,14 @@ public class MovementHintUI : MonoBehaviour
         group.alpha = 0f;
         gameObject.SetActive(false);
     }
+    #endregion
 
+    // ───────────── PUBLIC API ───────────────
+
+    #region Public API
     public static void ResetHint()
     {
         PlayerPrefs.DeleteKey("MovementHintShown");
     }
+    #endregion
 }

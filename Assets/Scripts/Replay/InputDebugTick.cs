@@ -1,11 +1,18 @@
 using UnityEngine;
 
+/// <summary>
+/// Logs captured input frames during fixed ticks for debugging.
+/// </summary>
+
 public class InputDebugTick : MonoBehaviour
 {
     public GatherInput input;
 
     private int tick;
 
+    // ───────────── LIFECYCLE ─────────────
+
+    #region Lifecycle
     private void Awake()
     {
         if (input == null) input = GetComponent<GatherInput>();
@@ -25,4 +32,5 @@ public class InputDebugTick : MonoBehaviour
 
         tick++;
     }
+    #endregion
 }

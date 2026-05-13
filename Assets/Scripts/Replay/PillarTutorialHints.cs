@@ -2,6 +2,9 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 
+/// <summary>
+/// Shows pillar-related speech and interaction hints near the player.
+/// </summary>
 public class PillarTutorialHints : MonoBehaviour
 {
     [Header("Speech Bubble")]
@@ -28,8 +31,9 @@ public class PillarTutorialHints : MonoBehaviour
     private Coroutine _speechFade;
     private Coroutine _hintFade;
 
-    // ── LIFECYCLE ─────────────────────────────────────────────────
+    // ───────────── LIFECYCLE ─────────────
 
+    #region Lifecycle
     private void Awake()
     {
         _speechGroup = GetOrAddGroup(speechBubbleRoot);
@@ -68,9 +72,11 @@ public class PillarTutorialHints : MonoBehaviour
 
         UpdateBubblePosition();
     }
+    #endregion
 
-    // ── PUBLIC API ────────────────────────────────────────────────
+    // ───────────── PUBLIC API ─────────────
 
+    #region Public API
     public void OnPlayerEntered()
     {
         _playerInZone = true;
@@ -80,9 +86,11 @@ public class PillarTutorialHints : MonoBehaviour
     {
         _playerInZone = false;
     }
+    #endregion
 
-    // ── POSITION ─────────────────────────────────────────────────
+    // ───────────── POSITION ─────────────
 
+    #region Position
     private void UpdateBubblePosition()
     {
         var cam = Camera.main;
@@ -99,8 +107,11 @@ public class PillarTutorialHints : MonoBehaviour
 
         speechBubbleRoot.anchoredPosition = localPoint + speechOffset;
     }
+    #endregion
 
-    // ── HELPERS ───────────────────────────────────────────────────
+    // ───────────── VISIBILITY ─────────────
+
+    #region Visibility
 
     private void SetVisible(CanvasGroup group, RectTransform root, bool visible, ref Coroutine handle)
     {
@@ -137,10 +148,15 @@ public class PillarTutorialHints : MonoBehaviour
         if (g != null) g.alpha = visible ? 1f : 0f;
         if (root != null) root.gameObject.SetActive(visible);
     }
+    #endregion
 
+    // ───────────── HELPERS ─────────────
+
+    #region Helpers
     private static CanvasGroup GetOrAddGroup(RectTransform rt)
     {
         if (rt == null) return null;
         return rt.GetComponent<CanvasGroup>() ?? rt.gameObject.AddComponent<CanvasGroup>();
     }
+    #endregion
 }

@@ -2,6 +2,13 @@ using System.Collections;
 using Unity.Cinemachine;
 using UnityEngine;
 
+/// <summary>
+/// Manages all active Cinemachine camera behavior in the scene.
+///
+/// This class controls camera switching, trigger-based camera panning,
+/// vertical damping adjustments during player falling, delayed confiner cache
+/// rebuilding, and instant snapping to the current target when needed.
+/// </summary>
 public class CameraManager : MonoBehaviour
 {
     public static CameraManager instance;
@@ -26,6 +33,9 @@ public class CameraManager : MonoBehaviour
 
     private Vector2 startingTrackedObjectOffset;
 
+    // ─────────────── LIFECYCLE ───────────────
+
+    #region Unity Lifecycle
     private void Awake()
     {
         if (instance != null && instance != this)
@@ -65,14 +75,19 @@ public class CameraManager : MonoBehaviour
         if (positionComposer == null)
             Debug.LogError("[CameraManager] CinemachinePositionComposer not found!");
 
-        // set the starting position of the tracked object offset
+        // stores the default camera offset so temporary pans can return to the original position
         startingTrackedObjectOffset = positionComposer.TargetOffset;
 
         StartCoroutine(RebuildAllConfinerCachesDelayed());
     }
+    #endregion
 
+    // ─────────────── CONFINER CACHE ───────────────
+
+    #region Confiner Cache
     private IEnumerator RebuildAllConfinerCachesDelayed()
     {
+        // waits until physics and collider data are initialized before baking confiner bounds
         yield return new WaitForFixedUpdate();
         yield return null; 
 
@@ -89,9 +104,11 @@ public class CameraManager : MonoBehaviour
             confiner.BakeBoundingShape(cam, 1f);
         }
     }
+    #endregion
+
+    // ─────────────── Y DAMPING ───────────────
 
     #region Lerp the Y Damping
-
     public void LerpYDamping(bool isPlayerFalling)
     {
         if (lerpYPanCoroutine != null)
@@ -110,7 +127,7 @@ public class CameraManager : MonoBehaviour
         if (isPlayerFalling)
             lerpedFromPlayerFalling = true;
 
-        // lerp the pan amount
+        // smoothly adjusts vertical damping depending on whether the player is falling
         float elapsedTime = 0f;
         while (elapsedTime < fallPanTime)
         {
@@ -129,11 +146,11 @@ public class CameraManager : MonoBehaviour
 
         isLerpingYDamping = false;
     }
-
     #endregion
 
-    #region Pan the camera
+    // ─────────────── CAMERA PANNING ───────────────
 
+    #region Pan the Camera
     public void PanCameraOnContact(float panDistance, float panTime, PanDirection panDirection, bool panToStartingPos)
     {
         if (panCameraCoroutine != null)
@@ -147,7 +164,7 @@ public class CameraManager : MonoBehaviour
         Vector2 endPos = Vector2.zero;
         Vector2 startingPos = Vector2.zero;
 
-        // handle pan from trigger
+        // calculates the target offset when the camera is panned away from its default position
         if (!panToStartingPos)
         {
             switch (panDirection)
@@ -175,7 +192,7 @@ public class CameraManager : MonoBehaviour
             endPos += startingPos;
         }
 
-        // handle the direction settings when moving back to the starting position
+        // returns the camera back to its original tracked object offset
         else
         {
             startingPos = positionComposer.TargetOffset;
@@ -185,14 +202,14 @@ public class CameraManager : MonoBehaviour
         Vector3 savedDamping = positionComposer.Damping;
         positionComposer.Damping = new Vector3(savedDamping.x, 0f, savedDamping.z);
 
-        // handle the actual panning of the camera
+        // smoothly moves the camera offset between the start and target positions
         float elapsedTime = 0f;
         while (elapsedTime < panTime)
         {
             elapsedTime += Time.deltaTime;
             float t = Mathf.Clamp01(elapsedTime / panTime);
 
-            // smoothstep gives ease-in + ease-out
+            // smoothStep gives the movement an ease-in and ease-out effect
             t = Mathf.SmoothStep(0f, 1f, t);
 
             positionComposer.TargetOffset = Vector3.Lerp(startingPos, endPos, t);
@@ -206,8 +223,9 @@ public class CameraManager : MonoBehaviour
     }
     #endregion
 
-    #region Camera Switching
+    // ─────────────── CAMERA SWITCHING ───────────────
 
+    #region Camera Switching
     public void SwitchCamera(CinemachineCamera cameraOnNegativeSide, CinemachineCamera cameraOnPositiveSide, Vector2 triggerExitDirection, CameraSwapAxis swapAxis)
     {
         float directionValue = swapAxis == CameraSwapAxis.Horizontal
@@ -220,7 +238,7 @@ public class CameraManager : MonoBehaviour
             return;
         }
 
-        // if the current camera is the camera on the left and trigger exit direction was on the right
+        // switches from the negative-side camera to the positive-side camera
         if (currentCamera == cameraOnNegativeSide && directionValue > 0f)
         {
             Debug.Log("[Switch] Negative -> Positive");
@@ -234,7 +252,7 @@ public class CameraManager : MonoBehaviour
             UpdateCameraState();
         }
 
-        // if the current camera is the camera on the right and trigger exit direction was on the left
+        // switches from the positive-side camera to the negative-side camera
         else if (currentCamera == cameraOnPositiveSide && directionValue < 0f)
         {
             Debug.Log("[Switch] Positive -> Negative");
@@ -254,8 +272,9 @@ public class CameraManager : MonoBehaviour
     }
     #endregion
 
-    #region Helpers
+    // ─────────────── HELPERS ───────────────
 
+    #region Helpers
     private void UpdateCameraState()
     {
         positionComposer = currentCamera.GetComponent<CinemachinePositionComposer>();
@@ -271,6 +290,8 @@ public class CameraManager : MonoBehaviour
         if (currentCamera == null || positionComposer == null) return;
 
         Vector3 saved = positionComposer.Damping;
+
+        // removes damping for one update so the camera immediately snaps to its target
         positionComposer.Damping = Vector3.zero;
         currentCamera.InternalUpdateCameraState(Vector3.up, Time.deltaTime);
         positionComposer.Damping = saved;

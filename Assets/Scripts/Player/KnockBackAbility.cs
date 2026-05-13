@@ -2,9 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// Handles knockback: applies an impulse away from the damage source,
-/// locks movement for the knockback duration, then either returns
-/// the player to normal gameplay or transitions to death.
+/// Applies knockback and handles the transition back to movement or death.
 /// </summary>
 public class KnockBackAbility : BaseAbility
 {
@@ -31,7 +29,6 @@ public class KnockBackAbility : BaseAbility
     // ───────────────── API ─────────────────
 
     #region Public API
-    // starts the knockback sequence, if a knockback is already in progress it will be interrupted and replaced
     public void StartKnockBack(float duration, Vector2 force, Transform enemyObject, float deathDelaySeconds, bool waitForGroundBeforeDeath, float maxWaitForGround)
     {
         if (player.playerStats == null || !player.playerStats.GetCanTakeDamage())
@@ -57,7 +54,7 @@ public class KnockBackAbility : BaseAbility
             yield break;
         }
 
-        // apply impulse away from the enemy
+        // applies an impulse away from the enemy
         Vector2 knockVelocity = CalculateKnockbackVelocity(force, enemyObject);
 
         linkedMotor.ExternalImpulse(knockVelocity, duration);
@@ -66,7 +63,7 @@ public class KnockBackAbility : BaseAbility
 
         linkedMotor.ClearExternalLock();
 
-        // alive: return to normal state
+        // if the player survived, return to the appropriate movement state
         if (player.playerStats != null && player.playerStats.GetCurrentHealth() > 0)
         {
             TransitionToMovementState();
@@ -76,7 +73,7 @@ public class KnockBackAbility : BaseAbility
         player.gatherInput?.DisablePlayerMap();
         linkedMotor.LastPressedJumpTime = 0f;
 
-        // dead: optional delay, optional wait for ground, then die
+        // if the player died, optionally wait before switching to the death state
         yield return WaitBeforeDeath(deathDelaySeconds, waitForGroundBeforeDeath, maxWaitForGround);
 
         if (player.playerStats != null)
@@ -93,7 +90,7 @@ public class KnockBackAbility : BaseAbility
     {
         float dirX = linkedMotor.RB.position.x - GetEnemyContactX(enemyObject);
 
-        // if enemy is at the exact same X, push in the direction the player faces
+        // if the enemy is at the same X position, push in the direction the player faces
         if (Mathf.Abs(dirX) < 0.001f)
             dirX = (player != null && player.facingRight) ? 1f : -1f;
 
@@ -102,7 +99,7 @@ public class KnockBackAbility : BaseAbility
 
     private float GetEnemyContactX(Transform enemyObject)
     {
-        // try to find the closest point on the enemy's collider
+        // uses the closest collider point when available for a more accurate knockback direction
         Collider2D srcCol = enemyObject.GetComponent<Collider2D>();
 
         if (srcCol == null)

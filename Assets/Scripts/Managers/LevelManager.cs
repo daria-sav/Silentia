@@ -3,11 +3,11 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// Handles scene transitions with a fullscreen fade overlay.
+/// Handles scene transitions through a fullscreen fade overlay.
 ///
-/// This manager fades the screen in when a scene starts and fades it out
+/// The manager fades the screen in when a scene starts and fades it out
 /// before loading or restarting a scene. It uses unscaled time so transitions
-/// still work while gameplay is paused, for example during terminal flow.
+/// remain stable even when gameplay is paused, such as during terminal flow.
 /// </summary>
 public class LevelManager : MonoBehaviour
 {
@@ -57,12 +57,11 @@ public class LevelManager : MonoBehaviour
     }
     #endregion
 
-    // ────────────────── API ──────────────────
+    // ─────────────── PUBLIC API ───────────────
 
     #region Public API
-    /// <summary>
-    /// Restarts the currently active scene using a fade-out transition
-    /// </summary>
+
+    // restarts the currently active scene using a fade-out transition
     public void RestartLevel()
     {
         if (!CanStartTransition())
@@ -72,10 +71,7 @@ public class LevelManager : MonoBehaviour
         StartTransition(FadeOutAndLoad(buildIndex));
     }
 
-    /// <summary>
-    /// Loads a scene by name using a fade-out transition
-    /// </summary>
-    /// <param name="sceneName"> scene name to load </param>
+    // loads the given scene using a fade-out transition
     public void LoadLevel(string sceneName)
     {
         if (!CanStartTransition())
@@ -88,9 +84,8 @@ public class LevelManager : MonoBehaviour
     // ─────────────── COROUTINES ──────────────
 
     #region Fade Coroutines
-    /// <summary>
-    /// Fades the screen from the current alpha to fully transparent
-    /// </summary>
+
+    // fades the screen from black to transparent after a scene starts
     private IEnumerator FadeIn()
     {
         isTransitioning = true;
@@ -102,6 +97,8 @@ public class LevelManager : MonoBehaviour
         }
 
         yield return null;
+
+        // snaps the camera to its target before revealing the scene
         CameraManager.instance?.SnapToTarget();
 
         yield return FadeCanvasTo(0f);
@@ -116,9 +113,7 @@ public class LevelManager : MonoBehaviour
         transitionRoutine = null;
     }
 
-    /// <summary>
-    /// Fades the screen to black and then loads a scene by name
-    /// </summary>
+    // fades the screen to black and then loads a scene by name
     private IEnumerator FadeOutAndLoad(string sceneName)
     {
         isTransitioning = true;
@@ -133,9 +128,7 @@ public class LevelManager : MonoBehaviour
         SceneManager.LoadScene(sceneName);
     }
 
-    /// <summary>
-    /// Fades the screen to black and then loads a scene by build index.
-    /// </summary>
+    // fades the screen to black and then loads a scene by build index
     private IEnumerator FadeOutAndLoad(int buildIndex)
     {
         isTransitioning = true;
@@ -150,11 +143,7 @@ public class LevelManager : MonoBehaviour
         SceneManager.LoadScene(buildIndex);
     }
 
-    /// <summary>
-    /// Smoothly changes the overlay alpha using unscaled time so pause state
-    /// does not affect scene transitions
-    /// </summary>
-    /// <param name="targetAlpha"> final alpha value </param>
+    // smoothly changes the fade overlay alpha using unscaled time
     private IEnumerator FadeCanvasTo(float targetAlpha)
     {
         if (canvasGroup == null)
@@ -185,18 +174,14 @@ public class LevelManager : MonoBehaviour
     // ─────────────── HELPERS ────────────────
 
     #region Internal Helpers
-    /// <summary>
-    /// Returns true when a new scene transition can be started
-    /// </summary>
+
+    // returns true when a new scene transition can be started
     private bool CanStartTransition()
     {
         return !isTransitioning && canvasGroup != null;
     }
 
-    /// <summary>
-    /// Stops the previous transition coroutine before starting a new one
-    /// </summary>
-    /// <param name="routine"> transition routine to run</param>
+    // stops the previous transition coroutine before starting a new one
     private void StartTransition(IEnumerator routine)
     {
         if (transitionRoutine != null)

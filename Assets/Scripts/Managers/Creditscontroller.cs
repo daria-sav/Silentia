@@ -2,9 +2,11 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// Scrolls the credits container upward, then shows a "Thank You" screen.
-/// Press Skip (any key / mouse click) to jump straight to Thank You.
-/// After the thank-you delay the game returns to the Main Menu.
+/// Controls the credits sequence after the game ends.
+///
+/// The controller scrolls the credits upward, transitions to a "Thank You"
+/// screen, and then returns the player to the main menu. It also supports
+/// skipping different parts of the sequence through a skip button.
 /// </summary>
 public class CreditsController : MonoBehaviour
 {
@@ -24,15 +26,15 @@ public class CreditsController : MonoBehaviour
     [Header("Scene")]
     [SerializeField] private string mainMenuScene = "MainMenu";
 
-    // ── state ──────────────────────────────────────────────────────────────
     private enum Phase { Scrolling, EndPause, FadingToThankYou, ThankYou, FadingOut }
     private Phase phase = Phase.Scrolling;
 
     private float phaseTimer;
     private float scrollFinishY;   // Y position when container is fully scrolled
 
-    // ───────────────────────────── LIFECYCLE ───────────────────────────────
+    // ─────────────── LIFECYCLE ───────────────
 
+    #region Unity Lifecycle
     private void Start()
     {
         Cursor.visible = true;
@@ -48,8 +50,7 @@ public class CreditsController : MonoBehaviour
         if (creditsCanvasGroup != null)
             creditsCanvasGroup.alpha = 1f;
 
-        // The container should scroll until its bottom edge clears the screen top.
-        // scrollFinishY = container height  (anchored at top-center, pivot bottom)
+        // defines the Y position where the credits are considered fully scrolled
         if (creditsContainer != null)
             scrollFinishY = 500f;
     }
@@ -65,9 +66,11 @@ public class CreditsController : MonoBehaviour
             case Phase.FadingOut: UpdateFadeOut(); break;
         }
     }
+    #endregion
 
-    // ───────────────────────────── PHASES ──────────────────────────────────
+    // ─────────────── PHASES ───────────────
 
+    #region Phases
     private void UpdateScrolling()
     {
         if (creditsContainer == null) return;
@@ -127,9 +130,11 @@ public class CreditsController : MonoBehaviour
         if (t >= 1f)
             GoToMainMenu();
     }
+    #endregion
 
-    // ───────────────────────────── HELPERS ─────────────────────────────────
+    // ─────────────── HELPERS ───────────────
 
+    #region Helpers
     private void EnterPhase(Phase next)
     {
         phase = next;
@@ -159,9 +164,11 @@ public class CreditsController : MonoBehaviour
 
         EnterPhase(Phase.ThankYou);
     }
+    #endregion
 
-    // ───────────────────────────── PUBLIC ──────────────────────────────────
+    // ─────────────── PUBLIC API ───────────────
 
+    #region Public API
     public void OnSkipButton()
     {
         switch (phase)
@@ -189,4 +196,5 @@ public class CreditsController : MonoBehaviour
         else
             SceneManager.LoadScene(mainMenuScene);
     }
+    #endregion
 }

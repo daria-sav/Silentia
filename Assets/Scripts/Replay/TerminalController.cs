@@ -2,10 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 /// <summary>
-/// Scene-local terminal object. Detects player proximity,
-/// handles interact input to open the terminal menu,
-/// and routes paused-mode input (slot selection, record, play, exit)
-/// to TerminalSession.
+/// Handles terminal proximity, interaction, and paused terminal input.
 /// </summary>
 [RequireComponent(typeof(Collider2D))]
 public class TerminalController : MonoBehaviour
@@ -39,7 +36,12 @@ public class TerminalController : MonoBehaviour
     private bool subscribed;
 
     private GatherInput gatherInput;
-    private bool playerInZone;
+    private Player playerInZone;
+
+    // presence polling
+    private Collider2D triggerCol;
+    private ContactFilter2D contactFilter;
+    private static readonly Collider2D[] overlapBuffer = new Collider2D[8];
 
     // ───────────── LIFECYCLE ───────────────
 
@@ -51,8 +53,13 @@ public class TerminalController : MonoBehaviour
 
     private void Awake()
     {
-        if (terminalInput == null) 
+        if (terminalInput == null)
             terminalInput = GetComponent<TerminalInput>();
+
+        triggerCol = GetComponent<Collider2D>();
+
+        contactFilter = ContactFilter2D.noFilter;
+        contactFilter.useTriggers = true;
     }
 
     private void OnEnable()
@@ -72,7 +79,11 @@ public class TerminalController : MonoBehaviour
     #region Update Loop
     private void Update()
     {
+        // keeps the scene-local terminal connected to the persistent TerminalSession
         TryBindSession();
+
+        // trigger exit can be missed during reloads or object changes, so presence is polled manually
+        PollPlayerInZone();
 
         if (session == null)
             return;
@@ -89,11 +100,73 @@ public class TerminalController : MonoBehaviour
     }
     #endregion
 
+    // ──────────── PRESENCE POLLING ───────────
+
+    #region Presence Polling
+    private void PollPlayerInZone()
+    {
+        if (triggerCol == null) return;
+
+        Player live = FindLivePlayerInTrigger();
+        if (ReferenceEquals(playerInZone, live)) return;
+
+        if (playerInZone != null)
+            HandlePlayerExited();
+
+        if (live != null)
+            HandlePlayerEntered(live);
+    }
+
+    private Player FindLivePlayerInTrigger()
+    {
+        int count = triggerCol.Overlap(contactFilter, overlapBuffer);
+
+        for (int i = 0; i < count; i++)
+        {
+            var col = overlapBuffer[i];
+            if (col == null) continue;
+            if (!col.CompareTag("Player")) continue;
+
+            var p = col.GetComponentInParent<Player>();
+            if (p == null) continue;
+
+            // replay ghosts may share the Player tag, but they must not open the terminal
+            var playback = p.GetComponent<ReplayPlayback>();
+            if (playback != null && playback.IsPlaying) continue;
+
+            return p;
+        }
+
+        return null;
+    }
+
+    private void HandlePlayerEntered(Player p)
+    {
+        playerInZone = p;
+        gatherInput = p.gatherInput != null ? p.gatherInput : p.GetComponent<GatherInput>();
+        gatherInput?.ClearInteractBuffered();
+
+        tutorialHints?.OnPlayerEntered();
+        UpdateSlotUiVisibility();
+
+        TerminalSession.Instance?.SetTerminalSpawn(terminalSpawnKey, facingRightAtTerminal);
+    }
+
+    private void HandlePlayerExited()
+    {
+        playerInZone = null;
+        gatherInput = null;
+        tutorialHints?.OnPlayerExited();
+        UpdateSlotUiVisibility();
+    }
+    #endregion
+
     // ──────────── INPUT HANDLING ─────────────
 
     #region Input Handling
     private void HandlePausedInput()
     {
+        // blocks terminal controls while the character intro dialog is active
         if (characterIntroUI != null && characterIntroUI.IsPlaying)
             return;
 
@@ -165,7 +238,7 @@ public class TerminalController : MonoBehaviour
 
     private void HandleNormalInput()
     {
-        if (!playerInZone || session == null || gatherInput == null)
+        if (playerInZone == null || session == null || gatherInput == null)
             return;
 
         if (gatherInput.ConsumeInteractDown())
@@ -213,6 +286,7 @@ public class TerminalController : MonoBehaviour
     {
         UpdateSlotUiVisibility();
 
+        // shows the character intro only once per runtime session
         if (state == TerminalSession.TerminalState.TerminalPaused
         && !_introShown
         && introSequence != null
@@ -240,6 +314,7 @@ public class TerminalController : MonoBehaviour
 
         if (terminalBackground != null)
         {
+            // background stays visible during planning and recording-related terminal states
             bool showBg = session != null && session.State is
                 TerminalSession.TerminalState.TerminalPaused or
                 TerminalSession.TerminalState.EnteringRecord or
@@ -252,41 +327,6 @@ public class TerminalController : MonoBehaviour
     public static void ResetIntroShown()
     {
         _introShown = false;
-    }
-    #endregion
-
-    // ──────────── TRIGGER ZONE ───────────────
-
-    #region Trigger Zone
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (!other.CompareTag("Player"))
-            return;
-
-        var player = other.GetComponentInParent<Player>();
-        if (player == null) return;
-
-        playerInZone = true;
-
-        tutorialHints?.OnPlayerEntered();
-
-        gatherInput = player.gatherInput != null ? player.gatherInput : player.GetComponent<GatherInput>();
-        gatherInput?.ClearInteractBuffered();
-
-        UpdateSlotUiVisibility();
-
-        TerminalSession.Instance?.SetTerminalSpawn(terminalSpawnKey, facingRightAtTerminal);
-    }
-
-    private void OnTriggerExit2D(Collider2D other)
-    {
-        var player = other.GetComponentInParent<Player>();
-        if (player == null) return;
-
-        playerInZone = false;
-        tutorialHints?.OnPlayerExited();
-        gatherInput = null;
-        UpdateSlotUiVisibility();
     }
     #endregion
 }

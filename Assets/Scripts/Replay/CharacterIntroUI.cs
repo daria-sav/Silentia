@@ -4,10 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Shows a dialog sequence introducing characters.
-/// Hero icon + speech text. The introduced character
-/// is highlighted in CharacterListUI, not shown here.
-/// Blocked until player presses Space / Enter / Click.
+/// Plays character introduction dialogs during the tutorial.
 /// </summary>
 public class CharacterIntroUI : MonoBehaviour
 {
@@ -28,7 +25,6 @@ public class CharacterIntroUI : MonoBehaviour
     [Header("Input")]
     [SerializeField] private TerminalInput terminalInput;
 
-    // ── runtime ───────────────────────────────────────────────────
     private CharacterIntroSequence sequence;
     private int currentEntry;
     private bool waitingForInput;
@@ -37,8 +33,9 @@ public class CharacterIntroUI : MonoBehaviour
 
     public bool IsPlaying { get; private set; }
 
-    // ── PUBLIC API ────────────────────────────────────────────────
+    // ───────────── PUBLIC API ─────────────
 
+    #region Public API
     public void Play(CharacterIntroSequence sequence, System.Action onComplete)
     {
         if (sequence == null || sequence.entries == null || sequence.entries.Length == 0)
@@ -61,9 +58,11 @@ public class CharacterIntroUI : MonoBehaviour
         gameObject.SetActive(true);
         StartCoroutine(FadePanel(0f, 1f, () => ShowEntry(currentEntry)));
     }
+    #endregion
 
-    // ── UPDATE ────────────────────────────────────────
+    // ───────────── LIFECYCLE ─────────────
 
+    #region Lifecycle
     private void Update()
     {
         if (!waitingForInput) return;
@@ -92,7 +91,11 @@ public class CharacterIntroUI : MonoBehaviour
         }
     }
 
-    // ── HELPERS ───────────────────────────────────────────────────
+    #endregion
+
+    // ───────────── DIALOG FLOW ─────────────
+
+    #region Dialog Flow
 
     private System.Action _onComplete;
 
@@ -144,7 +147,11 @@ public class CharacterIntroUI : MonoBehaviour
         if (dialogText != null) dialogText.text = entry.introText;
         typingDone = true;
     }
+    #endregion
 
+    // ───────────── FADE ─────────────
+
+    #region Fade
     private IEnumerator FadePanel(float from, float to, System.Action onDone)
     {
         waitingForInput = false;
@@ -161,4 +168,5 @@ public class CharacterIntroUI : MonoBehaviour
         panelGroup.alpha = to;
         onDone?.Invoke();
     }
+    #endregion
 }

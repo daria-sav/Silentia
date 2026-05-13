@@ -5,8 +5,11 @@ using UnityEngine.InputSystem;
 using TMPro;
 
 /// <summary>
-/// Intro: sentences appear one by one, fade in softly.
-/// Press Submit or Click to advance to the next line immediately.
+/// Controls the introductory story sequence before gameplay starts.
+///
+/// The sequence displays text lines one by one with soft fade transitions,
+/// allows the player to advance each line through input, and then fades into
+/// the next scene.
 /// </summary>
 public class IntroSequence : MonoBehaviour
 {
@@ -35,6 +38,7 @@ public class IntroSequence : MonoBehaviour
 
     // ─────────────── LIFECYCLE ───────────────
 
+    #region Unity Lifecycle
     private void OnEnable()
     {
         if (submitAction != null)
@@ -59,11 +63,6 @@ public class IntroSequence : MonoBehaviour
             clickAction.action.performed -= OnAdvance;
     }
 
-    private void OnAdvance(InputAction.CallbackContext ctx)
-    {
-        _advance = true;
-    }
-
     // ─────────────── SEQUENCE ────────────────
 
     private IEnumerator Start()
@@ -81,6 +80,8 @@ public class IntroSequence : MonoBehaviour
             yield return FadeLabel(0f, 1f, fadeInDuration);
 
             float t = 0f;
+
+            // keeps the current line visible until the timer ends or the player advances
             while (t < holdDuration && !_advance)
             {
                 t += Time.unscaledDeltaTime;
@@ -100,9 +101,20 @@ public class IntroSequence : MonoBehaviour
 
         SceneManager.LoadScene(nextScene);
     }
+    #endregion
 
-    // ─────────────── HELPERS ─────────────────
+    // ─────────────── INPUT ───────────────
 
+    #region Input
+    private void OnAdvance(InputAction.CallbackContext ctx)
+    {
+        _advance = true;
+    }
+    #endregion
+
+    // ─────────────── HELPERS ───────────────
+
+    #region Helpers
     private IEnumerator FadeLabel(float from, float to, float duration)
     {
         float t = 0f;
@@ -132,4 +144,5 @@ public class IntroSequence : MonoBehaviour
 
         cg.alpha = to;
     }
+    #endregion
 }

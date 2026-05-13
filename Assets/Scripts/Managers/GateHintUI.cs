@@ -2,6 +2,12 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 
+/// <summary>
+/// Displays short gate-related hint messages on the UI.
+///
+/// The hint appears for a limited time and then fades out using unscaled time,
+/// so it can still work correctly even when the game is paused or slowed down.
+/// </summary>
 public class GateHintUI : MonoBehaviour
 {
     public static GateHintUI Instance { get; private set; }
@@ -16,6 +22,9 @@ public class GateHintUI : MonoBehaviour
 
     private Coroutine currentRoutine;
 
+    // ─────────────── LIFECYCLE ───────────────
+
+    #region Unity Lifecycle
     private void Awake()
     {
         Instance = this;
@@ -34,6 +43,11 @@ public class GateHintUI : MonoBehaviour
         if (Instance == this)
             Instance = null;
     }
+    #endregion
+
+    // ─────────────── PUBLIC API ───────────────
+
+    #region Public API
 
     public void Show(string message)
     {
@@ -45,7 +59,11 @@ public class GateHintUI : MonoBehaviour
 
         currentRoutine = StartCoroutine(ShowRoutine(message));
     }
+    #endregion
 
+    // ─────────────── UI ROUTINES ───────────────
+
+    #region UI Routines
     private IEnumerator ShowRoutine(string message)
     {
         messageText.text = message;
@@ -58,6 +76,7 @@ public class GateHintUI : MonoBehaviour
 
         float elapsed = 0f;
 
+        // fades the hint out smoothly without depending on Time.timeScale
         while (elapsed < fadeTime)
         {
             elapsed += Time.unscaledDeltaTime;
@@ -67,6 +86,11 @@ public class GateHintUI : MonoBehaviour
 
         HideImmediately();
     }
+    #endregion
+
+    // ─────────────── HELPERS ───────────────
+
+    #region Helpers
 
     private void HideImmediately()
     {
@@ -77,4 +101,5 @@ public class GateHintUI : MonoBehaviour
         canvasGroup.interactable = false;
         canvasGroup.blocksRaycasts = false;
     }
+    #endregion
 }

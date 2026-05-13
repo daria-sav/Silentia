@@ -1,5 +1,7 @@
 using System;
-
+/// <summary>
+/// Stores player input captured for a single fixed replay tick.
+/// </summary>
 [Serializable]
 public struct InputFrame
 {
@@ -8,12 +10,12 @@ public struct InputFrame
     public float moveX;
     public float moveY;
 
-    // Jump
+    // ───────────── JUMP ─────────────
     public bool jumpDown;
     public bool jumpUp;
     public bool jumpHeld;
 
-    // Dash
+    // ───────────── DASH ─────────────
     public bool dashDown;
     public bool dashUp;
     public bool dashHeld;

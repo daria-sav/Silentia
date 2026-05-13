@@ -719,7 +719,6 @@ public class TerminalSession : MonoBehaviour
         }
     }
 
-
     private IEnumerator BeginRecordingNextFrame(ReplayRecorder recorder)
     {
         yield return new WaitForFixedUpdate();

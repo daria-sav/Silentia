@@ -2,13 +2,12 @@ using System.IO;
 using UnityEngine;
 
 /// <summary>
-/// Provides simple JSON-based save and load operations inside
-/// <see cref="Application.persistentDataPath"/>.
+/// Provides a global JSON-based persistence service for small serializable data objects.
 ///
-/// This manager is used as a global persistence service for small serializable
-/// data containers, such as spawn information that must survive scene reloads.
-/// It creates target folders automatically and supports save, load, file delete
-/// and folder delete operations.
+/// The manager stores save files inside <see cref="Application.persistentDataPath"/>,
+/// creates folders when needed, and supports saving, loading, deleting files,
+/// and deleting entire save folders. It is used for spawn and checkpoint data
+/// that must persist between scene loads.
 /// </summary>
 public class SaveLoadManager : MonoBehaviour
 {
@@ -43,17 +42,9 @@ public class SaveLoadManager : MonoBehaviour
     }
     #endregion
 
-    // ────────────────── API ──────────────────
+    // ─────────────── SAVE / LOAD API ───────────────
 
     #region Public Save / Load API
-    /// <summary>
-    /// Saves the given serializable object as formatted JSON.
-    /// The target directory is created automatically if needed.
-    /// </summary>
-    /// <typeparam name="T"> serializable data type </typeparam>
-    /// <param name="dataToSave"> object to serialize and write to disk </param>
-    /// <param name="folderName"> folder inside persistent data path </param>
-    /// <param name="fileName"> target file name </param>
     public void Save<T>(T dataToSave, string folderName, string fileName)
     {
         if (dataToSave == null)
@@ -67,14 +58,6 @@ public class SaveLoadManager : MonoBehaviour
         File.WriteAllText(savePath, JsonUtility.ToJson(dataToSave, true));
     }
 
-    /// <summary>
-    /// Loads JSON data from disk and overwrites fields of the provided object.
-    /// The target object must already exist before calling this method.
-    /// </summary>
-    /// <typeparam name="T"> serializable data type </typeparam>
-    /// <param name="dataToLoadInto"> existing object that receives loaded values </param>
-    /// <param name="folderName"> folder inside persistent data path </param>
-    /// <param name="fileName"> source file name </param>
     public void Load<T>(T dataToLoadInto, string folderName, string fileName)
     {
         string loadPath = Path.Combine(Application.persistentDataPath, folderName, fileName);
@@ -85,10 +68,6 @@ public class SaveLoadManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Saves spawn data through a single consistent entry point.
-    /// Every spawn save must provide scene name, spawn key and facing direction together.
-    /// </summary>
     public void SaveSpawnData(string sceneName, string spawnPintKey, bool facingRight)
     {
         if (string.IsNullOrWhiteSpace(sceneName))
@@ -137,35 +116,21 @@ public class SaveLoadManager : MonoBehaviour
         Save(data, folderName, fileCheckpoint);
     }
 
-    /// <summary>
-    /// Loads data from the default save file configured in the inspector.
-    /// </summary>
     public void LoadDefault<T>(T dataToLoadInto)
     {
         Load(dataToLoadInto, folderName, fileName);
     }
 
-    /// <summary>
-    /// Returns the full path to the default save file.
-    /// </summary>
     public string GetDefaultSavePath()
     {
         return Path.Combine(Application.persistentDataPath, folderName, fileName);
     }
 
-    /// <summary>
-    /// Returns true if the default save file exists.
-    /// </summary>
     public bool HasDefaultSaveFile()
     {
         return File.Exists(GetDefaultSavePath());
     }
 
-    /// <summary>
-    /// Deletes a specific save file if it exists
-    /// </summary>
-    /// <param name="folderName"> folder inside persistent data path </param>
-    /// <param name="fileName"> file to delete </param>
     public void DeleteSaveFile(string folderName, string fileName)
     {
         string deletePath = Path.Combine(Application.persistentDataPath, folderName, fileName);
@@ -175,10 +140,6 @@ public class SaveLoadManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Deletes an entire save folder and all files inside it
-    /// </summary>
-    /// <param name="folderName"> folder inside persistent data path </param>
     public void DeleteFolder(string folderName)
     {
         string folderPath = Path.Combine(Application.persistentDataPath, folderName);

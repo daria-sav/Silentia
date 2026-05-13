@@ -5,15 +5,11 @@ public class PlayerStates
     {
         Idle, // default one
         Walk,
-        Run, // ??
+        Run, 
         Jump,
-        DoubleJump, // ??
-        WallJump, // ??
         WallSlide,
+        WallJump,
         Dash,
-        Crouch, // ??
-        Ladders, // ??
-        Ignore, // ??
         KnockBack,
         Death,
     }

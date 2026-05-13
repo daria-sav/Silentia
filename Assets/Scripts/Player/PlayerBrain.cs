@@ -2,9 +2,7 @@ using UnityEngine;
 using UnityEngine.Profiling;
 
 /// <summary>
-/// Reads GatherInput every fixed tick and feeds the PlayerMovement motor.
-/// Handles both continuous input (move direction) and discrete events
-/// (jump press/release, dash press).
+/// Feeds fixed-tick input into player movement, abilities, recording, and camera damping.
 /// </summary>
 [DefaultExecutionOrder(-250)]
 public class PlayerBrain : MonoBehaviour
@@ -15,6 +13,9 @@ public class PlayerBrain : MonoBehaviour
     private DashAbility dash;
     private ReplayRecorder recorder;
 
+    // ───────────── LIFECYCLE ───────────────
+
+    #region Lifecycle
     private void Awake()
     {
         input = GetComponent<GatherInput>();
@@ -31,10 +32,10 @@ public class PlayerBrain : MonoBehaviour
         var motor = player.motor;
         if (motor == null) return;
 
-        // continuous: move direction
+        // sends continuous movement input to the motor
         motor.SetMoveInput(input.move.x, input.move.y);
 
-        // discrete: jump
+        // handles jump press for the current fixed tick
         if (input.jumpDownTick && jump != null)
         {
             jump.TryToJump();
@@ -42,22 +43,21 @@ public class PlayerBrain : MonoBehaviour
             input.ClearJumpDownTick(); 
         }
 
+        // handles jump release for variable jump height
         if (input.jumpUpTick && jump != null)
         {
             jump.OnJumpReleased();
             input.ClearJumpUpTick();
         }
 
-        // discrete: dash
+        // handles dash press for the current fixed tick
         if (input.dashDownTick && dash != null)
         {
             dash.TryStartDash();
             input.ClearDashDownTick(); 
         }
 
-        // dashUpTick????
-
-        // stop recording
+        // stops recording when the stop-record input is consumed
         if (recorder != null && recorder.IsRecording && input.ConsumeStopRecordDown())
         {
             recorder.StopRecording();
@@ -65,14 +65,18 @@ public class PlayerBrain : MonoBehaviour
 
         HandleCameraYDamping(motor);
     }
+    #endregion
 
+    // ───────────── CAMERA ───────────────
+
+    #region Camera
     private void HandleCameraYDamping(PlayerMovement motor)
     {
         if (CameraManager.instance == null) return;
 
         float velY = motor.RB.linearVelocity.y;
 
-        // Falling faster than the threshold - enable damping
+        // enables stronger vertical damping when the player falls fast enough
         if (velY < CameraManager.instance.fallSpeedYDampingChangeThreshold
             && !CameraManager.instance.isLerpingYDamping
             && !CameraManager.instance.lerpedFromPlayerFalling)
@@ -80,7 +84,7 @@ public class PlayerBrain : MonoBehaviour
             CameraManager.instance.LerpYDamping(true);
         }
 
-        // landed / flying up - reset damping
+        // restores normal vertical damping after falling ends
         if (velY >= 0f
             && !CameraManager.instance.isLerpingYDamping
             && CameraManager.instance.lerpedFromPlayerFalling)
@@ -89,4 +93,5 @@ public class PlayerBrain : MonoBehaviour
             CameraManager.instance.LerpYDamping(false);
         }
     }
+    #endregion
 }

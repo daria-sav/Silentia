@@ -1,16 +1,16 @@
 using System.Collections;
-using System.IO;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
 
 /// <summary>
-/// Controls the main menu actions for starting a new game,
-/// continuing from the last saved spawn state, and quitting the application.
+/// Manages the main menu flow, including starting a new game,
+/// continuing from saved progress, and quitting the application.
 ///
-/// This menu does not place the player inside a scene directly.
-/// Instead, it decides which scene should be loaded, while
-/// <see cref="SpawnControl"/> later applies the saved spawn point and facing direction.
+/// The class prepares the menu UI based on save availability and delegates
+/// scene loading to <see cref="LevelManager"/>. Saved spawn data is handled
+/// separately by <see cref="SaveLoadManager"/> and later applied by
+/// <see cref="SpawnControl"/>.
 /// </summary>
 public class MenuControl : MonoBehaviour
 {
@@ -27,6 +27,7 @@ public class MenuControl : MonoBehaviour
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
 
+        // refreshes the UI input module to ensure menu navigation works correctly after scene changes
         var inputModule = EventSystem.current?
             .GetComponent<InputSystemUIInputModule>();
         if (inputModule != null)
@@ -52,6 +53,7 @@ public class MenuControl : MonoBehaviour
 
         continueButton.SetActive(hasSave);
 
+        // selects the most relevant first button for keyboard/controller navigation
         GameObject firstButton = hasSave ? continueButton : newGameButton;
         if (firstButton != null)
             StartCoroutine(SelectFirstButton(firstButton));
@@ -63,6 +65,7 @@ public class MenuControl : MonoBehaviour
     #region Helpers
     private IEnumerator SelectFirstButton(GameObject button)
     {
+        // waits for the UI system to finish initialization before selecting the button
         yield return null;
         yield return null;
 
@@ -91,6 +94,7 @@ public class MenuControl : MonoBehaviour
             return;
         }
 
+        // clears previous progress before creating a fresh default spawn state
         SaveLoadManager.Instance.DeleteFolder(SaveLoadManager.Instance.folderName);
         SaveLoadManager.Instance.SaveSpawnData("Tutorial1", "Start", true);
         MovementHintUI.ResetHint();
@@ -117,11 +121,13 @@ public class MenuControl : MonoBehaviour
             SpawnData spawnData = new SpawnData();
             SaveLoadManager.Instance.LoadDefault(spawnData);
 
+            // falls back to the first tutorial scene if the saved scene name is missing.
             string sceneToLoad = string.IsNullOrEmpty(spawnData.sceneName) ? "Tutorial1" : spawnData.sceneName;
             LevelManager.Instance.LoadLevel(sceneToLoad);
         }
         else
         {
+            // creates a default save state if the save file is missing unexpectedly
             SaveLoadManager.Instance.SaveSpawnData("Tutorial1", "Start", true);
             LevelManager.Instance.LoadLevel("Tutorial1");
         }

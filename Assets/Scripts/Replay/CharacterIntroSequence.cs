@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// Stores tutorial intro text for character profiles.
+/// </summary>
 [CreateAssetMenu(menuName = "Tutorial/Character Intro Sequence")]
 public class CharacterIntroSequence : ScriptableObject
 {

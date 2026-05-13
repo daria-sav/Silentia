@@ -111,6 +111,7 @@ public class JumpingSpike : MonoBehaviour
                         bool nearCeiling = IsNearCeiling();
                         bool touchingCeiling = IsTouchingCeiling();
 
+                        // uses a separate approach sprite shortly before reaching the ceiling
                         ApplyVisuals(idle: false, onCeiling: false, approaching: nearCeiling);
 
                         if (touchingCeiling)
@@ -216,7 +217,7 @@ public class JumpingSpike : MonoBehaviour
     }
     #endregion
 
-    // ─────────────── DAMAGE ────────────────
+    // ───────────── TRIGGER HANDLING ─────────────
 
     #region Trigger Handling
     private void OnTriggerEnter2D(Collider2D collision)

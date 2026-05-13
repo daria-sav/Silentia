@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// Adds a subtle floating and pulsing animation to a tutorial hint.
+/// </summary>
 public class TutorialHintFloat : MonoBehaviour
 {
     [SerializeField] private float floatAmplitude = 0.12f;
@@ -11,6 +14,9 @@ public class TutorialHintFloat : MonoBehaviour
     private Vector3 startLocalPos;
     private Vector3 startScale;
 
+    // ─────────────── LIFECYCLE ───────────────
+
+    #region Unity Lifecycle
     private void Awake()
     {
         startLocalPos = transform.localPosition;
@@ -27,4 +33,5 @@ public class TutorialHintFloat : MonoBehaviour
         float scaleOffset = 1f + Mathf.Sin(t * pulseSpeed) * pulseAmplitude;
         transform.localScale = startScale * scaleOffset;
     }
+    #endregion
 }

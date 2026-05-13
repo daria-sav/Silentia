@@ -1,20 +1,26 @@
 using UnityEngine;
 
 /// <summary>
-/// Handles player death logic
-/// and drives the Death animator parameter.
+/// Handles death state behavior and restart flow.
 /// </summary>
 public class DeathAbility : BaseAbility
 {
     private const string DeathAnimParameterName = "Death";
     private int deathParameterID;
 
+    // ───────────── LIFECYCLE ───────────────
+
+    #region Lifecycle
     protected override void InitializeLinks()
     {
         base.InitializeLinks();
         deathParameterID = Animator.StringToHash(DeathAnimParameterName);
     }
+    #endregion
 
+    // ────────────── ABILITY STATE ───────────────
+
+    #region Ability State
     public override void EnterAbility()
     {
         Debug.Log($"[DEATH] EnterAbility on {gameObject.name}. CurrentProfileIndex={GetComponent<CloneSwitcher>()?.CurrentProfileIndex}");
@@ -27,6 +33,7 @@ public class DeathAbility : BaseAbility
         if (linkedAnimator != null)
             linkedAnimator.SetBool(deathParameterID, true);
 
+        // the main hero respawns from the latest checkpoint after death
         if (GetComponent<CloneSwitcher>()?.CurrentProfileIndex == 0)
         {
             SpawnMode.spawnFromCheckPoint = true;
@@ -41,12 +48,11 @@ public class DeathAbility : BaseAbility
         if (linkedAnimator != null)
             linkedAnimator.SetBool(deathParameterID, false);
     }
+    #endregion
 
-    public override void UpdateAnimator()
-    {
-        linkedAnimator.SetBool(deathParameterID, linkedStateMachine.currentState == PlayerStates.State.Death);
-    }
+    // ────────────── RESTART FLOW ───────────────
 
+    #region Restart Flow
     public void ResetGame()
     {
         Debug.Log($"[DEATH] DeathAbility.ResetGame called. CurrentProfileIndex={GetComponent<CloneSwitcher>()?.CurrentProfileIndex} TS.State={(TerminalSession.Instance?.State)}");
@@ -62,6 +68,7 @@ public class DeathAbility : BaseAbility
             return;
         }
 
+        // during recording, death returns the player to the terminal flow
         if (TerminalSession.Instance != null &&
             TerminalSession.Instance.State == TerminalSession.TerminalState.Recording)
         {
@@ -71,4 +78,14 @@ public class DeathAbility : BaseAbility
 
         LevelManager.Instance.RestartLevel();
     }
+    #endregion
+
+    // ────────────── ANIMATOR ───────────────
+
+    #region Animator
+    public override void UpdateAnimator()
+    {
+        linkedAnimator.SetBool(deathParameterID, linkedStateMachine.currentState == PlayerStates.State.Death);
+    }
+    #endregion
 }

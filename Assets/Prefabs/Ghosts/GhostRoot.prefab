@@ -183,7 +183,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e18cfba303db30e4a9eee35d0e5cd48d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WallSlideAbility
-  thisAbilityState: 6
+  thisAbilityState: 4
   isPermitted: 1
 --- !u!114 &811093759964038326
 MonoBehaviour:
@@ -197,7 +197,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 643a27b587e0f604fb7dcde44dd3f1df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DashAbility
-  thisAbilityState: 7
+  thisAbilityState: 6
   isPermitted: 1
 --- !u!114 &5380277254304922262
 MonoBehaviour:
@@ -211,7 +211,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fdc9dd43884246b47a8bc80a98b93f9f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KnockBackAbility
-  thisAbilityState: 11
+  thisAbilityState: 7
   isPermitted: 1
 --- !u!114 &7253031294074278652
 MonoBehaviour:
@@ -238,7 +238,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 479a86a3820e6d449abea123fc3a1fbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DeathAbility
-  thisAbilityState: 12
+  thisAbilityState: 8
   isPermitted: 1
 --- !u!114 &3683911692557887859
 MonoBehaviour:
@@ -253,10 +253,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ReplayDriftCorrector
   positionEpsilon: 0.05
-  hardSnapThreshold: 90
-  pullStrength: 0.5
-  correctVelocity: 0
+  positionDivergenceThreshold: 0.5
   velocityDivergenceThreshold: 1
+  pullStrength: 0.5
 --- !u!114 &-7890890947006341680
 MonoBehaviour:
   m_ObjectHideFlags: 0

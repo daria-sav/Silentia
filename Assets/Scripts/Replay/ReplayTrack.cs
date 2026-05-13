@@ -2,23 +2,26 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Stores recorded input, start state, and keyframes for replay playback.
+/// </summary>
 public class ReplayClip
 {
     public CharacterProfile profile;
     public string profileId;
 
-    // === SIMULATION SETTINGS (for determinism checks) ===
+    // ───────────── SIMULATION SETTINGS ─────────────
     public float fixedDeltaTime;
     public int velocityIterations;
     public int positionIterations;
 
-    // === START SNAPSHOT ===
+    // ───────────── START SNAPSHOT ─────────────
     public Vector2 startPosition;
     public Vector2 startVelocity;
     public bool startFacingRight;
     public PlayerStates.State startState;
 
-    // === FULL MOTOR SNAPSHOT ===
+    // ───────────── MOTOR SNAPSHOT ─────────────
     [Serializable]
     public struct MotorSnapshot
     {
@@ -49,7 +52,7 @@ public class ReplayClip
         public float dashRefillTimer;
 
         // dash phase
-        public int dashPhase;        // 0=None,1=Freeze,2=Active,3=Recovery
+        public int dashPhase;
         public float dashPhaseTimer;
         public Vector2 dashDir;
 
@@ -59,15 +62,17 @@ public class ReplayClip
 
     public MotorSnapshot startMotorSnapshot;
 
+    // ───────────── INPUT FRAMES ─────────────
+
     public readonly List<InputFrame> frames = new List<InputFrame>();
     public int FrameCount => frames.Count;
 
-    // === JUMP ===
+    // ───────────── JUMP STATE ─────────────
     public bool startIsJumping;
     public float startLastOnGroundTime;
     public int startAirJumpsLeft;
 
-    // === KEYFRAMES (drift correction) ===
+    // ───────────── KEYFRAMES ─────────────
     [Serializable]
     public struct ReplayKeyframe
     {
@@ -78,12 +83,19 @@ public class ReplayClip
 
     public readonly List<ReplayKeyframe> keyframes = new List<ReplayKeyframe>();
 
+    // ───────────── CONSTRUCTOR ─────────────
+
+    #region Constructor
     public ReplayClip(CharacterProfile profile)
     {
         this.profile = profile;
         this.profileId = profile != null ? profile.id : "";
     }
+    #endregion
 
+    // ───────────── PUBLIC API ─────────────
+
+    #region Public API
     public InputFrame GetFrame(int tick)
     {
         if (tick < 0 || tick >= frames.Count)
@@ -95,4 +107,5 @@ public class ReplayClip
     {
         keyframes.Add(new ReplayKeyframe { tick = tick, pos = pos, vel = vel });
     }
+    #endregion
 }

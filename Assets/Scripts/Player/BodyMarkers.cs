@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// Stores references to body-specific marker points and visual components.
+/// </summary>
 public class BodyMarkers : MonoBehaviour
 {
     [Header("Motor checks (OverlapBox)")]
@@ -8,7 +11,7 @@ public class BodyMarkers : MonoBehaviour
     public Transform backWallCheckPoint;
 
     [Header("Visual")]
-    public Transform visualRoot; // ??
+    public Transform visualRoot; 
     public Animator animator;
 
     public Transform flipRoot;

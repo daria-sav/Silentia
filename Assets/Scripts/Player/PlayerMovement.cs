@@ -529,7 +529,7 @@ public class PlayerMovement : MonoBehaviour
             if (wallJumpTimeLeft <= 0f)
             {
                 IsWallJumping = false;
-                if (RB.linearVelocity.y > 0f) isJumpFalling = true; // + эта строка
+                if (RB.linearVelocity.y > 0f) isJumpFalling = true;
             }
         }
 

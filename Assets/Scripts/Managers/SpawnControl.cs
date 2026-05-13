@@ -93,9 +93,7 @@ public class SpawnControl : MonoBehaviour
     // ─────────────── HELPERS ────────────────
 
     #region Internal Helpers
-    /// <summary>
-    /// Returns the spawn point with the given key, or null if none matches.
-    /// </summary>
+    // Returns the spawn point with the given key, or null if none matches
     private SpawnIdentifier FindSpawnPointByKey(string spawnKey)
     {
         if (spawnPoints == null || spawnPoints.Length == 0)
