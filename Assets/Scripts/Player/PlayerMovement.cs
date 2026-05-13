@@ -1,4 +1,11 @@
-﻿using UnityEngine;
+// Parts of this movement system were inspired by or adapted from
+// DawnosaurDev/platformer-movement:
+// https://github.com/DawnosaurDev/platformer-movement
+//
+// Original project licensed under the MIT License.
+// Copyright (c) 2024 Dawnosaur
+// See THIRD_PARTY_LICENSES.md for details.
+using UnityEngine;
 /// <summary>
 /// Tick-based movement motor. Receives input through public API methods
 /// (SetMoveInput, PressJump, PressDash) and simulates all physics
