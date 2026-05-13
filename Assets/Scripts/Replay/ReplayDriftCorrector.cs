@@ -2,24 +2,30 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// Corrects small replay drift without forcing large divergences back on track.
+/// Softly corrects small replay drift without overriding real physics divergence.
 /// </summary>
 [DefaultExecutionOrder(100)]
 public class ReplayDriftCorrector : MonoBehaviour
 {
-    [Header("Drift correction")]
+    [Header("Drift Correction")]
     [Tooltip("Position error smaller than this is ignored.")]
     [SerializeField] private float positionEpsilon = 0.005f;
 
-    [Tooltip("Position error larger than this is treated as real divergence and the correction is skipped")]
+    [Tooltip("Large position gaps are treated as real divergence and are not corrected.")]
     [SerializeField] private float positionDivergenceThreshold = 0.5f;
 
-    [Tooltip("Per-axis velocity tolerance.")]
-    [SerializeField] private float velocityDivergenceThreshold = 0.75f;
+    [Tooltip("Large velocity differences mean the replay is no longer on the same trajectory.")]
+    [SerializeField] private float velocityDivergenceThreshold = 2f;
 
-    [Tooltip("Soft pull amount.")]
+    [Tooltip("Soft pull amount applied to position when correcting.")]
     [Range(0f, 1f)]
     [SerializeField] private float pullStrength = 0.25f;
+
+    [Tooltip("If enabled, velocity is also pulled toward the recorded value.")]
+    [SerializeField] private bool correctVelocity = false;
+
+    [Header("Debug")]
+    [SerializeField] private bool debugLog = false;
 
     private PlayerMovement motor;
     private Vector2 targetPos;
@@ -35,7 +41,7 @@ public class ReplayDriftCorrector : MonoBehaviour
         targetPos = keyframePos;
         targetVel = keyframeVel;
 
-        // if a coroutine is already in flight, it will pick up the latest target on resume
+        // reuses the pending coroutine and lets it apply the latest scheduled keyframe
         if (!hasPending)
         {
             hasPending = true;
@@ -56,6 +62,7 @@ public class ReplayDriftCorrector : MonoBehaviour
     #region Correction
     private IEnumerator CorrectAfterPhysics()
     {
+        // runs after the current physics step, matching when replay keyframes were captured
         yield return new WaitForFixedUpdate();
 
         hasPending = false;
@@ -65,24 +72,38 @@ public class ReplayDriftCorrector : MonoBehaviour
         Vector2 curPos = motor.RB.position;
         Vector2 curVel = motor.RB.linearVelocity;
 
-        Vector2 posError = targetPos - curPos;
-        Vector2 velError = targetVel - curVel;
+        float posErr = Vector2.Distance(curPos, targetPos);
 
-        // negligible drift 
-        float posErrorMag = posError.magnitude;
-        if (posErrorMag < positionEpsilon) yield break;
-
-        // position diverged too far
-        if (posErrorMag > positionDivergenceThreshold) yield break;
-
-        // velocity diverged on either axis
-        if (Mathf.Abs(velError.x) > velocityDivergenceThreshold ||
-            Mathf.Abs(velError.y) > velocityDivergenceThreshold)
+        // large position error usually means the world state changed, not floating-point drift
+        if (posErr < positionEpsilon)
+        {
+            if (debugLog) Debug.Log($"[Drift] noop  posErr={posErr:F4}");
             yield break;
+        }
 
-        // same trajectory + small drift
-        motor.RB.position = curPos + posError * pullStrength;
-        motor.RB.linearVelocity = curVel + velError * pullStrength;
+        // 2. Position diverged too far — worlds have parted ways.
+        //    This is the ANTI-HOVER guard: stops the corrector from snapping
+        //    the ghost back onto geometry that no longer exists at playback.
+        if (posErr > positionDivergenceThreshold)
+        {
+            if (debugLog) Debug.Log($"[Drift] SKIP pos  posErr={posErr:F2} > {positionDivergenceThreshold} (world diverged)");
+            yield break;
+        }
+
+        // large velocity error means the live replay has split onto a different trajectory
+        float velDiff = Vector2.Distance(curVel, targetVel);
+        if (velDiff > velocityDivergenceThreshold)
+        {
+            if (debugLog) Debug.Log($"[Drift] SKIP vel  velDiff={velDiff:F2} > {velocityDivergenceThreshold} (trajectory diverged)");
+            yield break;
+        }
+
+        motor.RB.position = Vector2.Lerp(curPos, targetPos, pullStrength);
+
+        if (correctVelocity)
+            motor.RB.linearVelocity = Vector2.Lerp(curVel, targetVel, pullStrength);
+
+        if (debugLog) Debug.Log($"[Drift] pull  posErr={posErr:F3} velDiff={velDiff:F3}");
     }
     #endregion
 }
