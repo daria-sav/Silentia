@@ -74,15 +74,19 @@ Silentia valmis bakalaureusetöö projektina Tartu Ülikooli arvutiteaduse insti
 ## License / Litsents
 
 **EN**  
-This project is licensed under the license included in the repository.  
-See the [LICENSE](LICENSE) file for details.
+Silentia is licensed under **Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)**, unless otherwise stated.
 
-Parts of the movement system were inspired by or adapted from the open-source `platformer-movement` project by DawnosaurDev, licensed under the MIT License.  
-See [THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md) for details.
+This means that the project may be shared with proper attribution, but may not be used for commercial purposes or distributed in modified form.
+
+Third-party materials remain under their original licenses. Parts of the movement system were inspired by or adapted from DawnosaurDev's `platformer-movement` project, licensed under the MIT License.
+
+See [LICENSE.md](LICENSE.md) and [THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md) for details.
 
 **ET**  
-See projekt on litsentseeritud repositooriumis oleva litsentsi alusel.  
-Täpsem info on failis [LICENSE](LICENSE).
+Silentia on litsentseeritud **Creative Commons Autorile viitamine-Mitteäriline eesmärk-Tuletatud teoste keeld 4.0 Rahvusvaheline (CC BY-NC-ND 4.0)** litsentsi alusel, kui ei ole märgitud teisiti.
 
-Osa liikumissüsteemist on inspireeritud või kohandatud DawnosaurDev avatud lähtekoodiga projektist `platformer-movement`, mis on litsentseeritud MIT litsentsi alusel.  
-Täpsem info on failis [THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md).
+See tähendab, et projekti võib jagada korrektse autorile viitamisega, kuid seda ei tohi kasutada ärilisel eesmärgil ega levitada muudetud kujul.
+
+Kolmanda osapoole materjalid jäävad oma algsete litsentside alla. Osa liikumissüsteemist on inspireeritud või kohandatud DawnosaurDev projektist `platformer-movement`, mis on litsentseeritud MIT litsentsi alusel.
+
+Täpsem info on failides [LICENSE.md](LICENSE.md) ja [THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md).
