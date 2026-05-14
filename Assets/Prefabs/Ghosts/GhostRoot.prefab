@@ -253,11 +253,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ReplayDriftCorrector
   positionEpsilon: 0.005
-  positionDivergenceThreshold: 0.5
-  velocityDivergenceThreshold: 2
-  pullStrength: 0.25
+  positionDivergenceThreshold: 1.5
+  velocityDivergenceThreshold: 5
+  pullStrength: 1
   correctVelocity: 0
-  debugLog: 1
+  debugLog: 0
 --- !u!114 &-7890890947006341680
 MonoBehaviour:
   m_ObjectHideFlags: 0

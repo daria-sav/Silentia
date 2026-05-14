@@ -2,29 +2,38 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// Softly corrects small replay drift without overriding real physics divergence.
+/// Pulls the ghost toward the recorded trajectory on keyframes when the
+/// only delta is floating-point drift.
+///
+/// Two safety channels skip the pull when the worlds have actually parted
+/// ways (geometry changed, trajectory split) — without these guards the
+/// corrector would hover the ghost where geometry no longer exists.
+///
+/// Runs after the current tick's physics step via WaitForFixedUpdate,
+/// matching the post-physics moment captured by ReplayLateKeyframer.
 /// </summary>
 [DefaultExecutionOrder(100)]
 public class ReplayDriftCorrector : MonoBehaviour
 {
-    [Header("Drift Correction")]
+    [Header("Drift correction")]
     [Tooltip("Position error smaller than this is ignored.")]
     [SerializeField] private float positionEpsilon = 0.005f;
 
-    [Tooltip("Large position gaps are treated as real divergence and are not corrected.")]
+    [Tooltip("Above this position error the worlds have diverged — correction is skipped.")]
     [SerializeField] private float positionDivergenceThreshold = 0.5f;
 
-    [Tooltip("Large velocity differences mean the replay is no longer on the same trajectory.")]
+    [Tooltip("Above this velocity error the trajectory has split — correction is skipped.")]
     [SerializeField] private float velocityDivergenceThreshold = 2f;
 
-    [Tooltip("Soft pull amount applied to position when correcting.")]
+    [Tooltip("Pull amount applied to position. 1 = full snap to recorded value.")]
     [Range(0f, 1f)]
     [SerializeField] private float pullStrength = 0.25f;
 
-    [Tooltip("If enabled, velocity is also pulled toward the recorded value.")]
+    [Tooltip("Also pull velocity toward the recorded value. Tightens lock-step but changes physical feel.")]
     [SerializeField] private bool correctVelocity = false;
 
     [Header("Debug")]
+    [Tooltip("Logs every correction decision to Console.")]
     [SerializeField] private bool debugLog = false;
 
     private PlayerMovement motor;
@@ -32,7 +41,7 @@ public class ReplayDriftCorrector : MonoBehaviour
     private Vector2 targetVel;
     private bool hasPending;
 
-    // ───────────── PUBLIC API ─────────────
+    // ────────────────── API ──────────────────
 
     #region Public API
     public void ScheduleCorrection(Vector2 keyframePos, Vector2 keyframeVel, PlayerMovement motorRef)
@@ -41,7 +50,7 @@ public class ReplayDriftCorrector : MonoBehaviour
         targetPos = keyframePos;
         targetVel = keyframeVel;
 
-        // reuses the pending coroutine and lets it apply the latest scheduled keyframe
+        // a pending coroutine picks up the latest target on resume
         if (!hasPending)
         {
             hasPending = true;
@@ -57,12 +66,11 @@ public class ReplayDriftCorrector : MonoBehaviour
     }
     #endregion
 
-    // ───────────── CORRECTION ─────────────
+    // ────────── FIXED-STEP CORRECTION ─────────
 
-    #region Correction
+    #region Fixed-step Correction
     private IEnumerator CorrectAfterPhysics()
     {
-        // runs after the current physics step, matching when replay keyframes were captured
         yield return new WaitForFixedUpdate();
 
         hasPending = false;
@@ -74,23 +82,21 @@ public class ReplayDriftCorrector : MonoBehaviour
 
         float posErr = Vector2.Distance(curPos, targetPos);
 
-        // large position error usually means the world state changed, not floating-point drift
+        // negligible drift
         if (posErr < positionEpsilon)
         {
             if (debugLog) Debug.Log($"[Drift] noop  posErr={posErr:F4}");
             yield break;
         }
 
-        // 2. Position diverged too far — worlds have parted ways.
-        //    This is the ANTI-HOVER guard: stops the corrector from snapping
-        //    the ghost back onto geometry that no longer exists at playback.
+        // worlds diverged (anti-hover guard)
         if (posErr > positionDivergenceThreshold)
         {
             if (debugLog) Debug.Log($"[Drift] SKIP pos  posErr={posErr:F2} > {positionDivergenceThreshold} (world diverged)");
             yield break;
         }
 
-        // large velocity error means the live replay has split onto a different trajectory
+        // trajectory diverged
         float velDiff = Vector2.Distance(curVel, targetVel);
         if (velDiff > velocityDivergenceThreshold)
         {
@@ -98,6 +104,7 @@ public class ReplayDriftCorrector : MonoBehaviour
             yield break;
         }
 
+        // FP drift — pull toward recorded trajectory
         motor.RB.position = Vector2.Lerp(curPos, targetPos, pullStrength);
 
         if (correctVelocity)

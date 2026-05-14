@@ -87,6 +87,11 @@ public class SpawnControl : MonoBehaviour
         {
             player.ForceFlip();
         }
+
+        var motor = player.GetComponentInChildren<PlayerMovement>(true);
+        if (motor != null && motor.RB != null)
+            motor.RB.position = player.transform.position;
+        Physics2D.SyncTransforms();
     }
     #endregion
 

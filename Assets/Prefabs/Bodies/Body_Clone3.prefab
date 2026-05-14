@@ -318,6 +318,7 @@ MonoBehaviour:
     m_Bits: 64
   defaultInterpolation: 1
   platformInterpolation: 2
+  dashPhase: 0
 --- !u!114 &2555202574435278521
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -335,7 +336,7 @@ MonoBehaviour:
   backWallCheckPoint: {fileID: 5114144107605955281}
   visualRoot: {fileID: 2070480972542562775}
   animator: {fileID: 1845096455744794564}
-  flipRoot: {fileID: 146915337502471430}
+  flipRoot: {fileID: 2070480972542562775}
 --- !u!61 &8428990286554897567
 BoxCollider2D:
   m_ObjectHideFlags: 0

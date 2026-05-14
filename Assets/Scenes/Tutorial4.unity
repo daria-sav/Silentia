@@ -542,6 +542,10 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: -0.06
       objectReference: {fileID: 0}
+    - target: {fileID: 3419200764932349428, guid: 53e6446fdddeec24487ed89d1e5bf3cb, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6109609188983827564, guid: 53e6446fdddeec24487ed89d1e5bf3cb, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -15701,7 +15705,7 @@ Camera:
   far clip plane: 1000
   field of view: 12
   orthographic: 1
-  orthographic size: 8.4375
+  orthographic size: 7.5
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2

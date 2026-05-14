@@ -94,7 +94,7 @@ MonoBehaviour:
   input: {fileID: 6877654709472543452}
   cloneSwitcher: {fileID: 1535010861346565358}
   maxSeconds: 60
-  keyframeEveryTicks: 10
+  keyframeEveryTicks: 3
 --- !u!114 &2292556360748104979
 MonoBehaviour:
   m_ObjectHideFlags: 0

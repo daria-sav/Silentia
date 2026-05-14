@@ -102,7 +102,7 @@ public class ReplayRecorder : MonoBehaviour
         var motor = player != null ? player.motor : null;
 
         if (CurrentClip != null && motor != null)
-            CurrentClip.AddKeyframe(tick, transform.position, motor.RB.linearVelocity);
+            CurrentClip.AddKeyframe(tick, motor.RB.position, motor.RB.linearVelocity);
 
         if (CurrentClip != null)
             OnRecordingStopped?.Invoke(CurrentClip);
@@ -148,7 +148,7 @@ public class ReplayRecorder : MonoBehaviour
         else
         {
             // fallback: record now (pre-motor, less accurate but functional)
-            Vector2 pos = transform.position;
+            Vector2 pos = (motor != null) ? motor.RB.position : (Vector2)transform.position;
             Vector2 vel = (motor != null) ? motor.RB.linearVelocity : Vector2.zero;
             CurrentClip.AddKeyframe(keyframeTick, pos, vel);
         }

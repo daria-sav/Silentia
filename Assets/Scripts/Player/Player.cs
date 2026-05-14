@@ -28,7 +28,7 @@ public class Player : MonoBehaviour
         stateMachine = new StateMachine();
         playerAbilities = GetComponents<BaseAbility>();
         stateMachine.abilitiesArr = playerAbilities;
-        
+
         RefreshStatsFromChildren();
         RefreshMotorFromChildren();
 
