@@ -12505,26 +12505,6 @@ PrefabInstance:
       propertyPath: m_SortingOrder
       value: 110
       objectReference: {fileID: 0}
-    - target: {fileID: 7339220457444843841, guid: 2f8289b8e04b30c4c85ba4221fe8d671, type: 3}
-      propertyPath: m_Pivot.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7339220457444843841, guid: 2f8289b8e04b30c4c85ba4221fe8d671, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 433.7034
-      objectReference: {fileID: 0}
-    - target: {fileID: 7339220457444843841, guid: 2f8289b8e04b30c4c85ba4221fe8d671, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 243.9581
-      objectReference: {fileID: 0}
-    - target: {fileID: 7339220457444843841, guid: 2f8289b8e04b30c4c85ba4221fe8d671, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 38
-      objectReference: {fileID: 0}
-    - target: {fileID: 7339220457444843841, guid: 2f8289b8e04b30c4c85ba4221fe8d671, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -39
-      objectReference: {fileID: 0}
     - target: {fileID: 8846428899306624391, guid: 2f8289b8e04b30c4c85ba4221fe8d671, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0.73
