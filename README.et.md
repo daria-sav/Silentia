@@ -12,9 +12,9 @@
 
 <br>
 
-### 2D mõistatus-platvormer, kus su varasemad tegevused naasevad kajadena.
+### 2D mõistatus-platvormer, kus varasemad tegevused naasevad kajadena.
 
-*Su tegevused ei haihtu kunagi — need naasevad poolläbipaistvate varasemate minadena, kes lahendavad templit su kõrval.*
+*Sinu tegevused ei kao jäljetult — need pöörduvad tagasi poolläbipaistvate kajadena, kes tegutsevad templis sinu kõrval.*
 
 <br>
 
@@ -32,59 +32,59 @@
 
 ## Mängust
 
-Silentia on 2D mõistatus-platvormer, mille keskmes on kloonipõhine mehaanika. Vaikne munk läbib unustatud templi katsumusi, kus ühtki väljakutset ei saa ületada üksinda. Pühamus astub mängija ühte munga sisemistest jõududest, *tšakrasse*, ning salvestab selle liikumise. Maailma naastes ilmub see salvestus poolläbipaistva *kajana*, mis kordab samu tegevusi sünkroonis. Iga mõistatus lahendatakse, koordineerides munka kuni kolme kajaga korraga.
+Silentia on 2D mõistatus-platvormer, mille keskmes on kloonipõhine mehaanika. Mängija juhib munka läbi unustatud templi katsumuste, kus mõned väljakutset ei saa ületada üksinda. Pühamus saab mängija astuda ühte munga sisemistest jõududest ehk *tšakrasse* ning salvestada selle liikumise. Mängumaailma naastes ilmub salvestus poolläbipaistva *kajana*, mis kordab samu tegevusi sünkroonis. Iga mõistatus lahendatakse munka ja kuni kolme kaja tegevusi koordineerides.
 
-Kajad on tõelised osalised, mitte taustaanimatsioon. Nad vajutavad nuppe, hoiavad platvorme, jõuavad kohtadesse, kuhu munk ei pääse, ning püsivad omavahel täpselt sünkroonis.
+Kajad ei ole pelgalt taustaanimatsioonid, vaid mängumaailma tegelikud osalised. Nad vajutavad nuppe, hoiavad platvorme, jõuavad kohtadesse, kuhu munk ise ei pääse ning püsivad omavahel täpselt sünkroonis.
 
 > [!NOTE]
-> Silentia kujunes kahe testimisvooru käigus viie mängijaga, kes mõistsid kloonimehaanikat iseseisvalt ja pidasid raskusastet õiglaseks.
+> Silentia kujunes kahe testimisvooru käigus viie mängija tagasiside põhjal. Testijad mõistsid kloonipõhist mehaanikat iseseisvalt ning pidasid mängu raskusastet õiglaseks.
 
 ## Omadused
 
-- **Kloonipõhine mehaanika**, mis salvestab su tegevused ja esitab need taas poolläbipaistvate kajadena
-- **Kolm mängitavat tšakrat**, igaühel oma liikumisvõime
-- **Mõistatused, mis põhinevad ajastusel** ja mitme kaja üheaegsel koordineerimisel
-- **Sisendipõhine deterministlik taasesitussüsteem** koos kaadrihaaval toimuva kõrvalekalde korrigeerimisega
-- **Kuus käsitsi kujundatud taset**, mis õpetavad mehaanikat samm-sammult
-- **Algupärane pikselkunstis maailm** rahulikus, meditatiivses templis
-- Loodud **Unity 6**-s andmepõhise tegelaste arhitektuuriga
+- **Kloonipõhine mehaanika**, mis salvestab mängija tegevused ja toob need tagasi poolläbipaistvate kajadena
+- **Kolm mängitavat tšakrat**, igaühel oma liikumisvõime ja roll mõistatuste lahendamisel
+- **Ajastusel põhinevad mõistatused**, kus tuleb koordineerida mitut kaja korraga
+- **Sisendipõhine deterministlik taasesitussüsteem** koos kaadripõhise kõrvalekalde korrigeerimisega
+- **Kuus käsitsi kujundatud taset**, mis tutvustavad mehaanikat samm-sammult
+- **Algupärane pikselgraafikas maailm**, mis loob rahuliku ja meditatiivse templiatmosfääri
+- Loodud **Unity 6** mängumootoris andmepõhise tegelaste arhitektuuriga
 
 ## Tegelased
 
-Munk kasutab ainult põhilist liikumist. Kajadena saab salvestada kolme tšakrat ja **igaüks neist eksisteerib vaid ühes eksemplaris**, mistõttu iga mõistatus sõltub erinevate jõudude koostööst.
+Munk valdab ainult põhilist liikumist. Kajadena saab salvestada kolme tšakrat ning **igaüks neist saab korraga eksisteerida vaid ühe kajana**. Seetõttu sõltub iga mõistatus erinevate jõudude koostööst.
 
 | | Tšakra | Element | Võime |
 |:--:|:--|:--:|:--|
-| <img src="docs/images/muladhara.png" width="66"> | **Muladhara** | Maa | **Topelthüpe.** Maine ja kindel, ulatub kõrgele üles. |
-| <img src="docs/images/svadhisthana.png" width="66"> | **Svadhisthana** | Vesi | **Väike keha.** Kerge ja voolav, mahub kõige kitsamatesse pragudesse. |
-| <img src="docs/images/manipura.png" width="66"> | **Manipura** | Tuli | **Sööst.** Kiire ja terav, paiskub üle avara vahemaa. |
+| <img src="docs/images/muladhara.png" width="66"> | **Muladhara** | Maa | **Topelthüpe.** Kindel ja tasakaalukas jõud, mis aitab jõuda kõrgemale. |
+| <img src="docs/images/svadhisthana.png" width="66"> | **Svadhisthana** | Vesi | **Väike keha.** Kerge ja voolav jõud, mis mahub ka kõige kitsamatesse pragudesse. |
+| <img src="docs/images/manipura.png" width="66"> | **Manipura** | Tuli | **Sööst.** Kiire ja terav jõud, mis paiskub üle suuremate vahemaade. |
 
 ## Tehniline ülevaade
 
-Silentia kasutab sisendipõhist taasesitussüsteemi. See salvestab mängija sisendid, mitte tema asukoha, ning esitab need taas sama füüsikamootori kaudu, mis juhib munka. See muudab iga kaja maailma tõeliseks osaliseks, mitte eelsalvestatud klipiks. Kui platvorm oli salvestamise ajal olemas, kuid puudub taasesitusel, siis kaja kukub.
+Silentia kasutab sisendipõhist taasesitussüsteemi. See salvestab mängija sisendid, mitte tegelase asukoha, ning esitab need hiljem uuesti sama liikumis- ja füüsikasüsteemi kaudu, mis juhib ka munka. Tänu sellele on iga kaja mängumaailma päris osaline. Kui platvorm oli salvestamise ajal olemas, kuid taasesituse ajal puudub, kukub kaja alla.
 
-Et püsida ajas usaldusväärsena, on simulatsioon deterministlik. Kogu liikumine ja füüsika töötab fikseeritud ajasammul ning kõrvalekalde korrigeerimise süsteem joondab iga kaja igal kaadril uuesti tema salvestatud olekuga, parandades ujukomavea, mis pikkade salvestuste jooksul koguneb.
+Et taasesitus püsiks usaldusväärne, on simulatsioon üles ehitatud deterministlikult. Kogu liikumine ja füüsika toimuvad fikseeritud ajasammuga ning kõrvalekalde korrigeerimise süsteem joondab iga kaja igal kaadril tema salvestatud olekuga. Nii parandatakse väikeseid ujukomaarvutuste vigu, mis võivad pikemate salvestuste jooksul koguneda.
 
 <details>
 <summary><b>Lähem pilk taasesitussüsteemile</b></summary>
 
 <br>
 
-Tegevuste taasesitamise süsteemi jaoks on kaks lähenemist. **Olekupõhine** süsteem salvestab igal sammul tegelase täieliku oleku, sealhulgas asukoha, kiiruse ja sisemised väärtused. See on töökindel, kuid mahukas, ning kloon kordab vaid kindlat trajektoori, nagu videolõik. **Sisendipõhine** süsteem salvestab ainult mängija sisendid ja taastab kõik muu simulatsiooni teel. Silentia kasutab sisendipõhist lähenemist, sest salvestatud sisendid saab suunata tagasi läbi sama mootori, mis liigutab elavat tegelast, nii et kaja osaleb füüsikamaailmas, mitte ei korda külmunud trajektoori.
+Tegevuste taasesitamiseks on kaks peamist lähenemist. **Olekupõhine** süsteem salvestab igal sammul tegelase täieliku oleku, sealhulgas asukoha, kiiruse ja sisemised väärtused. See lähenemine on töökindel, kuid mahukas, ning kloon kordab kindlat trajektoori pigem nagu videolõik. **Sisendipõhine** süsteem salvestab ainult mängija sisendid ja taastab ülejäänu simulatsiooni kaudu. Silentia kasutab sisendipõhist lähenemist, sest salvestatud sisendid saab suunata tagasi läbi sama süsteemi, mis juhib elavat tegelast. Nii osaleb kaja füüsikamaailmas, mitte ei korda lihtsalt külmutatud trajektoori.
 
-**Determinism.** Sisendite taasesitus toimib ainult siis, kui samad sisendid annavad alati sama tulemuse. Seetõttu toimub kogu liikumine ja füüsika `FixedUpdate` sees fikseeritud ajasammuga, sõltumatult kaadrisagedusest, ning komponentide täitmisjärjekord on selgelt fikseeritud.
+**Determinism.** Sisendite taasesitus toimib ainult siis, kui samad sisendid annavad alati sama tulemuse. Seetõttu toimub kogu liikumine ja füüsika `FixedUpdate` meetodis fikseeritud ajasammuga, sõltumata kaadrisagedusest. Lisaks on komponentide täitmisjärjekord selgelt määratud.
 
-**Salvestamine.** Igal `FixedUpdate`-l kirjutab salvesti praeguse sisendi kaadrisse. Paralleelselt jäädvustatakse asukoha ja kiiruse hetktõmmised *pärast* füüsikasammu ning salvestatakse perioodiliste võtmekaadritena.
+**Salvestamine.** Iga `FixedUpdate` tsükli ajal kirjutab salvesti kaadrisse mängija praeguse sisendi. Samal ajal jäädvustatakse pärast füüsikasammu tegelase asukoha ja kiiruse hetktõmmised, mis salvestatakse perioodiliste võtmekaadritena.
 
-**Taasesitus ja kõrvalekalde korrigeerimine.** Taasesituse ajal suunatakse salvestatud sisendid tagasi läbi sama liikumissüsteemi, mida kasutab elav munk. Ujukomaviga koguneb pikkade salvestuste jooksul siiski, mistõttu korrektor võrdleb iga kaja pärast iga füüsikasammu tema võtmekaadritega. Väikesed kõrvalekalded interpoleeritakse sujuvalt tagasi salvestatud rajale, suured lahknevused jäetakse aga puutumata, sest need tähendavad, et muutunud on tase ise, mitte arvutus.
+**Taasesitus ja kõrvalekalde korrigeerimine.** Taasesituse ajal suunatakse salvestatud sisendid tagasi läbi sama liikumissüsteemi, mida kasutab elav munk. Pikkade salvestuste jooksul võivad siiski koguneda väikesed ujukomaarvutuste vead. Selle vähendamiseks võrdleb korrektor iga kaja pärast füüsikasammu tema salvestatud võtmekaadritega. Väikesed kõrvalekalded juhitakse sujuvalt tagasi salvestatud rajale, kuid suuri lahknevusi automaatselt ei parandata, sest need viitavad tõenäoliselt sellele, et mängumaailma olukord on muutunud.
 
-**Tegelaste arhitektuur.** Tegelased on andmepõhised. Ühine liikumismootor loeb iga tegelase parameetrid `ScriptableObject` failidest ning iga tegelane lubab ainult oma võimete olekud. Nii töötavad munk ja kõik kolm tšakrat ühel koodibaasil, säilitades samas erineva juhtimistunde.
+**Tegelaste arhitektuur.** Tegelased on üles ehitatud andmepõhiselt. Ühine liikumissüsteem loeb iga tegelase parameetrid `ScriptableObject` failidest ning iga tegelane lubab ainult talle määratud võimeolekuid. Nii saavad munk ja kolm tšakrat töötada sama koodibaasi peal, säilitades samal ajal erineva juhtimistunde.
 
 </details>
 
 ## Alustamine
 
-### Allalaadimine (Windows)
+### Allalaadimine Windowsile
 
 Mängitav versioon on saadaval jaotises [**Releases**](https://github.com/daria-sav/Silentia/releases).
 
@@ -97,7 +97,7 @@ Mängitav versioon on saadaval jaotises [**Releases**](https://github.com/daria-
 Silentia on Unity projekt.
 
 1. Klooni see repositoorium.
-2. Ava see **Unity 6**-ga või uuemaga.
+2. Ava projekt **Unity 6** või uuema versiooniga.
 3. Ava algstseen ja vajuta **Play**.
 
 ### Juhtnupud
@@ -107,7 +107,7 @@ Silentia on Unity projekt.
 | Liikumine | Nooleklahvid&nbsp;/&nbsp;WASD |
 | Hüpe | Üles&nbsp;/&nbsp;W&nbsp;/&nbsp;Tühik |
 | Sööst *(Manipura)* | X |
-| Suhtlemine · pühamusse sisenemine | E |
+| Suhtlemine ja pühamusse sisenemine | E |
 | Salvestuse lõpetamine | Q |
 | Kõigi salvestatud kajade käivitamine | C |
 | Pühamust lahkumine | Esc |
@@ -115,33 +115,33 @@ Silentia on Unity projekt.
 
 ## Edasiarendus
 
-Silentia on lõputööna valmis, kuid templil on veel arenguruumi.
+Silentia on valminud bakalaureusetööna, kuid templis on veel arenguruumi.
 
 **Testijate tagasiside põhjal**
 
-- [ ] **Heli ja muusika.** Praegune versioon on helitu; taustamuusika ja heliefektid on enim soovitud täiendus.
-- [ ] **Elav narratiiv.** Loo põimimine tasemetesse endisse, koos tegelastega, kes juhivad munka templis sügavamale.
-- [ ] **Rohkem avastada.** Lisatasemed ja mitmekesisemad templikeskkonnad.
+- [ ] **Heli ja muusika.** Praegune versioon on helitu. Taustamuusika ja heliefektid olid testijate seas kõige sagedamini soovitud täiendused.
+- [ ] **Elavam narratiiv.** Lugu võiks olla tihedamalt tasemetesse põimitud ning sisaldada tegelasi, kes juhivad munka templis sügavamale.
+- [ ] **Rohkem avastamist.** Mängu võiks laiendada lisatasemete ja mitmekesisemate templikeskkondadega.
 
 **Edasised ideed**
 
-- [ ] **Avatav tegelaskond.** Iga läbitud templiga teenitakse uus tšakra.
-- [ ] **Vaenlased ja võitlus.** Kerge võitluskiht väljakutse mitmekesistamiseks.
-- [ ] **Peidetud kogumisesemed.** Valikulised auhinnad taseme kõige keerulisemates nurkades.
-- [ ] **Läbimängu statistika.** Surmad, läbimisajad ja tasemepõhine edenemine.
+- [ ] **Avatav tegelaskond.** Iga läbitud templiosa võiks avada uue tšakra.
+- [ ] **Vaenlased ja võitlus.** Kerge võitluskiht võiks muuta väljakutseid mitmekesisemaks.
+- [ ] **Peidetud kogumisesemed.** Valikulised auhinnad võiksid paikneda tasemete kõige keerulisemates nurkades.
+- [ ] **Läbimängu statistika.** Mäng võiks jälgida surmade arvu, läbimisaegu ja tasemepõhist edenemist.
 
 ## Tehnoloogiad
 
-- **Unity 6** · mängumootor ja tööriistad
-- **C#** · mänguloogika programmeerimine
-- **Aseprite** · pikselgraafika ja animatsioon
-- **Figma** · kasutajaliidese kujundus
+- **Unity 6** - mängumootor ja arenduskeskkond
+- **C#** - mänguloogika programmeerimine
+- **Aseprite** - pikselgraafika ja animatsioon
+- **Figma** - kasutajaliidese kujundus
 
 ## Autorid
 
-- **Daria Savtšenko** · mängudisain, programmeerimine ja tasemete kujundus
-- **Sofia Savtšenko** · kunst ja visuaalne kujundus
-- **Mark Muhhin** · lõputöö juhendaja
+- **Daria Savtšenko** - mängudisain, programmeerimine ja tasemete kujundus
+- **Sofia Savtšenko** - kunst ja visuaalne kujundus
+- **Mark Muhhin** - lõputöö juhendaja
 
 Liikumissüsteemi alus on kohandatud projektist [DawnosaurDev / platformer-movement](https://github.com/DawnosaurDev/platformer-movement), mida kasutatakse MIT-litsentsi alusel.
 
@@ -151,7 +151,7 @@ Silentia valmis bakalaureusetööna Tartu Ülikooli arvutiteaduse instituudis 20
 
 Silentia on avaldatud litsentsi **Creative Commons Autorile viitamine-Mitteäriline eesmärk-Tuletatud teoste keeld 4.0 Rahvusvaheline** (CC BY-NC-ND 4.0) alusel. Projekti võib jagada autorile viidates, kuid seda ei tohi kasutada ärilisel eesmärgil ega levitada muudetud kujul.
 
-Kolmanda osapoole materjalid jäävad oma litsentside alla. Täpsem teave failides [LICENSE.md](LICENSE.md) ja [THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md).
+Kolmanda osapoole materjalid jäävad oma litsentside alla. Täpsem teave on failides [LICENSE.md](LICENSE.md) ja [THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md).
 
 ---
 
