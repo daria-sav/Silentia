@@ -32,7 +32,7 @@
 
 ## About
 
-Silentia is a 2D puzzle-platformer built around a clone-based mechanic. A silent monk walks the trials of a forgotten temple, where no challenge can be overcome alone. At a shrine, the player steps into one of the monk's inner powers, a *chakra*, and records its movements. Back in the world, that recording returns as a translucent *echo* that repeats the same actions in sync. Every puzzle is solved by coordinating the monk with up to three echoes at once.
+Silentia is a 2D puzzle-platformer built around a clone-based mechanic. A monk walks the trials of a forgotten temple, where no challenge can be overcome alone. At a shrine, the player steps into one of the monk's inner powers, a *chakra*, and records its movements. Back in the world, that recording returns as a translucent *echo* that repeats the same actions in sync. Every puzzle is solved by coordinating the monk with up to three echoes at once.
 
 Echoes are real participants, not background animation. They press buttons, hold platforms, reach places the monk cannot and stay perfectly in sync with one another.
 
@@ -132,16 +132,16 @@ Silentia is complete as a thesis project, but the temple still has room to grow.
 
 ## Built With
 
-- **Unity 6** · engine and tooling
-- **C#** · gameplay programming
-- **Aseprite** · pixel art and animation
-- **Figma** · interface design
+- **Unity 6** - engine and tooling
+- **C#** - gameplay programming
+- **Aseprite** - pixel art and animation
+- **Figma** - interface design
 
 ## Credits
 
-- **Daria Savtšenko** · game design, programming, and level design
-- **Sofia Savtšenko** · art and visual design
-- **Mark Muhhin** · thesis supervisor
+- **Daria Savtšenko** - game design, programming, and level design
+- **Sofia Savtšenko** - art and visual design
+- **Mark Muhhin** - thesis supervisor
 
 The movement foundation is adapted from [DawnosaurDev / platformer-movement](https://github.com/DawnosaurDev/platformer-movement), used under the MIT License.
 
