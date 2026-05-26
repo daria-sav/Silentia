@@ -97691,6 +97691,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Canvas - Level Manager
       objectReference: {fileID: 0}
+    - target: {fileID: 3100118927620623378, guid: 6e39b0f6cefaedd47bf9e0c8a98e2618, type: 3}
+      propertyPath: m_Alpha
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4097086914774744388, guid: 6e39b0f6cefaedd47bf9e0c8a98e2618, type: 3}
       propertyPath: terminalInput
       value: 
@@ -97797,22 +97801,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7068854117912751622, guid: 6e39b0f6cefaedd47bf9e0c8a98e2618, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7346579605902472142, guid: 6e39b0f6cefaedd47bf9e0c8a98e2618, type: 3}
-      propertyPath: m_Color.a
-      value: 0.6039216
-      objectReference: {fileID: 0}
-    - target: {fileID: 7346579605902472142, guid: 6e39b0f6cefaedd47bf9e0c8a98e2618, type: 3}
-      propertyPath: m_Color.b
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7346579605902472142, guid: 6e39b0f6cefaedd47bf9e0c8a98e2618, type: 3}
-      propertyPath: m_Color.g
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7346579605902472142, guid: 6e39b0f6cefaedd47bf9e0c8a98e2618, type: 3}
-      propertyPath: m_Color.r
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
