@@ -61,7 +61,7 @@ The monk uses only the core movement set. Three chakras can be recorded as echoe
 
 ## Technical Overview
 
-Silentia uses an input-based replay system. It records the player's inputs rather than their position, then replays them through the same physics engine that drives the monk. This makes each echo a real actor in the world rather than a pre-recorded clip. If a platform existed during the recording but is gone on replay, the echo falls.
+Silentia uses an input-based replay system. It records the player's inputs rather than their position, then replays them through the same physics engine that drives the monk. This makes each echo a real actor in the world. If a platform existed during the recording but is gone on replay, the echo falls.
 
 To stay reliable over time, the simulation is deterministic. All movement and physics run on a fixed timestep, and a drift-correction system realigns each echo with its recorded state every frame, correcting the floating-point error that builds up over long recordings.
 
@@ -70,7 +70,7 @@ To stay reliable over time, the simulation is deterministic. All movement and ph
 
 <br>
 
-Two design approaches exist for an action-replay system. A **state-based** recorder stores each character's full state, including position, velocity, and internal values, on every step. It is robust, but memory-heavy, and the clone only retraces a fixed path, like a video clip. An **input-based** recorder stores only the player's inputs and rebuilds everything else through simulation. Silentia uses the input-based approach, because the recorded inputs can be sent back through the very same engine that moves the live character, so an echo takes part in the physics world instead of replaying a frozen trajectory.
+Two design approaches exist for an action-replay system. A **state-based** recorder stores each character's full state, including position, velocity and internal values, on every step. It is robust, but memory-heavy, and the clone only retraces a fixed path, like a video clip. An **input-based** recorder stores only the player's inputs and rebuilds everything else through simulation. Silentia uses the input-based approach, because the recorded inputs can be sent back through the very same engine that moves the live character, so an echo takes part in the physics world instead of replaying a frozen trajectory.
 
 **Determinism.** Input replay only works if identical inputs always lead to identical results. All movement and physics therefore run inside `FixedUpdate` on a fixed timestep, independent of frame rate, with component execution order pinned explicitly.
 
@@ -119,7 +119,7 @@ Silentia is complete as a thesis project, but the temple still has room to grow.
 
 **Shaped by playtester feedback**
 
-- [ ] **Sound and music.** The current build is silent; an ambient score and sound effects are the most requested addition.
+- [ ] **Sound and music.** The current build is silent. An ambient score and sound effects are the most requested addition.
 - [ ] **A living narrative.** Weaving the story through the levels themselves, with characters who guide the monk deeper into the temple.
 - [ ] **More to explore.** Additional levels and a wider variety of temple environments.
 
